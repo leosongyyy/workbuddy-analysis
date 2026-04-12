@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WorkBuddy 使用行为分析报告 | 远的AI学习圈</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #0f1117; color: #e5e7eb; line-height: 1.6; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+
+  .header { text-align: center; margin-bottom: 48px; }
+  .header h1 { font-size: 28px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .header .subtitle { font-size: 14px; color: #6b7280; }
+  .header .badge-row { margin-top: 12px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .badge { background: #1f2937; border: 1px solid #374151; border-radius: 20px; padding: 4px 14px; font-size: 12px; color: #9ca3af; }
+  .badge.highlight { border-color: #4ade80; color: #4ade80; }
+
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 40px; }
+  .stat-card { background: #1a1d27; border: 1px solid #2d3142; border-radius: 12px; padding: 20px; text-align: center; }
+  .stat-card .num { font-size: 36px; font-weight: 800; color: #60a5fa; margin-bottom: 4px; }
+  .stat-card .num.orange { color: #fb923c; }
+  .stat-card .num.green { color: #4ade80; }
+  .stat-card .num.red { color: #f87171; }
+  .stat-card .label { font-size: 12px; color: #6b7280; }
+
+  .section { margin-bottom: 48px; }
+  .section-title { font-size: 18px; font-weight: 600; color: #fff; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #2d3142; }
+  .section-title span { font-size: 12px; font-weight: 400; color: #6b7280; margin-left: 10px; }
+
+  .finding-card { background: #1a1d27; border: 1px solid #2d3142; border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; }
+  .finding-card h3 { font-size: 15px; font-weight: 600; color: #f9fafb; margin-bottom: 8px; }
+  .finding-card .tag { display: inline-block; background: #1e3a5f; color: #60a5fa; border-radius: 4px; padding: 2px 8px; font-size: 11px; margin-bottom: 10px; }
+  .finding-card .tag.warning { background: #3d1f1f; color: #f87171; }
+  .finding-card .tag.good { background: #1a3d2b; color: #4ade80; }
+  .finding-card p { font-size: 14px; color: #9ca3af; }
+  .finding-card .highlight-line { color: #fbbf24; font-weight: 500; }
+
+  .timeline-chart { background: #1a1d27; border: 1px solid #2d3142; border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+  .chart-title { font-size: 14px; color: #9ca3af; margin-bottom: 16px; }
+  .bar-row { display: flex; align-items: center; margin-bottom: 8px; gap: 12px; }
+  .bar-label { font-size: 12px; color: #6b7280; width: 80px; flex-shrink: 0; }
+  .bar-track { flex: 1; height: 24px; background: #111827; border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 8px; font-size: 11px; font-weight: 600; color: #fff; white-space: nowrap; }
+  .bar-fill.blue { background: linear-gradient(90deg, #1d4ed8, #3b82f6); }
+  .bar-fill.orange { background: linear-gradient(90deg, #c2410c, #f97316); }
+  .bar-fill.red { background: linear-gradient(90deg, #b91c1c, #ef4444); }
+  .bar-fill.green { background: linear-gradient(90deg, #15803d, #22c55e); }
+  .bar-fill.purple { background: linear-gradient(90deg, #6d28d9, #8b5cf6); }
+
+  .article-list { background: #1a1d27; border: 1px solid #2d3142; border-radius: 12px; overflow: hidden; }
+  .article-item { padding: 16px 24px; border-bottom: 1px solid #1f2937; display: flex; align-items: flex-start; gap: 16px; }
+  .article-item:last-child { border-bottom: none; }
+  .article-item .date { font-size: 12px; color: #6b7280; width: 80px; flex-shrink: 0; padding-top: 2px; }
+  .article-item .info .title { font-size: 14px; color: #f9fafb; font-weight: 500; margin-bottom: 4px; }
+  .article-item .info .meta { font-size: 12px; color: #6b7280; }
+  .article-item .tag { flex-shrink: 0; background: #1f2937; border: 1px solid #374151; border-radius: 4px; padding: 2px 8px; font-size: 11px; color: #9ca3af; }
+
+  .optimization-item { background: #1a1d27; border: 1px solid #2d3142; border-radius: 12px; padding: 20px 24px; margin-bottom: 12px; }
+  .optimization-item .header-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .optimization-item .num { width: 28px; height: 28px; border-radius: 50%; background: #374151; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  .optimization-item h3 { font-size: 15px; color: #f9fafb; font-weight: 600; }
+  .optimization-item .priority { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+  .optimization-item .priority.p0 { background: #3d1f1f; color: #f87171; }
+  .optimization-item .priority.p1 { background: #3d2b1f; color: #fb923c; }
+  .optimization-item .priority.p2 { background: #1e3a5f; color: #60a5fa; }
+  .optimization-item p { font-size: 13px; color: #9ca3af; padding-left: 38px; margin-top: 4px; }
+  .optimization-item .detail { padding-left: 38px; margin-top: 8px; }
+  .optimization-item .detail li { font-size: 13px; color: #9ca3af; margin-bottom: 4px; padding-left: 12px; position: relative; }
+  .optimization-item .detail li::before { content: "·"; position: absolute; left: 0; color: #4b5563; }
+
+  .quote-box { background: #1a1d27; border-left: 3px solid #60a5fa; border-radius: 0 12px 12px 0; padding: 16px 20px; margin-top: 16px; }
+  .quote-box p { font-size: 14px; color: #d1d5db; font-style: italic; }
+  .quote-box .author { font-size: 12px; color: #6b7280; margin-top: 8px; font-style: normal; }
+
+  .type-dist { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .type-box { background: #1a1d27; border: 1px solid #2d3142; border-radius: 12px; padding: 16px; }
+  .type-box h4 { font-size: 13px; color: #f9fafb; margin-bottom: 8px; }
+  .type-box .mini-stat { display: flex; justify-content: space-between; font-size: 12px; color: #6b7280; margin-bottom: 4px; }
+  .type-box .mini-stat span { color: #e5e7eb; }
+
+  .time-dist { background: #1a1d27; border: 1px solid #2d3142; border-radius: 12px; padding: 20px 24px; }
+  .time-dist h4 { font-size: 14px; color: #f9fafb; margin-bottom: 14px; }
+  .time-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .time-row .t { font-size: 12px; color: #6b7280; width: 50px; }
+  .time-row .bar { height: 18px; background: linear-gradient(90deg, #1d4ed8, #3b82f6); border-radius: 3px; display: flex; align-items: center; padding: 0 8px; font-size: 11px; color: #fff; min-width: 30px; }
+
+  .footer { text-align: center; padding: 32px 0; border-top: 1px solid #2d3142; margin-top: 48px; font-size: 12px; color: #4b5563; }
+
+  @media (max-width: 640px) {
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .type-dist { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>WorkBuddy 使用行为分析报告</h1>
+    <div class="subtitle">远的AI学习圈 · 工作流复盘与优化建议</div>
+    <div class="subtitle" style="margin-top:4px;">数据范围：2026-03-29 → 2026-04-13（15天）</div>
+    <div class="badge-row">
+      <span class="badge highlight">75个任务目录</span>
+      <span class="badge">13个有效产出</span>
+      <span class="badge">公众号文章×7</span>
+      <span class="badge">AI工具集成×4</span>
+      <span class="badge">系统优化×3</span>
+    </div>
+  </div>
+
+  <!-- 核心数据 -->
+  <div class="grid-4">
+    <div class="stat-card">
+      <div class="num">75</div>
+      <div class="label">任务目录总数</div>
+    </div>
+    <div class="stat-card">
+      <div class="num orange">13</div>
+      <div class="label">有外部产出的任务</div>
+    </div>
+    <div class="stat-card">
+      <div class="num red">62</div>
+      <div class="label">空任务（无产出）</div>
+    </div>
+    <div class="stat-card">
+      <div class="num green">17%</div>
+      <div class="label">有效产出率</div>
+    </div>
+  </div>
+
+  <!-- 发现一：任务爆炸 -->
+  <div class="section">
+    <div class="section-title">发现一：任务创建极度碎片化<span>最严重的问题</span></div>
+
+    <div class="finding-card">
+      <h3>75个任务中，只有13个真正产出了东西</h3>
+      <span class="tag warning">高优先级</span>
+      <p>其余62个任务（83%）仅包含 <code>.workbuddy/memory/</code> 目录框架，没有任何外部产出文件。这意味着每5次"新建任务"，只有不到1次真正完成了可见工作。</p>
+    </div>
+
+    <div class="finding-card">
+      <h3>每天平均创建5个任务，但有效产出只有0.87个</h3>
+      <span class="tag warning">高优先级</span>
+      <p>15天里，你创建了75个任务目录，平均每天5个。但实际产出了文章的只有7天，大量任务属于"建了但没做完"或"试了一下就放弃"的状态。</p>
+    </div>
+
+    <div class="finding-card">
+      <h3>4月9日单日创建了35个任务——历史峰值</h3>
+      <span class="tag">数据</span>
+      <p>4月9日 15:32至22:35，仅7个小时内连续创建了35个任务目录（20260409153248到20260409223456），其中绝大部分没有任何产出。这是典型的"多任务切换焦虑"信号。</p>
+    </div>
+
+    <div class="finding-card">
+      <h3>每篇文章平均触发2.7个子任务目录</h3>
+      <span class="tag">数据</span>
+      <p>以SBTI文章为例，产生了4个独立任务目录（20260411201820/20260411210705/20260411211738/20260411213107），文章内容分散在 /龙虾/ 目录而非任务目录内。产出路径不统一是常态。</p>
+    </div>
+
+    <div class="timeline-chart">
+      <div class="chart-title">每日任务创建数量（按日期）</div>
+      <div class="bar-row">
+        <div class="bar-label">03-29</div>
+        <div class="bar-track"><div class="bar-fill blue" style="width:5.7%">2</div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">04-04</div>
+        <div class="bar-track"><div class="bar-fill blue" style="width:8.6%">3</div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">04-05</div>
+        <div class="bar-track"><div class="bar-fill blue" style="width:4%">1</div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">04-06</div>
+        <div class="bar-track"><div class="bar-fill blue" style="width:2.8%">1</div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">04-07</div>
+        <div class="bar-track"><div class="bar-fill blue" style="width:5.7%">2</div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">04-08</div>
+        <div class="bar-track"><div class="bar-fill orange" style="width:13.7%">5</div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">04-09</div>
+        <div class="bar-track"><div class="bar-fill red" style="width:100%">35</div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">04-10</div>
+        <div class="bar-track"><div class="bar-fill orange" style="width:14.9%">7</div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">04-11</div>
+        <div class="bar-track"><div class="bar-fill orange" style="width:17.1%">13</div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">04-12</div>
+        <div class="bar-track"><div class="bar-fill purple" style="width:14.9%">7</div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">04-13</div>
+        <div class="bar-track"><div class="bar-fill green" style="width:2.8%">1</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 发现二：产出结构 -->
+  <div class="section">
+    <div class="section-title">发现二：有效产出结构分析</div>
+
+    <div class="type-dist">
+      <div class="type-box">
+        <h4>产出类型分布</h4>
+        <div class="mini-stat">公众号HTML <span>7篇（54%）</span></div>
+        <div class="mini-stat">AI配图（PNG）<span>5张</span></div>
+        <div class="mini-stat">研究报告（MD）<span>4篇</span></div>
+        <div class="mini-stat">GitHub Trending <span>1篇</span></div>
+        <div class="mini-stat">Cookies配置 <span>1个</span></div>
+      </div>
+      <div class="type-box">
+        <h4>内容主题分布</h4>
+        <div class="mini-stat">AI科技趋势分析 <span>5篇（38%）</span></div>
+        <div class="mini-stat">Agent系统架构 <span>2篇</span></div>
+        <div class="mini-stat">商业/运营分析 <span>2篇</span></div>
+        <div class="mini-stat">航空航天 <span>1篇</span></div>
+        <div class="mini-stat">互联网考古 <span>1篇</span></div>
+      </div>
+    </div>
+
+    <div class="article-list" style="margin-top:16px;">
+      <div style="padding:12px 24px;background:#111827;border-radius:12px 12px 0 0;font-size:13px;color:#6b7280;border-bottom:1px solid #2d3142;">实际产出的公众号文章（7篇）</div>
+      <div class="article-item">
+        <div class="date">03-29</div>
+        <div class="info">
+          <div class="title">内容策略报告（Content Strategy Report）</div>
+          <div class="meta">33.75 KB HTML · 内容运营规划</div>
+        </div>
+        <div class="tag">首发</div>
+      </div>
+      <div class="article-item">
+        <div class="date">04-04</div>
+        <div class="info">
+          <div class="title">No Free Lunch 定理 · 归纳偏置（万维钢风格）</div>
+          <div class="meta">26.55 KB HTML · 深度技术分析</div>
+        </div>
+        <div class="tag">技术</div>
+      </div>
+      <div class="article-item">
+        <div class="date">04-04</div>
+        <div class="info">
+          <div class="title">贝叶斯先验 · Bayesian Prior 深度研究</div>
+          <div class="meta">24.92 KB HTML · 认知科学</div>
+        </div>
+        <div class="tag">技术</div>
+      </div>
+      <div class="article-item">
+        <div class="date">04-08</div>
+        <div class="info">
+          <div class="title">公众号运营优化报告 + 工具包</div>
+          <div class="meta">20.58 KB MD · 运营策略</div>
+        </div>
+        <div class="tag">运营</div>
+      </div>
+      <div class="article-item">
+        <div class="date">04-10</div>
+        <div class="info">
+          <div class="title">卡兹克写作风格Skill（AI创造力）</div>
+          <div class="meta">21.06 KB HTML v2版 · 写作方法论</div>
+        </div>
+        <div class="tag">方法论</div>
+      </div>
+      <div class="article-item">
+        <div class="date">04-11</div>
+        <div class="info">
+          <div class="title">MBTI已死，SBTI当道（万维钢风格）</div>
+          <div class="meta">25.08 KB HTML · 5500字，爆款话题</div>
+        </div>
+        <div class="tag">爆款</div>
+      </div>
+      <div class="article-item">
+        <div class="date">04-12</div>
+        <div class="info">
+          <div class="title">Artemis II · 人类再登月（卡兹克风格整合）</div>
+          <div class="meta">14.13 KB HTML · 4000字</div>
+        </div>
+        <div class="tag">航天</div>
+      </div>
+    </div>
+
+    <div class="quote-box">
+      <p>"工具越强大，产生垃圾的可能性也越大。问题不是WorkBuddy不够好，而是没有形成一套'启动→产出→归档'的闭环习惯。"</p>
+      <div class="author">— 分析判断</div>
+    </div>
+  </div>
+
+  <!-- 发现三：行为模式 -->
+  <div class="section">
+    <div class="section-title">发现三：隐含行为模式</div>
+
+    <div class="finding-card">
+      <h3>明显的夜间工作模式</h3>
+      <span class="tag">行为</span>
+      <p>大量任务集中在深夜创建：02:05、02:14、03:00+时段频繁出现。说明主人的核心创作时间在凌晨，这与"AI内容创作者"身份高度一致——深夜干扰少，思路集中。</p>
+    </div>
+
+    <div class="finding-card">
+      <h3>文章发布呈现"集中爆款"规律</h3>
+      <span class="tag">内容</span>
+      <p>有效产出集中在4-5个爆发日（03-29、04-04、04-08、04-10、04-11），而非均匀分布。说明日常有大量"准备动作"，真正的发布是脉冲式完成。</p>
+    </div>
+
+    <div class="finding-card">
+      <h3>文件分散在两个地方</h3>
+      <span class="tag warning">架构</span>
+      <p>公众号文章HTML同时存在于 <code>/Volumes/mac_mini/龙虾/</code> 和 <code>/Users/songwuyuan/WorkBuddy/{task}/</code> 两个路径。这导致文章版本管理困难，容易出现"哪个是最新版"的困惑。</p>
+    </div>
+
+    <div class="finding-card">
+      <h3>记忆注入系统效果明显</h3>
+      <span class="tag good">亮点</span>
+      <p>MEMORY.md 在所有74个任务中被一致性复制（8.19 KB相同内容），说明记忆注入Daemon在4月9日18:29的批量部署有效。连续性机制本身是成功的。</p>
+    </div>
+
+    <div class="time-dist">
+      <h4>任务创建时段分布（4月9日 35个任务）</h4>
+      <div class="time-row"><div class="t">15:32</div><div class="bar" style="width:60px">3</div></div>
+      <div class="time-row"><div class="t">18:02</div><div class="bar" style="width:100px">5</div></div>
+      <div class="time-row"><div class="t">18:17</div><div class="bar" style="width:40px">2</div></div>
+      <div class="time-row"><div class="t">18:26</div><div class="bar" style="width:80px">4</div></div>
+      <div class="time-row"><div class="t">18:30</div><div class="bar" style="width:40px">2</div></div>
+      <div class="time-row"><div class="t">18:39</div><div class="bar" style="width:80px">4</div></div>
+      <div class="time-row"><div class="t">20:00</div><div class="bar" style="width:40px">2</div></div>
+      <div class="time-row"><div class="t">22:34</div><div class="bar" style="width:80px">4</div></div>
+      <p style="font-size:11px;color:#4b5563;margin-top:10px;">集中在18:00-19:00和22:00-23:00两个高峰期，属于典型的"下班后创作模式"</p>
+    </div>
+  </div>
+
+  <!-- 优化建议 -->
+  <div class="section">
+    <div class="section-title">优化建议：六项可落地的改进</div>
+
+    <div class="optimization-item">
+      <div class="header-row">
+        <div class="num">1</div>
+        <h3>建立"任务只做不建"原则</h3>
+        <span class="priority p0">P0 · 立即执行</span>
+      </div>
+      <p>一次任务完成一个完整主题，不要因为"换了个想法"就新建任务。WorkBuddy的任务切换代价极低，导致了过度细粒度的任务碎片。建议：每个自然日最多3个活跃任务目录，未完成的合并到同一个目录。</p>
+      <ul class="detail">
+        <li>规则：同一主题的调研+写作+配图→同一个任务目录</li>
+        <li>例外：不同平台（公众号/小红书/龙虾）可拆分</li>
+        <li>操作：旧任务的未完成内容迁移到主任务目录</li>
+      </ul>
+    </div>
+
+    <div class="optimization-item">
+      <div class="header-row">
+        <div class="num">2</div>
+        <h3>统一产出文件路径规范</h3>
+        <span class="priority p0">P0 · 立即执行</span>
+      </div>
+      <p>文章HTML应该只存在于一个位置。建议：以<code>/Volumes/mac_mini/龙虾/{文章名}/</code>为唯一存储，WorkBuddy任务目录只保留研究素材和过程文件，文章写完后将HTML同步到龙虾目录并清理任务目录。</p>
+      <ul class="detail">
+        <li>WorkBuddy任务目录：研究素材.md + 原始数据</li>
+        <li>龙虾目录：最终公众号HTML + 配图</li>
+        <li>规则：HTML文件从不进WorkBuddy任务目录</li>
+      </ul>
+    </div>
+
+    <div class="optimization-item">
+      <div class="header-row">
+        <div class="num">3</div>
+        <h3>设立"草稿 → 发布"状态标签</h3>
+        <span class="priority p1">P1 · 本周执行</span>
+      </div>
+      <p>在龙虾目录下为每篇文章增加状态标签（如加前缀 _草稿/✓已发布/▣待配图），让文章状态一目了然，不需要靠文件名猜测进度。</p>
+      <ul class="detail">
+        <li>文件夹命名：01_草稿_AI薪资溢价/ 02_已发布_SBTI / 03_待配图_xxx</li>
+        <li>配合每周一次的目录整理（30分钟）</li>
+      </ul>
+    </div>
+
+    <div class="optimization-item">
+      <div class="header-row">
+        <div class="num">4</div>
+        <h3>清理历史空任务目录</h3>
+        <span class="priority p1">P1 · 一次性</span>
+      </div>
+      <p>75个任务目录中有62个是空的。这些目录占用空间且增加管理噪音。建议一次性清理：将有价值的未完成任务迁移合并，无价值的直接删除或归档。</p>
+      <ul class="detail">
+        <li>操作：列出所有96B大小的任务目录（空目录特征），逐个确认后归档</li>
+        <li>归档位置：/Users/songwuyuan/WorkBuddy/archive/{YYYY-MM}/</li>
+        <li>预计可释放约50个空目录</li>
+      </ul>
+    </div>
+
+    <div class="optimization-item">
+      <div class="header-row">
+        <div class="num">5</div>
+        <h3>建立每周复盘节奏</h3>
+        <span class="priority p1">P1 · 习惯养成</span>
+      </div>
+      <p>建议每周日晚30分钟做"WorkBuddy周检视"：回顾本周产出数量和质量、更新MEMORY.md中的"关键结论"、清理归档空目录。15天数据表明，有效产出集中在少数几天，周复盘可以帮助识别并放大高效日的行为模式。</p>
+    </div>
+
+    <div class="optimization-item">
+      <div class="header-row">
+        <div class="num">6</div>
+        <h3>完善 wechat-cli 初始化流程</h3>
+        <span class="priority p2">P2 · 按需</span>
+      </div>
+      <p>wechat-cli 已安装（v0.2.4），但初始化卡在微信重新签名步骤。这是个一次性障碍：需要用户在终端执行4行codesign命令+重启微信。如果打通，可以实现"让AI直接查询微信群聊内容"的能力，对社群运营分析有直接价值。</p>
+      <ul class="detail">
+        <li>阻塞点：需要sudo权限在终端手动执行codesign</li>
+        <li>完成后：wechat-cli sessions / history / search 全部可用</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 核心洞察 -->
+  <div class="section">
+    <div class="section-title">核心洞察</div>
+
+    <div class="finding-card">
+      <h3>WorkBuddy 本身运行良好，问题在"使用节奏"</h3>
+      <span class="tag good">结论</span>
+      <p>记忆注入系统、多层记忆架构、GitHub Pages自动部署、Skill技能体系这些基础设施都已正常工作。但核心问题是：<span class="highlight-line">工具已经很完善，使用者的"任务管理习惯"还没跟上工具的复杂程度。</span></p>
+    </div>
+
+    <div class="finding-card">
+      <h3>碎片化的根因是"探索成本低"</h3>
+      <span class="tag">分析</span>
+      <p>WorkBuddy每次新建任务几乎没有代价（自动创建目录、自动注入记忆），这让"试一下"变成了默认操作。真正高效的团队往往把"关闭一个任务"当作一件需要完成的事情来对待，而不是"打开一个新任务"。</p>
+    </div>
+
+    <div class="finding-card">
+      <h3>有效产出集中在"深夜专注时间"</h3>
+      <span class="tag">洞察</span>
+      <p>核心产出几乎都来自夜间时段（22:00-03:00）。这意味着在夜间应该<strong>减少任务切换、保持单线程专注</strong>，把需要"试一下"的探索放到白天，把真正的写作放到深夜。</p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>由 远（WorkBuddy AI Agent）自动生成 · 2026-04-13</div>
+    <div style="margin-top:4px;">数据来源：/Users/songwuyuan/WorkBuddy/ 下全部75个任务目录</div>
+  </div>
+
+</div>
+</body>
+</html>
