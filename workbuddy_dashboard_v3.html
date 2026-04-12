@@ -233,6 +233,34 @@ header {
 .insight-card.expanded .insight-detail { display: block; }
 .insight-card.expanded .insight-summary { display: none; }
 
+/* WECHAT ACCOUNT MODULE */
+.wx-kpi-row { display: flex; gap: 16px; margin-bottom: 16px; }
+.wx-kpi { flex: 1; text-align: center; padding: 12px 8px; background: var(--card-hover); border-radius: 6px; }
+.wx-kpi .kpi-val { font-size: 22px; font-weight: 700; color: var(--blue); line-height: 1; }
+.wx-kpi .kpi-val.green { color: #3fb950; }
+.wx-kpi .kpi-val.orange { color: #e3b341; }
+.wx-kpi .kpi-label { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+.wx-trend-wrap { margin-bottom: 14px; }
+.wx-trend-label { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+.wx-chart { width: 100%; height: 70px; display: flex; align-items: flex-end; gap: 1px; }
+.wx-bar { flex: 1; background: var(--blue); border-radius: 1px 1px 0 0; min-height: 2px; opacity: 0.7; cursor: pointer; transition: opacity 0.1s; }
+.wx-bar:hover { opacity: 1; }
+.wx-chart-labels { display: flex; gap: 1px; margin-top: 2px; }
+.wx-chart-label { flex: 1; font-size: 8px; color: var(--text-muted); text-align: center; }
+.wx-articles { border-top: 1px solid var(--border); padding-top: 12px; }
+.wx-articles-title { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+.wx-article-item { display: flex; align-items: flex-start; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+.wx-article-item:last-child { border-bottom: none; }
+.wx-art-rank { min-width: 20px; font-size: 12px; font-weight: 700; color: var(--blue); text-align: center; }
+.wx-art-rank.gold { color: #e3b341; }
+.wx-art-rank.silver { color: #a371f7; }
+.wx-art-rank.bronze { color: #f0883e; }
+.wx-art-body { flex: 1; min-width: 0; }
+.wx-art-title { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wx-art-meta { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+.wx-art-meta span { margin-right: 8px; }
+.wx-art-reads { font-size: 12px; font-weight: 600; color: var(--green-4); min-width: 50px; text-align: right; }
+
 /* ADD MODULE CARD */
 .add-module-card { background: var(--card); border: 1px dashed var(--border); border-radius: 8px; padding: 16px 20px; cursor: pointer; transition: all 0.15s; }
 .add-module-card:hover { border-color: var(--text-muted); background: var(--card-hover); }
@@ -441,6 +469,9 @@ header {
     <button class="module-btn active" data-mod="pipeline" onclick="toggleModule('pipeline', this)">
       <span class="dot"></span>选题Pipeline
       <span class="mod-badge">新</span>
+    </button>
+    <button class="module-btn active" data-mod="wechat" onclick="toggleModule('wechat', this)">
+      <span class="dot"></span>公众号数据
     </button>
     <button class="module-btn active" data-mod="topic-graph" onclick="toggleModule('topic-graph', this)">
       <span class="dot"></span>选题关联图
@@ -696,6 +727,18 @@ header {
       </div>
       <div id="topicGraphContent" style="position:relative;"></div>
     </div>
+
+      <!-- MOD: 公众号数据 -->
+      <div class="module-section" id="mod-wechat">
+        <div class="module-header">
+          <div class="module-title">
+            <span class="module-icon">&#x1F4F1;</span>
+            <span>公众号数据</span>
+          </div>
+          <span class="module-tag">2026.03.14–04.12</span>
+        </div>
+        <div id="wechatContent"></div>
+      </div>
 
       <!-- ADD MODULE -->
       <div class="add-module-card" id="addModuleBtn2" onclick="document.getElementById('modalOverlay').classList.add('open')">
@@ -1106,6 +1149,121 @@ const topicEdges = [
   { source: "社科热点", target: "文化评论", weight: 3, reason: "Z世代文化研究" },
   { source: "系统优化", target: "调研报告", weight: 2, reason: "数据采集流程" }
 ];
+
+// ===== WECHAT ACCOUNT DATA =====
+const wxReads = {
+  "2026-03-14":0,"2026-03-15":45,"2026-03-16":35,"2026-03-17":35,"2026-03-18":115,
+  "2026-03-19":75,"2026-03-20":36,"2026-03-21":22,"2026-03-22":42,"2026-03-23":59,
+  "2026-03-24":25,"2026-03-25":19,"2026-03-26":48,"2026-03-27":117,"2026-03-28":152,
+  "2026-03-29":252,"2026-03-30":1115,"2026-03-31":4942,"2026-04-01":7989,
+  "2026-04-02":6518,"2026-04-03":6364,"2026-04-04":5000,"2026-04-05":2977,
+  "2026-04-06":2104,"2026-04-07":806,"2026-04-08":181,"2026-04-09":294,
+  "2026-04-10":309,"2026-04-11":192,"2026-04-12":398
+};
+const wxEngagement = {
+  "2026-03-14":{"shares":0,"jumps":0,"favs":0,"articles":0},
+  "2026-03-15":{"shares":2,"jumps":0,"favs":0,"articles":1},
+  "2026-03-16":{"shares":2,"jumps":0,"favs":0,"articles":3},
+  "2026-03-17":{"shares":4,"jumps":0,"favs":0,"articles":2},
+  "2026-03-18":{"shares":11,"jumps":0,"favs":3,"articles":4},
+  "2026-03-19":{"shares":6,"jumps":0,"favs":0,"articles":1},
+  "2026-03-20":{"shares":1,"jumps":0,"favs":0,"articles":1},
+  "2026-03-21":{"shares":2,"jumps":0,"favs":0,"articles":1},
+  "2026-03-22":{"shares":4,"jumps":0,"favs":2,"articles":1},
+  "2026-03-23":{"shares":3,"jumps":0,"favs":1,"articles":2},
+  "2026-03-24":{"shares":2,"jumps":0,"favs":0,"articles":1},
+  "2026-03-25":{"shares":3,"jumps":0,"favs":0,"articles":1},
+  "2026-03-26":{"shares":8,"jumps":0,"favs":1,"articles":2},
+  "2026-03-27":{"shares":12,"jumps":0,"favs":3,"articles":2},
+  "2026-03-28":{"shares":15,"jumps":0,"favs":1,"articles":2},
+  "2026-03-29":{"shares":9,"jumps":0,"favs":4,"articles":2},
+  "2026-03-30":{"shares":9,"jumps":0,"favs":4,"articles":2},
+  "2026-03-31":{"shares":32,"jumps":0,"favs":7,"articles":3},
+  "2026-04-01":{"shares":46,"jumps":0,"favs":12,"articles":2},
+  "2026-04-02":{"shares":24,"jumps":0,"favs":7,"articles":2},
+  "2026-04-03":{"shares":30,"jumps":0,"favs":15,"articles":1},
+  "2026-04-04":{"shares":63,"jumps":0,"favs":23,"articles":2},
+  "2026-04-05":{"shares":31,"jumps":0,"favs":7,"articles":4},
+  "2026-04-06":{"shares":39,"jumps":0,"favs":5,"articles":3},
+  "2026-04-07":{"shares":26,"jumps":0,"favs":4,"articles":4},
+  "2026-04-08":{"shares":17,"jumps":0,"favs":4,"articles":3},
+  "2026-04-09":{"shares":19,"jumps":0,"favs":6,"articles":4},
+  "2026-04-10":{"shares":12,"jumps":0,"favs":3,"articles":3},
+  "2026-04-11":{"shares":16,"jumps":0,"favs":10,"articles":2},
+  "2026-04-12":{"shares":59,"jumps":0,"favs":30,"articles":3}
+};
+const wxTopArticles = [
+  {title:"DeepSeek还没凉，豆包已经3亿了",date:"20260330",reads:34695,channel:"全部"},
+  {title:"小红书最新规定：这样用AI，账号直接没了",date:"20260331",reads:2361,channel:"全部"},
+  {title:"你以为很丑，实际是中了基因彩票",date:"20260329",reads:560,channel:"全部"},
+  {title:"被忽视的追赶者：千问552%增长背后的AI格局洗牌",date:"20260405",reads:36,channel:"搜一搜"},
+  {title:"Claude订阅陷阱：为什么付了钱却不能用？",date:"20260407",reads:34,channel:"搜一搜"},
+  {title:"纽约客万字长文：Sam Altman的谎言与野心",date:"20260407",reads:33,channel:"朋友圈"},
+  {title:"序言：当人类洞见遇上AI协同，跟高级智能对齐",date:"20260318",reads:29,channel:"搜一搜"},
+  {title:"你对AI工具的焦虑，是理性的",date:"20260316",reads:25,channel:"朋友圈"},
+  {title:"Happy Horse 1.0登顶AI视频榜：开源视频模型为",date:"20260409",reads:24,channel:"搜一搜"},
+  {title:"MBTI已死，SBTI当道：一场关于\"发疯\"的集体狂欢",date:"20260412",reads:19,channel:"搜一搜"}
+];
+
+function renderWechat() {
+  const el = document.getElementById('wechatContent');
+  const dates = Object.keys(wxReads);
+  const reads = dates.map(d => wxReads[d]);
+  const totalReads = reads.reduce((a,b)=>a+b,0);
+  const totalShares = Object.values(wxEngagement).reduce((a,b)=>a+b.shares,0);
+  const totalFavs = Object.values(wxEngagement).reduce((a,b)=>a+b.favs,0);
+  const totalArticles = Object.values(wxEngagement).reduce((a,b)=>a+b.articles,0);
+
+  // KPI row
+  let html = '<div class="wx-kpi-row">';
+  html += `<div class="wx-kpi"><div class="kpi-val">${(totalReads/10000).toFixed(1)}<span style="font-size:14px">万</span></div><div class="kpi-label">总阅读</div></div>`;
+  html += `<div class="wx-kpi"><div class="kpi-val green">${totalShares}</div><div class="kpi-label">总分享</div></div>`;
+  html += `<div class="wx-kpi"><div class="kpi-val orange">${totalFavs}</div><div class="kpi-label">总收藏</div></div>`;
+  html += `<div class="wx-kpi"><div class="kpi-val">${totalArticles}</div><div class="kpi-label">发文章</div></div>`;
+  html += '</div>';
+
+  // Peak dates
+  const peakDate = Object.entries(wxReads).sort((a,b)=>b[1]-a[1])[0];
+  html += `<div style="font-size:10px;color:var(--text-muted);margin-bottom:12px;">峰值：${peakDate[0]} · 阅读${peakDate[1].toLocaleString()}（DeepSeek爆款日）</div>`;
+
+  // Trend chart (30-day)
+  const maxR = Math.max(...reads, 1);
+  const labelIdx = [0, 7, 14, 21, 29];
+  html += '<div class="wx-trend-wrap">';
+  html += '<div class="wx-trend-label">30天阅读趋势</div>';
+  html += '<div class="wx-chart">';
+  dates.forEach((d,i) => {
+    const h = Math.max(2, Math.round((reads[i]/maxR)*66));
+    const isPeak = i === reads.indexOf(maxR);
+    html += `<div class="wx-bar" style="height:${h}px;${isPeak?'opacity:1;background:var(--green-4)':''}" title="${d}: ${reads[i]}"></div>`;
+  });
+  html += '</div>';
+  html += '<div class="wx-chart-labels">';
+  labelIdx.forEach(i => {
+    html += `<div class="wx-chart-label">${dates[i].slice(5)}</div>`;
+  });
+  html += '</div></div>';
+
+  // Top articles
+  html += '<div class="wx-articles">';
+  html += '<div class="wx-articles-title">TOP 10 热门文章</div>';
+  wxTopArticles.slice(0,8).forEach((a,i) => {
+    const rankClass = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    const rank = ['1st','2nd','3rd'][i] || `#${i+1}`;
+    const dateFmt = `${a.date.slice(0,4)}-${a.date.slice(4,6)}-${a.date.slice(6)}`;
+    const channelColor = {'推荐':'#58a6ff','朋友圈':'#3fb950','搜一搜':'#e3b341','全部':'#cdd9e5'}[a.channel]||'#cdd9e5';
+    html += `<div class="wx-article-item">
+      <div class="wx-art-rank ${rankClass}">${i+1}</div>
+      <div class="wx-art-body">
+        <div class="wx-art-title" title="${a.title}">${a.title}</div>
+        <div class="wx-art-meta"><span style="color:${channelColor}">${a.channel}</span><span>${dateFmt}</span></div>
+      </div>
+      <div class="wx-art-reads">${a.reads>=1000?(a.reads/1000).toFixed(1)+'k':a.reads}</div>
+    </div>`;
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
 
 // ===== PIPELINE =====
 const pipelineData = {
@@ -1691,6 +1849,7 @@ renderWeekTrend();
   renderRetro();
   renderPipeline();
   renderTopicGraph();
+  renderWechat();
 </script>
 </body>
 </html>
