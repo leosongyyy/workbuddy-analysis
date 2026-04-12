@@ -1340,34 +1340,32 @@ function renderWechat() {
   });
   html += '</div>';
 
-  // AI Insights block
+  // AI Insights block - 远 · 数据洞察
   html += `<div class="wx-insights">
     <div class="wx-insights-title">远 · 数据洞察</div>
     <div class="wx-insights-grid">
-      <div class="wx-insight-card">
-        <div class="wxi-label">📊 数据分析</div>
-        <ul class="wxi-list">
-          <li>近30天阅读量 <strong>43,303</strong>，峰值出现在 <strong>04-01（DeepSeek爆款）</strong>，单日阅读 7,989，占全期18.4%</li>
-          <li>推荐渠道一家独大（<strong>95.5%</strong>），搜一搜+朋友圈合计不足3%，说明选题在算法分发友好，但自然搜索潜力未被激活</li>
-          <li>分享/收藏比约 3.5:1（531:150），收藏率偏低表明文章缺乏「收藏价值」——多为即时消费型内容</li>
-          <li>04-12 收藏峰值（30次）与 DeepSeek 爆款截然不同：说明日常文章若精准击中需求，收藏转化率可大幅提升</li>
-        </ul>
-      </div>
-      <div class="wx-insight-card">
-        <div class="wxi-label">💡 选题建议</div>
-        <ul class="wxi-list">
-          <li><strong>「算法友好」型</strong>：延续 DeepSeek / 千问 / Claude 等大模型对比路线，数据驱动型标题，点击率有保障</li>
-          <li><strong>「收藏价值」型</strong>：工具测评、效率方法论、AI趋势清单 —— 参照 04-12 收藏峰值逻辑，提升收藏率</li>
-          <li><strong>跨平台联动</strong>：小红书「Chinamaxxing」「Vibe Coding」等热点可同步改编，小红书验证热度→公众号深度文章</li>
-          <li><strong>搜索优化</strong>：搜一搜仅占1.4%，建议在标题/摘要中植入高搜索量关键词（AI工具对比、免费AI等）</li>
-        </ul>
-      </div>
       <div class="wx-insight-card" style="grid-column:1/-1;">
-        <div class="wxi-label">🧭 核心洞见</div>
+        <div class="wxi-label">数据分析</div>
         <ul class="wxi-list">
-          <li><strong>脉冲依赖症</strong>：公众号阅读高度依赖爆款（DeepSeek单篇3.5万），日常内容天花板约500-800阅读，两者相差40倍，内容策略需要「爆款+常青」双轨并行</li>
-          <li><strong>渠道单一风险</strong>：推荐渠道占比95.5%意味着一旦算法策略调整，流量将断崖式下跌。建议逐步培育搜一搜（知识搜索场景）和朋友圈（私域传播）作为备份</li>
-          <li><strong>互动结构失衡</strong>：分享高（531）但收藏低（150），说明内容「有传播力但无留存价值」。收藏率是内容资产厚度的核心指标，建议每篇设置至少一个「知识锚点」方便读者回溯</li>
+          <li><strong>DeepSeek爆款的6天推流机制：</strong>03-30至04-04，推荐流持续6天才消退。算法根据前48小时互动数据决定是否继续推。高互动=持续推流=长尾价值——好内容有「延迟效应」</li>
+          <li><strong>推荐渠道占47.6%，搜一搜+朋友圈合计仅1.4%：</strong>推荐流高度依赖算法，自然搜索和社交扩散几乎未激活。渠道单一风险极高，一旦算法策略调整，流量将断崖</li>
+          <li><strong>收藏峰值规律：</strong>04-12收藏30次，与DeepSeek爆款截然不同。「大流量不等于高收藏」，收藏率与文章是否提供「可复用框架」强相关——精准触达比大流量更重要</li>
+          <li><strong>分享收藏比4:1（531:150）：</strong>分享是「一次性扩散」，收藏是「长期资产沉淀」。收藏率才是内容护城河的真正指标，分享率高只是表面繁荣</li>
+        </ul>
+      </div>
+      <div class="wx-insight-card">
+        <div class="wxi-label">选题建议</div>
+        <ul class="wxi-list">
+          <li><strong>双轨并行：</strong>AI热点路线（DeepSeek类）做流量，2:8产能分配；「认知框架」路线（基因彩票类）做收藏，建立长期信任资产</li>
+          <li><strong>搜索优化：</strong>「主动高认知负荷」已有58人从搜一搜进站，说明选题有搜索价值，但标题关键词布局不足，参考微信指数植入高搜索量词</li>
+          <li><strong>系列化机会：</strong>「认知负荷」已有58人搜索，可做成「注意力系列」；即梦/AI工具对比可做成「工具测评系列」，高收藏文章天然适合系列化</li>
+        </ul>
+      </div>
+      <div class="wx-insight-card">
+        <div class="wxi-label">核心洞见</div>
+        <ul class="wxi-list">
+          <li><strong>脉冲依赖 vs 常青资产：</strong>DeepSeek单篇3.5万，但爆款结束后4月8日只剩366阅读。公众号没有「沉淀效应」，爆款结束后一切归零。需要常青内容库来构建基础阅读护城河</li>
+          <li><strong>认知锚点=收藏率：</strong>收藏高的文章往往有一个「读者可以带走的框架」。工具教程、决策清单、概念图谱——即使离开推荐流也能持续被搜索到，是真正的内容资产</li>
         </ul>
       </div>
     </div>
@@ -1621,51 +1619,51 @@ function renderAIInsights() {
   const insights = [
     {
       priority: 'high',
-      icon: '&#x26A1;',
-      title: `「脉冲式」创作节奏，均值${avgRead}但峰值${peakRead}，差距${pulseRatio}`,
-      summary: `${days}天产出${totalArticles}篇，日均阅读${avgRead}，峰值集中于推荐渠道单点爆发`,
-      detail: `数据显示阅读高度依赖偶发性大爆款（峰值日${peakDate}贡献${((peakRead/totalReads)*100).toFixed(0)}%流量）。推荐渠道占比${topChannelPct}%，其余渠道激活不足。公众号护城河尚未建立，日常内容缺乏稳定基础阅读。`,
-      suggestion: '建立「常青内容库」：每周固定产出一篇可长期带流量的「知识锚点」型文章（如工具教程、概念科普），与爆款形成互补，降低对单点爆发的依赖。'
+      icon: '&#x1F4C8;',
+      title: '工具开发挤占内容创作：仪表盘今天迭代了5轮，文章只产出了1篇',
+      summary: '今日（04-13）主要精力用于仪表盘v3迭代（5轮改稿），而文章产出仅有Artemis II整合版一篇',
+      detail: '每次迭代都在修正上一轮的判断——全宽bug、趋势图风格不统一、文章列表格式。根本原因是动手之前没有把方案想清楚。Artemis II整合版质量不错，但一整天只出了这一篇内容。',
+      suggestion: '下次遇到需要改布局/样式的问题，先在ASK模式里讨论清楚完整方案，确认没有漏洞再动手。减少返工，把时间留给内容创作。'
     },
     {
       priority: 'high',
-      icon: '&#x1F4CB;',
-      title: `互动比失衡：分享${totalShares}次 / 收藏${totalFavs}次，收藏率${(totalFavs/totalShares*100).toFixed(1)}%`,
-      summary: `收藏量不足分享量的一半，读者「愿意传不愿留」，内容传播属性强但资产沉淀能力弱`,
-      detail: `分享率体现传播力，收藏率体现长期价值。${totalFavs/totalShares < 0.5 ? '收藏/分享比低于0.5，说明内容偏「一次性消费」而非「值得保存」的知识型内容。' : '收藏/分享比相对健康，但仍有提升空间。'}`,
-      suggestion: '在每篇文章结尾增加「认知锚点」：提炼3个可操作的要点或模板，让读者觉得「这篇文章我要留着以后用」，而非只是「这篇文章说得对」。'
+      icon: '&#x1F30E;',
+      title: 'Artemis II vs DeepSeek：硬核科技的天花板，比AI话题低一个量级',
+      summary: 'DeepSeek一篇3.5万阅读，Artemis II进不了TOP5，不是质量问题，是受众宽度问题',
+      detail: 'Artemis II是典型的精英日课式写作——信息密度高、分析深入。但公众号主体受众是非科技从业者，他们更关心「AI能帮我做什么」而非「NASA SLS火箭成本为什么是星舰的10倍」。这不是写作质量问题，是选题受众宽度的结构性问题。',
+      suggestion: '按2:8分配产能：AI话题做流量，硬核科技做品牌。如果希望覆盖更大受众，AI话题仍是首选；如果想建立专业壁垒，硬核科技需要接受更低的阅读预期。两者都重要，但要分清主次。'
+    },
+    {
+      priority: 'high',
+      icon: '&#x1F504;',
+      title: 'DeepSeek爆款揭示算法记忆效应：优质内容可被持续推流6天',
+      summary: 'DeepSeek那篇被推荐流整整推了6天（03-30至04-04），阅读量才逐渐消退，而非「一天就结束」',
+      detail: '这说明算法不是「一篇推一天就结束」，而是根据用户互动数据持续决定是否继续推。收藏率高的文章在推荐流消退后仍有延迟价值。关键洞察：内容「生命周期」可以很长，只要前48小时的互动数据足够好，算法会持续找到目标受众。',
+      suggestion: '每篇重要文章发布后24小时内，主动在朋友圈/社群做一轮真实初始扩散。不用刷量，但需要帮助算法完成初始的人群定向，之后算法会自己找到精准受众。'
     },
     {
       priority: 'medium',
-      icon: '&#x1F3AF;',
-      title: `${articleCount}篇文章 / ${courseCount}节课程，选题同质化风险仍在`,
-      summary: `课程差异化做得比公众号好，公众号仍集中于AI职场/职业话题，${courseVsArticle}课程占比`,
-      detail: `公众号文章数量不少但话题集中度过高，课程方向已覆盖心理学、历史、商业案例等差异化领域。多平台爬虫数据（小红书热点、X.com舆情、即梦作品）大量采集但未转化为文章，选题仍依赖直觉而非数据驱动。`,
-      suggestion: '建立「数据选题会」机制：每周一用爬虫数据（小红书/即梦/X.com）做选题过滤，从数据中提炼3个有差异化的角度，强制分配1个跨领域选题到本周计划中。'
+      icon: '&#x1F4D0;',
+      title: '记忆同步协议已建立，但「数据消化」环节仍然缺失',
+      summary: '4月6日至11日历史记忆已全部补录，但爬虫数据没有被转化为选题决策',
+      detail: '过去一周的爬虫数据（小红书热点、X.com舆情、即梦作品分析）记录了不少有价值的发现，但散落在各个memory文件里，没有变成「选题决策」。采集和消化是两件事，后者需要有意识地把数据结论写成行动项。',
+      suggestion: '每周五下午设置一个「数据消化会」：把本周所有爬虫报告读一遍，直接提炼3个可行动的选题写进Pipeline「计划中」，而不是让数据躺在memory里睡大觉。'
     },
     {
       priority: 'medium',
-      icon: '&#x1F331;',
-      title: `Skill生态${skillStats.length}个，但「深度积累」弱于「广度覆盖」`,
-      summary: `Top Skill「${topSkill ? topSkill.label : '—'}」使用${topSkill ? topSkill.count : 0}次，跨Skill协作场景有限`,
-      detail: `Skills覆盖全面（wechat-article-writer、course-generator、harness-engineering、xiaohongshu等），但单Skill使用深度不足。Harness Engineering集成已完成但外循环（多步迭代、自我纠错）未常态化。`,
-      suggestion: '将常用Skill组合写成固定工作流模板（如「课程生成→公众号写作→GitHub Pages部署」一键触发），减少每次从零启动的认知消耗。'
-    },
-    {
-      priority: 'medium',
-      icon: '&#x1F4C5;',
-      title: '选题Pipeline已建立，但决策逻辑仍未结构化沉淀',
-      summary: `Pipeline四栏运转，但进入「计划中」的选题缺乏「为什么选这个」的理由记录`,
-      detail: `选题积累解决了从零到一的问题，但「决策历史」——热点为什么选、放弃了哪个、发布后数据如何——仍在脑海而非记录中。长期导致同类错误反复出现，无法从历史数据中提炼选题规律。`,
-      suggestion: '在Pipeline每个「计划中」的选题卡片增加一个「选题理由」字段（20字以内），推动决策逻辑显性化，形成可复用的选题决策数据库。'
+      icon: '&#x1F4D6;',
+      title: '收藏率的结构性价值：收藏高的文章是「认知锚点」，值得系列化',
+      summary: '收藏峰值04-12（30次）对应日常文章而非爆款，说明精准触达比大流量更重要',
+      detail: '收藏行为意味着「我以后还会用到」。高收藏文章通常有一个共同特征：提供了一套可以复用的认知框架或工具方法。基因彩票（560阅读但收藏率高）、AI自习室县城都是这个逻辑——给了读者一个可以用在自己身上的「框架」。',
+      suggestion: '写完每篇文章后自问：「读者读完会记住哪一句话？这句话够不够成一个框架？」如果不够，加一个「3步清单」或「决策树」来提升收藏价值。'
     },
     {
       priority: 'low',
-      icon: '&#x1F680;',
-      title: 'Harness Flow已集成，Agent化程度仍有提升空间',
-      summary: `Token缓存效率+73%已验证，但复杂任务外循环使用频率低`,
-      detail: `Harness Engineering主流程在多个工作空间验证了效率提升，但以单次任务执行为主，多步迭代、自我纠错、轨迹回溯等外循环能力尚未常态化。`,
-      suggestion: '遇到复杂任务（3步以上的多阶段工作）时，主动使用Harness Flow规划，每步结果留存到memory/，形成可追溯的Agent执行轨迹。'
+      icon: '&#x1F50E;',
+      title: '搜一搜渠道是被忽视的精准流量：基数小但意图强，转化质量高',
+      summary: '搜一搜占1.4%但数据稳定，有明确搜索意图的用户转化质量高于推荐流',
+      detail: '朋友圈（547）和搜一搜（557）阅读量相近，但来源逻辑完全不同：朋友圈是社交扩散，搜一搜是主动搜索。搜一搜进站的「主动高认知负荷」有58阅读，说明现有文章有搜索价值，但标题关键词布局还不够精准，没有被算法识别为搜索答案。',
+      suggestion: '在标题中植入高搜索量关键词（参考微信指数热词），在前300字覆盖目标搜索词，让算法把你的文章识别为「这个问题的答案」。搜一搜是被动流量里质量最高的，值得优化。'
     }
   ];
 
