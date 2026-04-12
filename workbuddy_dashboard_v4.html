@@ -504,7 +504,7 @@ header {
         公众号数据
         <span class="count">2026.03.14–04.12</span>
       </div>
-      <div style="font-size:11px;color:var(--text-muted);">30天完整数据 · 生成于 04-13 05:27</div>
+      <div style="font-size:11px;color:var(--text-muted);">30天完整数据 · 生成于 04-13 05:30</div>
     </div>
     <div id="wechatContent"></div>
   </div>
@@ -758,7 +758,7 @@ header {
 
 <script>
 // ===== AUTO-GENERATED DATA =====
-const GENERATION_TIME = "2026-04-13 05:27";
+const GENERATION_TIME = "2026-04-13 05:30";
 const DATE_RANGE = ["2026-02-12", "2026-02-13", "2026-02-14", "2026-02-15", "2026-02-16", "2026-02-17", "2026-02-18", "2026-02-19", "2026-02-20", "2026-02-21", "2026-02-22", "2026-02-23", "2026-02-24", "2026-02-25", "2026-02-26", "2026-02-27", "2026-02-28", "2026-03-01", "2026-03-02", "2026-03-03", "2026-03-04", "2026-03-05", "2026-03-06", "2026-03-07", "2026-03-08", "2026-03-09", "2026-03-10", "2026-03-11", "2026-03-12", "2026-03-13", "2026-03-14", "2026-03-15", "2026-03-16", "2026-03-17", "2026-03-18", "2026-03-19", "2026-03-20", "2026-03-21", "2026-03-22", "2026-03-23", "2026-03-24", "2026-03-25", "2026-03-26", "2026-03-27", "2026-03-28", "2026-03-29", "2026-03-30", "2026-03-31", "2026-04-01", "2026-04-02", "2026-04-03", "2026-04-04", "2026-04-05", "2026-04-06", "2026-04-07", "2026-04-08", "2026-04-09", "2026-04-10", "2026-04-11", "2026-04-12", "2026-04-13"];
 
 // ===== ACTIVITY DATA =====
@@ -894,6 +894,240 @@ const wxTopArticles = [
 // ===== PRE-RENDERED INSIGHTS =====
 const AI_INSIGHTS_HTML = ``;
 const WX_INSIGHTS_HTML = ``;
+
+function renderWechat() {
+  const el = document.getElementById('wechatContent');
+  const dates = Object.keys(wxReads);
+  const reads = dates.map(d => wxReads[d]);
+  const totalReads = reads.reduce((a,b)=>a+b,0);
+  const totalShares = Object.values(wxEngagement).reduce((a,b)=>a+b.shares,0);
+  const totalFavs = Object.values(wxEngagement).reduce((a,b)=>a+b.favs,0);
+  const totalArticles = Object.values(wxEngagement).reduce((a,b)=>a+b.articles,0);
+
+  // Channel reads data
+  const channelData = [
+    { name: '推荐', reads: 38468, color: '#388bfd' },
+    { name: '搜一搜', reads: 557, color: '#a371f7' },
+    { name: '朋友圈', reads: 547, color: '#3fb950' },
+    { name: '公众号主页', reads: 263, color: '#e3b341' },
+    { name: '其他', reads: 270, color: '#8b949e' },
+    { name: '聊天会话', reads: 198, color: '#f0883e' }
+  ];
+  const maxChannel = Math.max(...channelData.map(c => c.reads));
+
+  // KPI row
+  let html = '<div class="wx-kpi-row">';
+  html += `<div class="wx-kpi"><div class="kpi-val">${(totalReads/10000).toFixed(1)}<span style="font-size:14px">万</span></div><div class="kpi-label">总阅读</div></div>`;
+  html += `<div class="wx-kpi"><div class="kpi-val green">${totalShares}</div><div class="kpi-label">总分享</div></div>`;
+  html += `<div class="wx-kpi"><div class="kpi-val orange">${totalFavs}</div><div class="kpi-label">总收藏</div></div>`;
+  html += `<div class="wx-kpi"><div class="kpi-val">${totalArticles}</div><div class="kpi-label">发文章</div></div>`;
+  html += '</div>';
+
+  // Peak note
+  const peakDate = Object.entries(wxReads).sort((a,b)=>b[1]-a[1])[0];
+  html += `<div style="font-size:10px;color:var(--text-muted);margin-bottom:16px;">峰值：${peakDate[0]} · 阅读${peakDate[1].toLocaleString()}（DeepSeek爆款日）</div>`;
+
+  // Three-column grid: trend | channel | share/fav
+  html += '<div class="wx-layout">';
+
+  // === Col 1: 30-day reads trend ===
+  const maxR = Math.max(...reads, 1);
+  const labelIdx = [0, 7, 14, 21, 29];
+  html += '<div class="wx-chart-wrap">';
+  html += '<div class="wx-trend-label">30天阅读趋势</div>';
+  html += '<div class="wx-chart">';
+  dates.forEach((d,i) => {
+    const h = Math.max(2, Math.round((reads[i]/maxR)*66));
+    const isPeak = i === reads.indexOf(maxR);
+    html += `<div class="wx-bar" style="height:${h}px;${isPeak?'opacity:1;background:var(--green-4)':''}" title="${d}: ${reads[i]}"></div>`;
+  });
+  html += '</div>';
+  html += '<div class="wx-chart-labels">';
+  labelIdx.forEach(i => {
+    html += `<div class="wx-chart-label">${dates[i].slice(5)}</div>`;
+  });
+  html += '</div></div>';
+
+  // === Col 2: Channel proportion ===
+  html += '<div class="wx-channel-wrap">';
+  html += '<div class="wx-trend-label">各渠道阅读占比</div>';
+  channelData.forEach(c => {
+    const pct = (c.reads / totalReads * 100).toFixed(1);
+    const w = Math.max(2, Math.round((c.reads / maxChannel) * 100));
+    html += `<div class="wx-channel-row">
+      <div class="wx-channel-name">${c.name}</div>
+      <div class="wx-channel-bar-wrap">
+        <div class="wx-channel-bar" style="width:${w}%;background:${c.color}" title="${c.reads}"></div>
+      </div>
+      <div class="wx-channel-val">${c.reads >= 1000 ? (c.reads/1000).toFixed(1)+'k' : c.reads}</div>
+      <div class="wx-channel-pct">${pct}%</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  // === Col 3: Share + Fav trend (CSS bars, same style as reading trend) ===
+  const engDates = Object.keys(wxEngagement);
+  const shareVals = engDates.map(d => wxEngagement[d].shares);
+  const favVals  = engDates.map(d => wxEngagement[d].favs);
+  const maxEng   = Math.max(...shareVals, ...favVals, 1);
+  const engLabelIdx = [0, Math.floor(engDates.length/2), engDates.length-1];
+
+  html += '<div class="wx-chart-wrap">';
+  html += '<div class="wx-trend-label">分享 &amp; 收藏趋势</div>';
+
+  // Share bars (green)
+  html += '<div class="wx-chart">';
+  shareVals.forEach((v,i) => {
+    const h = Math.max(2, Math.round((v/maxEng)*66));
+    const isPeak = i === shareVals.indexOf(Math.max(...shareVals));
+    html += `<div class="wx-bar" style="height:${h}px;background:#3fb950;${isPeak?'opacity:1':''}" title="${engDates[i]}: 分享${v}"></div>`;
+  });
+  html += '</div>';
+  html += '<div class="wx-chart-labels">';
+  engLabelIdx.forEach(i => { html += `<div class="wx-chart-label">${engDates[i].slice(5)}</div>`; });
+  html += '</div>';
+
+  // Fav bars (yellow)
+  html += '<div class="wx-chart" style="margin-top:6px;">';
+  favVals.forEach((v,i) => {
+    const h = Math.max(2, Math.round((v/maxEng)*66));
+    const isPeak = i === favVals.indexOf(Math.max(...favVals));
+    html += `<div class="wx-bar" style="height:${h}px;background:#e3b341;${isPeak?'opacity:1':''}" title="${engDates[i]}: 收藏${v}"></div>`;
+  });
+  html += '</div>';
+  html += '<div class="wx-chart-labels">';
+  engLabelIdx.forEach(i => { html += `<div class="wx-chart-label">${engDates[i].slice(5)}</div>`; });
+  html += '</div>';
+
+  // Legend
+  html += '<div style="display:flex;gap:12px;font-size:10px;margin-top:4px;">';
+  html += `<span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:8px;background:#3fb950;display:inline-block;border-radius:1px 1px 0 0"></span>分享（峰值${Math.max(...shareVals)}）</span>`;
+  html += `<span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:8px;background:#e3b341;display:inline-block;border-radius:1px 1px 0 0"></span>收藏（峰值${Math.max(...favVals)}）</span>`;
+  html += '</div></div>';
+
+  html += '</div>'; // end wx-layout
+
+  // Top articles - two columns
+  html += '<div class="wx-articles" style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:20px;">';
+
+  // Section 1: Top 5 all time (left)
+  const top5All = [...wxTopArticles].sort((a,b)=>b.reads-a.reads).slice(0,5);
+  html += '<div>';
+  html += '<div class="wx-articles-title">TOP 5 · 全-time</div>';
+  top5All.forEach((a,i) => {
+    const rankClass = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    const dateFmt = `${a.date.slice(0,4)}-${a.date.slice(4,6)}-${a.date.slice(6)}`;
+    const channelColor = {'推荐':'#388bfd','朋友圈':'#3fb950','搜一搜':'#a371f7','全部':'#cdd9e5'}[a.channel]||'#cdd9e5';
+    html += `<div class="wx-article-item">
+      <div class="wx-art-rank ${rankClass}">${i+1}</div>
+      <div class="wx-art-body">
+        <div class="wx-art-title" title="${a.title}">${a.title}</div>
+        <div class="wx-art-meta"><span style="color:${channelColor}">${a.channel}</span><span>${dateFmt}</span></div>
+      </div>
+      <div class="wx-art-reads">${a.reads>=1000?(a.reads/1000).toFixed(1)+'k':a.reads}</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  // Section 2: Top 5 in last 7 days (right)
+  const last7 = ['20260406','20260407','20260408','20260409','20260410','20260411','20260412'];
+  const top5Recent = [...wxTopArticles]
+    .filter(a => last7.includes(a.date))
+    .sort((a,b)=>b.reads-a.reads)
+    .slice(0,5);
+  html += '<div>';
+  html += '<div class="wx-articles-title">TOP 5 · 近7天</div>';
+  top5Recent.forEach((a,i) => {
+    const dateFmt = `${a.date.slice(0,4)}-${a.date.slice(4,6)}-${a.date.slice(6)}`;
+    const channelColor = {'推荐':'#388bfd','朋友圈':'#3fb950','搜一搜':'#a371f7','全部':'#cdd9e5'}[a.channel]||'#cdd9e5';
+    html += `<div class="wx-article-item">
+      <div class="wx-art-rank" style="color:var(--text-muted)">${i+1}</div>
+      <div class="wx-art-body">
+        <div class="wx-art-title" title="${a.title}">${a.title}</div>
+        <div class="wx-art-meta"><span style="color:${channelColor}">${a.channel}</span><span>${dateFmt}</span></div>
+      </div>
+      <div class="wx-art-reads">${a.reads>=1000?(a.reads/1000).toFixed(1)+'k':a.reads}</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  // AI Insights block - 远 · 数据洞察
+  html += `<div class="wx-insights">
+    <div class="wx-insights-title">远 · 数据洞察</div>
+    <div class="wx-insights-grid">
+      <div class="wx-insight-card" style="grid-column:1/-1;">
+        <div class="wxi-label">数据分析</div>
+        <ul class="wxi-list">
+          <li><strong>DeepSeek爆款的6天推流机制：</strong>03-30至04-04，推荐流持续6天才消退。算法根据前48小时互动数据决定是否继续推。高互动=持续推流=长尾价值——好内容有「延迟效应」</li>
+          <li><strong>推荐渠道占47.6%，搜一搜+朋友圈合计仅1.4%：</strong>推荐流高度依赖算法，自然搜索和社交扩散几乎未激活。渠道单一风险极高，一旦算法策略调整，流量将断崖</li>
+          <li><strong>收藏峰值规律：</strong>04-12收藏30次，与DeepSeek爆款截然不同。「大流量不等于高收藏」，收藏率与文章是否提供「可复用框架」强相关——精准触达比大流量更重要</li>
+          <li><strong>分享收藏比4:1（531:150）：</strong>分享是「一次性扩散」，收藏是「长期资产沉淀」。收藏率才是内容护城河的真正指标，分享率高只是表面繁荣</li>
+        </ul>
+      </div>
+      <div class="wx-insight-card">
+        <div class="wxi-label">选题建议</div>
+        <ul class="wxi-list">
+          <li><strong>双轨并行：</strong>AI热点路线（DeepSeek类）做流量，2:8产能分配；「认知框架」路线（基因彩票类）做收藏，建立长期信任资产</li>
+          <li><strong>搜索优化：</strong>「主动高认知负荷」已有58人从搜一搜进站，说明选题有搜索价值，但标题关键词布局不足，参考微信指数植入高搜索量词</li>
+          <li><strong>系列化机会：</strong>「认知负荷」已有58人搜索，可做成「注意力系列」；即梦/AI工具对比可做成「工具测评系列」，高收藏文章天然适合系列化</li>
+        </ul>
+      </div>
+      <div class="wx-insight-card">
+        <div class="wxi-label">核心洞见</div>
+        <ul class="wxi-list">
+          <li><strong>脉冲依赖 vs 常青资产：</strong>DeepSeek单篇3.5万，但爆款结束后4月8日只剩366阅读。公众号没有「沉淀效应」，爆款结束后一切归零。需要常青内容库来构建基础阅读护城河</li>
+          <li><strong>认知锚点=收藏率：</strong>收藏高的文章往往有一个「读者可以带走的框架」。工具教程、决策清单、概念图谱——即使离开推荐流也能持续被搜索到，是真正的内容资产</li>
+        </ul>
+      </div>
+    </div>
+  </div>`;
+
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+// ===== PIPELINE =====
+const pipelineData = {
+  hot: [
+    { title: "老外开始\"Chinamaxxing\"了！喝温水、泡脚、八段锦，中式生活为何征服欧美Z世代？", meta: "周报4/12·🔥热点·双平台热议" },
+    { title: "小红书黑客松背后的野心：48小时极限开发，00后正在重新定义\"科技连接器\"", meta: "周报4/12·🔥热点·时效性强" },
+    { title: "AI重写旅游行业规则：86%的人用AI做计划，OTA沦为\"付款工具\"？", meta: "周报4/12·📈趋势·数据震撼" },
+    { title: "\"人类丰容\"实验：这届年轻人，正在把家变成\"精神避难所\"", meta: "周报4/12·🔥热点·90天破亿浏览" },
+    { title: "AI从\"工具\"变\"搭子\"：请我喝奶茶、指导恋爱、监督自习，这届AI太会了", meta: "周报4/12·🔥热点·生活化AI" },
+    { title: "德国五分之一青年计划移居国外：经济停滞、AI冲击、职业前景暗淡", meta: "周报4/12·📈社科·跨文化对比" }
+  ],
+  plan: [
+    { title: "观鸟成年轻人新宠：#鸟门1.2亿浏览量背后，是逃离都市的集体渴望", meta: "周报4/12·入门指南·视觉素材丰富" },
+    { title: "Vibe Coding风刮进小红书：非技术人的AI编程新范式", meta: "日报4/12·新概念·平台战略解读" },
+    { title: "工信部\"人工智能+\"高价值场景：制造业为主战场，核心产业规模1.2万亿", meta: "日报4/12·政策解读·产业数据" },
+    { title: "AI陪伴技术伦理争议：安慰还是阻碍？心理学家这样说", meta: "周报4/12·伦理分析·深度评论" }
+  ],
+  writing: [
+    { title: "Anthropic禁止OpenClaw访问Claude：第三方AI工具的API战争", meta: "日报4/10·科技评论·待核实数据" }
+  ],
+  done: [
+    { title: "阿尔忒弥斯II：53年后人类再次站上深空的门槛", meta: "04-13发布" },
+    { title: "MBTI已死，SBTI当道", meta: "04-11发布" },
+    { title: "你以为AI在帮你，其实它在拉大差距", meta: "04-11发布" },
+    { title: "小红书AI热点分析", meta: "已发布" },
+    { title: "AI工具焦虑", meta: "已发布" },
+    { title: "万维钢书单全5季", meta: "已发布" },
+    { title: "AI正在杀死普通职场人", meta: "已发布" },
+    { title: "为什么年轻人把AI当朋友", meta: "已发布" },
+    { title: "Z世代的\"主体性\"觉醒", meta: "已发布" },
+    { title: "文化消费的平民化", meta: "已发布" },
+    { title: "Claude Code泄露分析", meta: "已发布" },
+    { title: "千问552%增长分析", meta: "已发布" },
+    { title: "Seedance 2.0与AI视频元年", meta: "已发布" },
+    { title: "DeepSeek还没凉，豆包已经3亿了", meta: "已发布" },
+    { title: "2026年十大技术趋势", meta: "已发布" }
+  ]
+};
+
+const typeNames = {
+  article: "文章", skill: "Skill", system: "系统",
+  scraper: "爬虫", image: "配图", course: "课程", research: "调研"
+};
 
 // ===== RENDER: SKILL STATS =====
 function renderSkillStats() {
@@ -1523,6 +1757,7 @@ renderAIInsights();
   renderPipeline();
   renderTopicGraph();
   renderWechat();
+
 </script>
 </body>
 </html>
