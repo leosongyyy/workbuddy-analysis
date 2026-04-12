@@ -1283,49 +1283,44 @@ function renderWechat() {
   });
   html += '</div>';
 
-  // === Col 3: Share + Fav trend (stacked bars via SVG) ===
+  // === Col 3: Share + Fav trend (CSS bars, same style as reading trend) ===
+  const engDates = Object.keys(wxEngagement);
+  const shareVals = engDates.map(d => wxEngagement[d].shares);
+  const favVals  = engDates.map(d => wxEngagement[d].favs);
+  const maxEng   = Math.max(...shareVals, ...favVals, 1);
+  const engLabelIdx = [0, Math.floor(engDates.length/2), engDates.length-1];
+
   html += '<div class="wx-chart-wrap">';
   html += '<div class="wx-trend-label">分享 &amp; 收藏趋势</div>';
 
-  // SVG dual-line trend
-  const engDates = Object.keys(wxEngagement);
-  const shareVals = engDates.map(d => wxEngagement[d].shares);
-  const favVals = engDates.map(d => wxEngagement[d].favs);
-  const maxEng = Math.max(...shareVals, ...favVals, 1);
-  const wW = 300, wH = 70;
-  const paddingX = 2, paddingY = 4;
-  const plotW = wW - paddingX * 2;
-  const plotH = wH - paddingY * 2;
-
-  let svgPathShares = '';
-  let svgPathFavs = '';
-  engDates.forEach((d, i) => {
-    const x = paddingX + (i / (engDates.length - 1)) * plotW;
-    const yShare = paddingY + plotH - (shareVals[i] / maxEng) * plotH;
-    const yFav = paddingY + plotH - (favVals[i] / maxEng) * plotH;
-    svgPathShares += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + yShare.toFixed(1);
-    svgPathFavs += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + yFav.toFixed(1);
+  // Share bars (green)
+  html += '<div class="wx-chart">';
+  shareVals.forEach((v,i) => {
+    const h = Math.max(2, Math.round((v/maxEng)*66));
+    const isPeak = i === shareVals.indexOf(Math.max(...shareVals));
+    html += `<div class="wx-bar" style="height:${h}px;background:#3fb950;${isPeak?'opacity:1':''}" title="${engDates[i]}: 分享${v}"></div>`;
   });
+  html += '</div>';
+  html += '<div class="wx-chart-labels">';
+  engLabelIdx.forEach(i => { html += `<div class="wx-chart-label">${engDates[i].slice(5)}</div>`; });
+  html += '</div>';
 
-  html += `<svg class="wx-svg-chart" viewBox="0 0 ${wW} ${wH}" preserveAspectRatio="xMidYMid meet">`;
-  html += `<polyline points="${svgPathShares}" fill="none" stroke="#3fb950" stroke-width="1.5" opacity="0.9"/>`;
-  html += `<polyline points="${svgPathFavs}" fill="none" stroke="#e3b341" stroke-width="1.5" opacity="0.9"/>`;
-  // Peak dot for shares
-  const peakShareIdx = shareVals.indexOf(Math.max(...shareVals));
-  const px = paddingX + (peakShareIdx / (engDates.length - 1)) * plotW;
-  const py = paddingY + plotH - (shareVals[peakShareIdx] / maxEng) * plotH;
-  html += `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="2.5" fill="#3fb950"/>`;
-  // Peak dot for favs
-  const peakFavIdx = favVals.indexOf(Math.max(...favVals));
-  const fx = paddingX + (peakFavIdx / (engDates.length - 1)) * plotW;
-  const fy = paddingY + plotH - (favVals[peakFavIdx] / maxEng) * plotH;
-  html += `<circle cx="${fx.toFixed(1)}" cy="${fy.toFixed(1)}" r="2.5" fill="#e3b341"/>`;
-  html += '</svg>';
+  // Fav bars (yellow)
+  html += '<div class="wx-chart" style="margin-top:6px;">';
+  favVals.forEach((v,i) => {
+    const h = Math.max(2, Math.round((v/maxEng)*66));
+    const isPeak = i === favVals.indexOf(Math.max(...favVals));
+    html += `<div class="wx-bar" style="height:${h}px;background:#e3b341;${isPeak?'opacity:1':''}" title="${engDates[i]}: 收藏${v}"></div>`;
+  });
+  html += '</div>';
+  html += '<div class="wx-chart-labels">';
+  engLabelIdx.forEach(i => { html += `<div class="wx-chart-label">${engDates[i].slice(5)}</div>`; });
+  html += '</div>';
 
-  // Legend for share/fav
-  html += '<div style="display:flex;gap:12px;font-size:10px;margin-top:2px;">';
-  html += `<span style="display:flex;align-items:center;gap:4px;"><span style="width:16px;height:2px;background:#3fb950;display:inline-block;border-radius:1px"></span>分享（峰值${Math.max(...shareVals)}）</span>`;
-  html += `<span style="display:flex;align-items:center;gap:4px;"><span style="width:16px;height:2px;background:#e3b341;display:inline-block;border-radius:1px"></span>收藏（峰值${Math.max(...favVals)}）</span>`;
+  // Legend
+  html += '<div style="display:flex;gap:12px;font-size:10px;margin-top:4px;">';
+  html += `<span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:8px;background:#3fb950;display:inline-block;border-radius:1px 1px 0 0"></span>分享（峰值${Math.max(...shareVals)}）</span>`;
+  html += `<span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:8px;background:#e3b341;display:inline-block;border-radius:1px 1px 0 0"></span>收藏（峰值${Math.max(...favVals)}）</span>`;
   html += '</div></div>';
 
   html += '</div>'; // end wx-layout
