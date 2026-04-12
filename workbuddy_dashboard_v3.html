@@ -251,6 +251,50 @@ header {
 .wx-chart-label { flex: 1; font-size: 8px; color: var(--text-muted); text-align: center; }
 .wx-articles { border-top: 1px solid var(--border); padding-top: 12px; }
 .wx-articles-title { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+.wx-insights {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.wx-insights-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.wx-insights-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.wx-insight-card {
+  background: var(--bg-secondary);
+  border-radius: 6px;
+  padding: 12px;
+  border: 1px solid var(--border);
+}
+.wx-insight-card[style*="grid-column"] {
+  grid-column: 1 / -1;
+}
+.wxi-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.wxi-list {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+.wxi-list strong {
+  color: var(--blue);
+}
 .wx-article-item { display: flex; align-items: flex-start; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border); }
 .wx-article-item:last-child { border-bottom: none; }
 .wx-art-rank { min-width: 20px; font-size: 12px; font-weight: 700; color: var(--blue); text-align: center; }
@@ -1368,6 +1412,39 @@ function renderWechat() {
     </div>`;
   });
   html += '</div>';
+
+  // AI Insights block
+  html += `<div class="wx-insights">
+    <div class="wx-insights-title">远 · 数据洞察</div>
+    <div class="wx-insights-grid">
+      <div class="wx-insight-card">
+        <div class="wxi-label">📊 数据分析</div>
+        <ul class="wxi-list">
+          <li>近30天阅读量 <strong>43,303</strong>，峰值出现在 <strong>04-01（DeepSeek爆款）</strong>，单日阅读 7,989，占全期18.4%</li>
+          <li>推荐渠道一家独大（<strong>95.5%</strong>），搜一搜+朋友圈合计不足3%，说明选题在算法分发友好，但自然搜索潜力未被激活</li>
+          <li>分享/收藏比约 3.5:1（531:150），收藏率偏低表明文章缺乏「收藏价值」——多为即时消费型内容</li>
+          <li>04-12 收藏峰值（30次）与 DeepSeek 爆款截然不同：说明日常文章若精准击中需求，收藏转化率可大幅提升</li>
+        </ul>
+      </div>
+      <div class="wx-insight-card">
+        <div class="wxi-label">💡 选题建议</div>
+        <ul class="wxi-list">
+          <li><strong>「算法友好」型</strong>：延续 DeepSeek / 千问 / Claude 等大模型对比路线，数据驱动型标题，点击率有保障</li>
+          <li><strong>「收藏价值」型</strong>：工具测评、效率方法论、AI趋势清单 —— 参照 04-12 收藏峰值逻辑，提升收藏率</li>
+          <li><strong>跨平台联动</strong>：小红书「Chinamaxxing」「Vibe Coding」等热点可同步改编，小红书验证热度→公众号深度文章</li>
+          <li><strong>搜索优化</strong>：搜一搜仅占1.4%，建议在标题/摘要中植入高搜索量关键词（AI工具对比、免费AI等）</li>
+        </ul>
+      </div>
+      <div class="wx-insight-card" style="grid-column:1/-1;">
+        <div class="wxi-label">🧭 核心洞见</div>
+        <ul class="wxi-list">
+          <li><strong>脉冲依赖症</strong>：公众号阅读高度依赖爆款（DeepSeek单篇3.5万），日常内容天花板约500-800阅读，两者相差40倍，内容策略需要「爆款+常青」双轨并行</li>
+          <li><strong>渠道单一风险</strong>：推荐渠道占比95.5%意味着一旦算法策略调整，流量将断崖式下跌。建议逐步培育搜一搜（知识搜索场景）和朋友圈（私域传播）作为备份</li>
+          <li><strong>互动结构失衡</strong>：分享高（531）但收藏低（150），说明内容「有传播力但无留存价值」。收藏率是内容资产厚度的核心指标，建议每篇设置至少一个「知识锚点」方便读者回溯</li>
+        </ul>
+      </div>
+    </div>
+  </div>`;
 
   html += '</div>';
   el.innerHTML = html;
