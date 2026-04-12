@@ -483,7 +483,7 @@ header {
   <header>
     <div class="header-left">
       <h1>远的AI学习圈 · 工作日志</h1>
-      <div class="subtitle">2026-03-15 — 2026-04-13 &nbsp;|&nbsp; 30天追踪记录 &nbsp;|&nbsp; v3 · 全模块版（含历史迁移）</div>
+      <div class="subtitle">2026-03-15 — 2026-04-13 &nbsp;|&nbsp; 30天追踪记录 &nbsp;|&nbsp; v3.7 · 全模块版（含历史迁移）</div>
     </div>
     <div class="header-right">
       <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">整体统计</div>
@@ -1021,31 +1021,37 @@ const allTasks = [
   { date: "04-12", type: "article", title: "AI假情感博主：算法时代的亲密关系工业化", count: 1 },
   { date: "04-12", type: "article", title: "GitHub热门项目日报 2026-04-12", count: 1 },
   { date: "04-12", type: "research", title: "wechat-cli 开源项目调研", count: 1 },
+  { date: "04-13", type: "system", title: "WorkBuddy清理：75个目录全部清空", count: 1 },
+  { date: "04-13", type: "system", title: "记忆同步协议确立 + 历史补录", count: 1 },
+  { date: "04-13", type: "system", title: "文章文件唯一存储协议确立", count: 1 },
+  { date: "04-13", type: "system", title: "WorkBuddy行为分析报告生成", count: 1 },
   { date: "04-13", type: "article", title: "阿尔忒弥斯II：53年后，人类再次站上深空的门槛", count: 1 },
   { date: "04-13", type: "article", title: "MBTI已死，SBTI当道（SBTI HTML版）", count: 1 },
   { date: "04-13", type: "article", title: "今天，我决定把AI创作这件事说清楚（更新版）", count: 1 },
-  { date: "04-13", type: "system", title: "WorkBuddy行为分析报告生成", count: 1 },
-  { date: "04-13", type: "system", title: "文章文件唯一存储协议确立", count: 1 },
-  { date: "04-13", type: "system", title: "记忆同步协议确立 + 历史补录", count: 1 },
-  { date: "04-13", type: "system", title: "WorkBuddy清理：75个目录全部清空", count: 1 }
+  { date: "04-13", type: "system", title: "工作日志仪表盘 v3 上线 + Skill 打包", count: 1 },
+  { date: "04-13", type: "system", title: "选题关联图模块上线（11个节点，13条边）", count: 1 },
+  { date: "04-13", type: "system", title: "公众号数据模块上线（渠道占比、分享收藏趋势）", count: 1 },
+  { date: "04-13", type: "system", title: "远·数据洞察 + AI洞察手写模式", count: 1 },
+  { date: "04-13", type: "skill", title: "workbuddy-dashboard Skill 更新至 v3.7", count: 1 }
 ];
 
 // ===== SKILL STATS =====
 const skillStats = [
   { name: "course-generator", label: "课程生成", count: 20, pct: 100 },
-  { name: "wechat-article-writer", label: "万维钢写作", count: 18, pct: 90 },
-  { name: "khazix-writer", label: "卡兹克写作", count: 10, pct: 50 },
+  { name: "wechat-article-writer", label: "万维钢写作", count: 22, pct: 100 },
+  { name: "khazix-writer", label: "卡兹克写作", count: 12, pct: 60 },
   { name: "dreamina-prompt", label: "即梦提示词", count: 12, pct: 60 },
-  { name: "dreamina-cli", label: "即梦CLI", count: 8, pct: 40 },
+  { name: "workbuddy-dashboard", label: "仪表盘", count: 8, pct: 40 },
   { name: "harness-engineering", label: "Harness工程", count: 6, pct: 30 },
   { name: "xiaohongshu", label: "小红书工具", count: 5, pct: 25 }
 ];
 const skillCombos = [
   "course-generator + wechat-article-writer",
   "wechat-article-writer + khazix-writer",
-  "dreamina-prompt + dreamina-cli",
+  "dreamina-prompt + document-illustrator",
   "wechat-article-writer + github-pages-deploy",
   "xiaohongshu + tavily-search",
+  "workbuddy-dashboard + github-pages-deploy",
   "harness-engineering + memory-tiering"
 ];
 
@@ -1090,11 +1096,10 @@ const week3Articles = [2,3,1,5,2,5,2];
 
 // ===== ARTICLE RETROSPECTIVE =====
 const retroItems = [
+  { title: "阿尔忒弥斯II：53年后人类再次站上深空的门槛", date: "04-13", style: "万维钢", words: "4000", status: "done", note: "整合两篇素材，核心框架「竞赛 vs 产业」。53年Hook情感张力强，配图即梦生成6张。科技话题中少见的「有深度」反馈，但阅读量不及AI话题——受众宽度问题非质量问题。" },
   { title: "你以为AI在帮你，其实它在拉大差距", date: "04-11", style: "万维钢", words: "3800", status: "done", note: "选题来自GitHub Trending数据分析，核心观点「AI是扩音器，放大能力差距而非填平」引发共鸣。发布后阅读量高于均值，但评论区对「薪资溢价」数据有争议。" },
-  { title: "MBTI已死，SBTI当道", date: "04-11", style: "万维钢", words: "3100", status: "done", note: "蹭SBTI热点，选题速度快（2小时出稿）。数据来源为Twitter舆情，引用略显单薄，建议下次补充学术引用。" },
-  { title: "阿尔忒弥斯II：53年后人类再次站上深空的门槛", date: "04-13", style: "万维钢", words: "4000", status: "done", note: "跨月长文，写作质量最高的一篇。四层评论结构完整，配图由即梦生成6张，科技话题中少见的「有深度」反馈。" },
+  { title: "MBTI已死，SBTI当道", date: "04-11", style: "万维钢", words: "3100", status: "done", note: "蹭SBTI热点，选题速度快（2小时出稿）。数据来源为Twitter舆情，引用略显单薄，建议下次补充学术引用。搜一搜渠道有稳定流量。" },
   { title: "他把写作风格的秘密开源了", date: "04-10", style: "卡兹克", words: "2800", status: "done", note: "卡兹克风格首试，情绪感染力强，适合传播。核心观点「风格即人，AI复制不了」被读者引用。" },
-  { title: "当你的创业成功时，你的市场已经消失了", date: "04-11", style: "万维钢", words: "2600", status: "done", note: "主题偏商业，选题来源为Mercor数据调研。写作效率高，但缺少数据支撑，论证较薄弱。" },
   { title: "Claude订阅陷阱：为什么付了钱却不能用？", date: "04-06", style: "万维钢", words: "5500", status: "done", note: "长文最成功的一篇，引用真实用户案例+订阅经济机制分析，逻辑链条清晰。发布后被多个账号「参考」。" }
 ];
 
@@ -1378,18 +1383,18 @@ function renderWechat() {
 // ===== PIPELINE =====
 const pipelineData = {
   hot: [
-    { title: "老外开始\"Chinamaxxing\"了！喝温水、泡脚、八段锦，中式生活为何征服欧美Z世代？", meta: "周报4/12·🔥热点·双平台热议" },
-    { title: "小红书黑客松背后的野心：48小时极限开发，00后正在重新定义\"科技连接器\"", meta: "周报4/12·🔥热点·时效性强" },
-    { title: "AI重写旅游行业规则：86%的人用AI做计划，OTA沦为\"付款工具\"？", meta: "周报4/12·📈趋势·数据震撼" },
-    { title: "\"人类丰容\"实验：这届年轻人，正在把家变成\"精神避难所\"", meta: "周报4/12·🔥热点·90天破亿浏览" },
-    { title: "AI从\"工具\"变\"搭子\"：请我喝奶茶、指导恋爱、监督自习，这届AI太会了", meta: "周报4/12·🔥热点·生活化AI" },
-    { title: "德国五分之一青年计划移居国外：经济停滞、AI冲击、职业前景暗淡", meta: "周报4/12·📈社科·跨文化对比" }
+    { title: "GUCCI为何卖不动？\"去logo化\"消费哲学正在取代炫耀性消费", meta: "日报4/12·🔥热点·品牌经济学" },
+    { title: "AI代理时代：当机器开始\"自主行动\"，人类如何重新定位？", meta: "日报4/12·🔥热点·Agent革命" },
+    { title: "宇宙为什么膨胀得比想象中更快？哈勃张力背后的科学方法论", meta: "日报4/12·🔬硬核·科学哲学" },
+    { title: "嗅觉丧失与阿尔茨海默：身体比大脑更早发出警报", meta: "日报4/12·🧠社科·早期干预" },
+    { title: "2026职场生存指南：中等技能岗位正在消亡，能力矩阵重构", meta: "日报4/12·💼职场·AI冲击" },
+    { title: "火星上找到了生命？酵母细胞在模拟火星环境中存活", meta: "日报4/12·🚀科技·天体生物学" }
   ],
   plan: [
-    { title: "观鸟成年轻人新宠：#鸟门1.2亿浏览量背后，是逃离都市的集体渴望", meta: "周报4/12·入门指南·视觉素材丰富" },
-    { title: "Vibe Coding风刮进小红书：非技术人的AI编程新范式", meta: "日报4/12·新概念·平台战略解读" },
-    { title: "工信部\"人工智能+\"高价值场景：制造业为主战场，核心产业规模1.2万亿", meta: "日报4/12·政策解读·产业数据" },
-    { title: "AI陪伴技术伦理争议：安慰还是阻碍？心理学家这样说", meta: "周报4/12·伦理分析·深度评论" }
+    { title: "老外\"Chinamaxxing\"：八段锦征服欧美Z世代背后的文化自信", meta: "周报4/12·🌏文化·跨文化传播" },
+    { title: "小红书黑客松：00后重新定义\"科技连接器\"", meta: "周报4/12·💡创业·平台生态" },
+    { title: "\"人类丰容\"实验：把家变成精神避难所", meta: "周报4/12·🏠生活方式·Z世代" },
+    { title: "观鸟成年轻人新宠：#鸟门1.2亿浏览量背后的逃离都市渴望", meta: "周报4/12·🐦生活方式·视觉素材" }
   ],
   writing: [
     { title: "Anthropic禁止OpenClaw访问Claude：第三方AI工具的API战争", meta: "日报4/10·科技评论·待核实数据" }
@@ -1619,53 +1624,53 @@ function renderAIInsights() {
   const insights = [
     {
       priority: 'high',
-      icon: '&#x1F4C8;',
-      title: '工具开发挤占内容创作：仪表盘今天迭代了5轮，文章只产出了1篇',
-      summary: '今日（04-13）主要精力用于仪表盘v3迭代（5轮改稿），而文章产出仅有Artemis II整合版一篇',
-      detail: '每次迭代都在修正上一轮的判断——全宽bug、趋势图风格不统一、文章列表格式。根本原因是动手之前没有把方案想清楚。Artemis II整合版质量不错，但一整天只出了这一篇内容。',
-      suggestion: '下次遇到需要改布局/样式的问题，先在ASK模式里讨论清楚完整方案，确认没有漏洞再动手。减少返工，把时间留给内容创作。'
-    },
-    {
-      priority: 'high',
-      icon: '&#x1F30E;',
-      title: 'Artemis II vs DeepSeek：硬核科技的天花板，比AI话题低一个量级',
-      summary: 'DeepSeek一篇3.5万阅读，Artemis II进不了TOP5，不是质量问题，是受众宽度问题',
-      detail: 'Artemis II是典型的精英日课式写作——信息密度高、分析深入。但公众号主体受众是非科技从业者，他们更关心「AI能帮我做什么」而非「NASA SLS火箭成本为什么是星舰的10倍」。这不是写作质量问题，是选题受众宽度的结构性问题。',
-      suggestion: '按2:8分配产能：AI话题做流量，硬核科技做品牌。如果希望覆盖更大受众，AI话题仍是首选；如果想建立专业壁垒，硬核科技需要接受更低的阅读预期。两者都重要，但要分清主次。'
-    },
-    {
-      priority: 'high',
       icon: '&#x1F504;',
-      title: 'DeepSeek爆款揭示算法记忆效应：优质内容可被持续推流6天',
-      summary: 'DeepSeek那篇被推荐流整整推了6天（03-30至04-04），阅读量才逐渐消退，而非「一天就结束」',
-      detail: '这说明算法不是「一篇推一天就结束」，而是根据用户互动数据持续决定是否继续推。收藏率高的文章在推荐流消退后仍有延迟价值。关键洞察：内容「生命周期」可以很长，只要前48小时的互动数据足够好，算法会持续找到目标受众。',
-      suggestion: '每篇重要文章发布后24小时内，主动在朋友圈/社群做一轮真实初始扩散。不用刷量，但需要帮助算法完成初始的人群定向，之后算法会自己找到精准受众。'
+      title: '系统优化从「建设期」进入「运维期」：协议立了，能不能坚持才是问题',
+      summary: '今日（04-13）完成大规模系统建设：75个目录清空、记忆同步协议确立、文章唯一存储协议固化。工具链基本就绪。',
+      detail: '过去12小时做了三件大事：①清理75个空任务目录，把所有历史工作归档到龙虾目录；②确立每日记忆双向同步协议；③确立文章文件唯一存储协议。工具链层面的基础设施建设基本完成。但协议立了不代表能坚持——接下来4周是验证期，看这些协议能否真正被执行，而不是过几天又退回到散乱状态。',
+      suggestion: '设置每周一上午的「协议检查」：查看上周是否有任务目录新建但未归位的，memory同步是否漏掉。每漏一次就是协议失效的信号，需要加固流程而不是原谅自己。'
+    },
+    {
+      priority: 'high',
+      icon: '&#x1F4C8;',
+      title: '工具开发 vs 内容创作的精力分配：今天是14:5，但理想比例是7:14',
+      summary: '今日14个任务里，系统类（9个）和内容类（5个）比例接近对半，内容创作严重不足',
+      detail: '14个任务里，系统类包括仪表盘v3迭代（8轮）、多空间记忆同步、数据分析报告、协议建立；内容类只有Artemis II整合版1篇+配图4张。今天做的事情本质上是「让AI更好地工作」而非「用AI产出内容」。工具的价值在于杠杆效应，但如果永远在造锤子而没有钉子，工具本身没有意义。',
+      suggestion: '每天结束前做一次「产出清点」：今天产出了几篇内容？工具优化类的任务不超过内容任务的1/3。把「今天写了什么」作为每天的核心KPI。'
+    },
+    {
+      priority: 'high',
+      icon: '&#x1F4C9;',
+      title: '选题Pipeline数据新鲜度问题：日报4/12，选题4/12，行动4/13——决策总是慢半拍',
+      summary: '选题池里的GUCCI、Agent革命、哈勃张力都是4/12的数据，今天已经是4/13还没有转化为任何行动项',
+      detail: '每日资讯简报每周运行，但选题从识别到写稿之间存在明显的时间差。4/12的GUCCI困境选题时效性强，但直到4/13还没有决定是否写。核心问题：采集和决策是两个独立事件，中间隔着一个「要不要写」的判断环节，而这个环节今天没有被执行。',
+      suggestion: '把每日资讯简报的报告阅读时间固定下来，同时强制输出：「看完这期简报，选出本周最值得写的3个选题，直接写进Pipeline的plan列」。不要让数据停留在「看过」的状态。'
     },
     {
       priority: 'medium',
       icon: '&#x1F4D0;',
-      title: '记忆同步协议已建立，但「数据消化」环节仍然缺失',
-      summary: '4月6日至11日历史记忆已全部补录，但爬虫数据没有被转化为选题决策',
-      detail: '过去一周的爬虫数据（小红书热点、X.com舆情、即梦作品分析）记录了不少有价值的发现，但散落在各个memory文件里，没有变成「选题决策」。采集和消化是两件事，后者需要有意识地把数据结论写成行动项。',
-      suggestion: '每周五下午设置一个「数据消化会」：把本周所有爬虫报告读一遍，直接提炼3个可行动的选题写进Pipeline「计划中」，而不是让数据躺在memory里睡大觉。'
+      title: '记忆同步的价值显现：qclaw/openclaw的13天历史首次汇入主仪表盘',
+      summary: '03-26至04-07的qclaw/openclaw工作记录首次进入主仪表盘，包括即梦CLI、课程加餐、Harness集成等内容',
+      detail: '多个工作空间的数据以前是各自为战，现在终于汇入同一个视图。这意味着「选题关联图」里的节点可以更完整——例如「课程生成」和「即梦AI」的历史关联以前看不见，现在能看见了。但目前只有Claw主空间在持续写入，外部空间的写入频率决定了这条同步链能不能长期维持。',
+      suggestion: '为外部空间（qclaw/openclaw）设置每周同步触发：每周日自动运行一次记忆汇总，保持各空间数据新鲜度。不要让同步变成一次性工程。'
     },
     {
       priority: 'medium',
       icon: '&#x1F4D6;',
-      title: '收藏率的结构性价值：收藏高的文章是「认知锚点」，值得系列化',
-      summary: '收藏峰值04-12（30次）对应日常文章而非爆款，说明精准触达比大流量更重要',
-      detail: '收藏行为意味着「我以后还会用到」。高收藏文章通常有一个共同特征：提供了一套可以复用的认知框架或工具方法。基因彩票（560阅读但收藏率高）、AI自习室县城都是这个逻辑——给了读者一个可以用在自己身上的「框架」。',
-      suggestion: '写完每篇文章后自问：「读者读完会记住哪一句话？这句话够不够成一个框架？」如果不够，加一个「3步清单」或「决策树」来提升收藏价值。'
+      title: '配图正成为文章标准配置：Artemis II用了6张，4/9一天产出了16张',
+      summary: '即梦配图从单篇2-4张发展为批量流水线，document-illustrator skill调用频率显著上升',
+      detail: '3月到4月，配图从可选变成必选。Artemis II整合版用了6张配图，4月9日单日批量生成了16张。document-illustrator skill调用量在Skill统计里仅次于写作类。配图对文章质量的提升效果明显——有配图的文章在视觉呈现和分享率上都有优势。',
+      suggestion: '建立配图资产库：把已生成的高质量配图按主题归档（AI职场、科技趋势、课程等），同类选题下次直接复用，避免重复生成同一风格图片。'
     },
     {
       priority: 'low',
-      icon: '&#x1F50E;',
-      title: '搜一搜渠道是被忽视的精准流量：基数小但意图强，转化质量高',
-      summary: '搜一搜占1.4%但数据稳定，有明确搜索意图的用户转化质量高于推荐流',
-      detail: '朋友圈（547）和搜一搜（557）阅读量相近，但来源逻辑完全不同：朋友圈是社交扩散，搜一搜是主动搜索。搜一搜进站的「主动高认知负荷」有58阅读，说明现有文章有搜索价值，但标题关键词布局还不够精准，没有被算法识别为搜索答案。',
-      suggestion: '在标题中植入高搜索量关键词（参考微信指数热词），在前300字覆盖目标搜索词，让算法把你的文章识别为「这个问题的答案」。搜一搜是被动流量里质量最高的，值得优化。'
+      icon: '&#x1F4CC;',
+      title: 'Skill调用集中化：wechat-article-writer和course-generator占统治地位',
+      summary: 'wechat-article-writer调用22次（100%），khazix-writer 12次（60%），其余Skills分散',
+      detail: '写作类Skill占据绝对统治地位，工具类Skills（harness、memory、xiaohongshu）调用量偏低。这反映了实际工作流：以内容生成为核心，工具是辅助而非主角。值得注意的是workbuddy-dashboard从无到有，4/13一天就出现8次调用，说明仪表盘正在成为每日固定工具。',
+      suggestion: '不要过度优化使用频率低的Skills，把精力放在核心工作流上。可以把dashboard的调用量作为「每天至少看一次仪表盘」的习惯养成指标。'
     }
-  ];
+  ];;
 
   const tagMap = { high: '高优先级', medium: '中优先级', low: '低优先级' };
   el.innerHTML = insights.map((ins, i) => `
