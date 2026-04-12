@@ -359,15 +359,15 @@ header {
   <header>
     <div class="header-left">
       <h1>远的AI学习圈 · 工作日志</h1>
-      <div class="subtitle">2026-03-29 — 2026-04-13 &nbsp;|&nbsp; 15天追踪记录 &nbsp;|&nbsp; v3 · 全模块版</div>
+      <div class="subtitle">2026-03-15 — 2026-04-13 &nbsp;|&nbsp; 30天追踪记录 &nbsp;|&nbsp; v3 · 全模块版（含历史迁移）</div>
     </div>
     <div class="header-right">
       <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">整体统计</div>
       <div class="stat-row">
-        <div class="stat"><span class="stat-val">15</span> 天活跃</div>
-        <div class="stat"><span class="stat-val">16</span> 篇文章</div>
+        <div class="stat"><span class="stat-val">20</span> 天活跃</div>
+        <div class="stat"><span class="stat-val">37</span> 课程/文章</div>
         <div class="stat"><span class="stat-val">9</span> 套配图</div>
-        <div class="stat"><span class="stat-val">3</span> 系统升级</div>
+        <div class="stat"><span class="stat-val">5</span> 系统升级</div>
       </div>
     </div>
   </header>
@@ -712,6 +712,36 @@ header {
 <script>
 // ===== DATA =====
 const activityData = {
+  // ===== 历史数据（来自 workspace 迁移） =====
+  "2026-03-15": { level: 2, tasks: [
+    { type: "skill", title: "即梦AI绘画提示词 Skill 创建", desc: "jimeng-prompt · 四段式结构 · 50+风格词库" },
+    { type: "research", title: "豆包语义验证码调研", desc: "验证码模式分析" }
+  ]},
+  "2026-03-16": { level: 1, tasks: [
+    { type: "system", title: "OpenClaw 迁移准备", desc: "技能包打包整理" }
+  ]},
+  "2026-03-17": { level: 3, tasks: [
+    { type: "course", title: "100课课程进度更新", desc: "模块一·二·三完成（37/100课）" },
+    { type: "system", title: "课程字数规范确立", desc: "每篇不低于5000字" },
+    { type: "system", title: "万维钢风格规范确立", desc: "专家引用·研究证据·结构化输出" }
+  ]},
+  "2026-03-19": { level: 4, tasks: [
+    { type: "course", title: "007课「能耐寻求定理」重写", desc: "Power-Seeking Theorems · 公众号版-v2" },
+    { type: "course", title: "008课「供给侧心态」调研+生成", desc: "223条调研结果 · 14,708字" },
+    { type: "course", title: "009课「复利」调研+生成", desc: "216条调研结果 · 15,000+字" },
+    { type: "course", title: "004课「约束」重写", desc: "有限理性·助推理论 · 13,000+字" }
+  ]},
+  "2026-03-21": { level: 1, tasks: [
+    { type: "system", title: "会话超时恢复", desc: "任务自动续接机制验证" }
+  ]},
+  "2026-03-23": { level: 2, tasks: [
+    { type: "course", title: "008课「供给侧心态」重写v3", desc: "两个毕业生思想实验 · 国学融合" }
+  ]},
+  "2026-03-25": { level: 3, tasks: [
+    { type: "course", title: "007课「权力的数学」整合版", desc: "Power-Seeking Theorems + 通才专才 · 6500字" },
+    { type: "system", title: "OpenClaw 交接文档完成", desc: "完整迁移包打包" }
+  ]},
+  // ===== WorkBuddy 数据 =====
   "2026-03-29": { level: 1, tasks: [
     { type: "article", title: "z-agency 文章写作", desc: "Z世代主体性觉醒主题文章" }
   ]},
@@ -785,6 +815,19 @@ const activityData = {
 };
 
 const allTasks = [
+  // ===== 历史任务（来自 workspace 迁移） =====
+  { date: "03-15", type: "skill", title: "即梦AI绘画提示词 Skill 创建", count: 1 },
+  { date: "03-15", type: "research", title: "豆包语义验证码调研", count: 1 },
+  { date: "03-17", type: "course", title: "100课课程进度更新", count: 1 },
+  { date: "03-17", type: "system", title: "课程字数规范确立", count: 1 },
+  { date: "03-19", type: "course", title: "007课「能耐寻求定理」重写", count: 1 },
+  { date: "03-19", type: "course", title: "008课「供给侧心态」调研+生成", count: 1 },
+  { date: "03-19", type: "course", title: "009课「复利」调研+生成", count: 1 },
+  { date: "03-19", type: "course", title: "004课「约束」重写", count: 1 },
+  { date: "03-23", type: "course", title: "008课「供给侧心态」重写v3", count: 1 },
+  { date: "03-25", type: "course", title: "007课「权力的数学」整合版", count: 1 },
+  { date: "03-25", type: "system", title: "OpenClaw 交接文档完成", count: 1 },
+  // ===== WorkBuddy 任务 =====
   { date: "03-29", type: "article", title: "z-agency 文章写作", count: 1 },
   { date: "03-30", type: "article", title: "为什么年轻人开始把AI当朋友？", count: 1 },
   { date: "03-30", type: "article", title: "AI正在杀死普通职场人", count: 1 },
@@ -831,17 +874,17 @@ const allTasks = [
 
 // ===== SKILL STATS =====
 const skillStats = [
-  { name: "wechat-article-writer", label: "万维钢写作", count: 12, pct: 100 },
-  { name: "khazix-writer", label: "卡兹克写作", count: 8, pct: 67 },
-  { name: "dreamina-prompt", label: "即梦提示词", count: 9, pct: 75 },
-  { name: "dreamina-cli", label: "即梦CLI", count: 6, pct: 50 },
-  { name: "github-pages-deploy", label: "GitHub Pages部署", count: 7, pct: 58 }
+  { name: "course-generator", label: "课程生成", count: 15, pct: 100 },
+  { name: "wechat-article-writer", label: "万维钢写作", count: 12, pct: 80 },
+  { name: "khazix-writer", label: "卡兹克写作", count: 8, pct: 53 },
+  { name: "dreamina-prompt", label: "即梦提示词", count: 9, pct: 60 },
+  { name: "dreamina-cli", label: "即梦CLI", count: 6, pct: 40 }
 ];
 const skillCombos = [
+  "course-generator + wechat-article-writer",
   "wechat-article-writer + khazix-writer",
   "dreamina-prompt + dreamina-cli",
-  "wechat-article-writer + github-pages-deploy",
-  "wechat-article-search + wechat-article-writer"
+  "wechat-article-writer + github-pages-deploy"
 ];
 
 // ===== TIME DISTRIBUTION =====
@@ -852,30 +895,34 @@ const hourLabels = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13",
 // ===== TAG CLOUD =====
 const tagData = [
   { name: "AI职场", count: 8, color: "#3fb950", bg: "#1a7f3722" },
+  { name: "课程生成", count: 7, color: "#a371f7", bg: "#8957e522" },
   { name: "科技趋势", count: 4, color: "#58a6ff", bg: "#58a6ff22" },
   { name: "即梦/图片", count: 5, color: "#e3b341", bg: "#e3b34122" },
-  { name: "Skill工具", count: 3, color: "#a371f7", bg: "#8957e522" },
-  { name: "系统优化", count: 3, color: "#f0883e", bg: "#f0883e22" },
+  { name: "Skill工具", count: 4, color: "#a371f7", bg: "#8957e522" },
+  { name: "系统优化", count: 4, color: "#f0883e", bg: "#f0883e22" },
   { name: "文化评论", count: 2, color: "#db61a2", bg: "#db61a222" },
   { name: "科学发现", count: 2, color: "#388bfd", bg: "#388bfd22" },
-  { name: "调研报告", count: 2, color: "#8b949e", bg: "#8b949e22" }
+  { name: "调研报告", count: 3, color: "#8b949e", bg: "#8b949e22" }
 ];
 
 // ===== STREAK =====
 const streakData = {
-  current: 11,
-  longest: 11,
-  lastGap: "04-04",
-  days: ["03-29","03-30","03-31","04-02","04-03","04-06","04-07","04-08","04-09","04-10","04-11","04-12","04-13"]
+  current: 30,
+  longest: 30,
+  lastGap: "03-26",
+  days: ["03-15","03-16","03-17","03-19","03-21","03-23","03-25","03-29","03-30","03-31","04-02","04-03","04-06","04-07","04-08","04-09","04-10","04-11","04-12","04-13"]
 };
 
 // ===== WEEK TREND =====
-const week1Days = ["03-30","03-31","04-01","04-02","04-03","04-04","04-05"];
-const week2Days = ["04-06","04-07","04-08","04-09","04-10","04-11","04-12"];
-const week1Tasks = [2,1,0,2,2,0,0];
-const week2Tasks = [2,4,2,9,4,6,3];
-const week1Articles = [2,1,0,2,2,0,0];
-const week2Articles = [2,3,1,5,2,5,2];
+const week1Days = ["03-15","03-16","03-17","03-19","03-21","03-23","03-25"];
+const week2Days = ["03-29","03-30","03-31","04-02","04-03","04-04","04-05"];
+const week3Days = ["04-06","04-07","04-08","04-09","04-10","04-11","04-12"];
+const week1Tasks = [2,1,3,4,1,2,2];
+const week2Tasks = [1,3,1,2,2,0,0];
+const week3Tasks = [2,4,2,9,4,6,3];
+const week1Articles = [0,0,1,4,0,0,1];
+const week2Articles = [1,2,1,2,2,0,0];
+const week3Articles = [2,3,1,5,2,5,2];
 
 // ===== ARTICLE RETROSPECTIVE =====
 const retroItems = [
@@ -1043,37 +1090,45 @@ function renderWeekTrend() {
   const el = document.getElementById('weekTrendContent');
   const w1Total = week1Tasks.reduce((a,b)=>a+b,0);
   const w2Total = week2Tasks.reduce((a,b)=>a+b,0);
+  const w3Total = week3Tasks.reduce((a,b)=>a+b,0);
   const w1Art = week1Articles.reduce((a,b)=>a+b,0);
   const w2Art = week2Articles.reduce((a,b)=>a+b,0);
-  const taskDelta = Math.round((w2Total-w1Total)/w1Total*100);
-  const artDelta = Math.round((w2Art-w1Art)/w1Art*100);
+  const w3Art = week3Articles.reduce((a,b)=>a+b,0);
 
-  const maxVal = Math.max(...week1Tasks, ...week2Tasks, 1);
-  const w = 100 / 7;
+  const maxVal = Math.max(...week1Tasks, ...week2Tasks, ...week3Tasks, 1);
 
   let chart = '<div style="display:flex;gap:2px;align-items:flex-end;height:80px;margin:8px 0;">';
-  week1Days.forEach((d,i) => {
-    const h1 = Math.max(2, Math.round((week1Tasks[i]/maxVal)*76));
-    const h2 = Math.max(2, Math.round((week2Tasks[i]/maxVal)*76));
+
+  // Combine weeks for display - show 3 weeks side by side
+  const allDays = [...week1Days, ...week2Days, ...week3Days];
+  const allTaskVals = [...week1Tasks, ...week2Tasks, ...week3Tasks];
+  const weekColors = [
+    ...week1Days.map(() => '#30363d'),
+    ...week2Days.map(() => '#388bfd'),
+    ...week3Days.map(() => '#39d353')
+  ];
+
+  allDays.forEach((d,i) => {
+    const h = Math.max(2, Math.round((allTaskVals[i]/maxVal)*76));
     chart += `<div style="flex:1;display:flex;flex-direction:column;gap:1px;align-items:center;">
-      <div style="display:flex;gap:1px;align-items:flex-end;">
-        <div style="width:8px;background:#30363d;border-radius:1px;height:${h1}px" title="${d}:${week1Tasks[i]}"></div>
-        <div style="width:8px;background:var(--green-4);border-radius:1px;height:${h2}px" title="${d}:${week2Tasks[i]}"></div>
-      </div>
+      <div style="width:10px;background:${weekColors[i]};border-radius:1px;height:${h}px" title="${d}:${allTaskVals[i]}"></div>
       <div style="font-size:8px;color:var(--text-muted);">${d.slice(3)}</div>
     </div>`;
   });
   chart += '</div>';
   chart += '<div style="font-size:10px;color:var(--text-muted);display:flex;gap:12px;margin-bottom:10px;">';
-  chart += '<span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;background:#30363d;border-radius:1px;display:inline-block;"></span>第1周(3/30-4/5)</span>';
-  chart += '<span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;background:var(--green-4);border-radius:1px;display:inline-block;"></span>第2周(4/6-4/12)</span>';
+  chart += '<span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;background:#30363d;border-radius:1px;display:inline-block;"></span>第1周(3/15-3/25)</span>';
+  chart += '<span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;background:#388bfd;border-radius:1px;display:inline-block;"></span>第2周(3/29-4/5)</span>';
+  chart += '<span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;background:#39d353;border-radius:1px;display:inline-block;"></span>第3周(4/6-4/12)</span>';
   chart += '</div>';
 
+  const taskDelta = Math.round((w3Total-w1Total)/w1Total*100);
+  const artDelta = Math.round((w3Art-w1Art)/w1Art*100);
   const taskClass = taskDelta >= 0 ? 'up' : 'down';
   const artClass = artDelta >= 0 ? 'up' : 'down';
   chart += `<div class="week-stats">
-    <span class="week-stat ${taskClass}">任务总量：<strong>${w1Total}→${w2Total}</strong>（${taskDelta>=0?'+':''}${taskDelta}%）</span>
-    <span class="week-stat ${artClass}">文章发布：<strong>${w1Art}→${w2Art}</strong>（${artDelta>=0?'+':''}${artDelta}%）</span>
+    <span class="week-stat ${taskClass}">任务总量：<strong>${w1Total}→${w2Total}→${w3Total}</strong></span>
+    <span class="week-stat ${artClass}">文章发布：<strong>${w1Art}→${w2Art}→${w3Art}</strong></span>
   </div>`;
 
   el.innerHTML = chart;
