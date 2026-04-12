@@ -313,6 +313,41 @@ header {
 .pipeline-add { font-size: 11px; color: var(--text-muted); padding: 6px 0; cursor: pointer; display: flex; align-items: center; gap: 4px; }
 .pipeline-add:hover { color: var(--blue); }
 
+/* TOPIC GRAPH */
+.topic-graph-wrap {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: default;
+}
+.graph-svg { width: 100%; height: 100%; }
+.graph-node { cursor: pointer; }
+.graph-node:hover { opacity: 0.75; }
+.graph-node text { pointer-events: none; font-size: 10px; fill: var(--text); font-family: inherit; }
+.graph-edge { stroke: var(--border); stroke-width: 1; opacity: 0.35; }
+.graph-edge.high { stroke-width: 2.5; opacity: 0.7; }
+.graph-tooltip {
+  position: fixed;
+  background: #2d333b;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--text);
+  pointer-events: none;
+  z-index: 1000;
+  display: none;
+  max-width: 220px;
+  line-height: 1.5;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.graph-tooltip strong { display: block; margin-bottom: 4px; font-size: 13px; }
+.graph-conn-list { margin-top: 6px; font-size: 10px; color: var(--text-muted); line-height: 1.6; }
+
 /* MODAL */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.open { display: flex; }
@@ -401,6 +436,10 @@ header {
     </button>
     <button class="module-btn active" data-mod="pipeline" onclick="toggleModule('pipeline', this)">
       <span class="dot"></span>选题Pipeline
+      <span class="mod-badge">新</span>
+    </button>
+    <button class="module-btn active" data-mod="topic-graph" onclick="toggleModule('topic-graph', this)">
+      <span class="dot"></span>选题关联图
       <span class="mod-badge">新</span>
     </button>
     <button class="module-btn" id="addModuleBtn" onclick="document.getElementById('modalOverlay').classList.add('open')">
@@ -640,6 +679,19 @@ header {
         </div>
 
       </div>
+
+      <!-- MOD 8: 选题关联图 -->
+    <div class="module-section visible" id="mod-topic-graph">
+      <div class="module-section-header">
+        <div class="module-section-title">
+          <span class="icon">&#x1F517;</span>
+          选题关联图
+          <span class="count">主题关系可视化</span>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);">节点=主题 · 连线=关联强度 · 大小=内容密度</div>
+      </div>
+      <div id="topicGraphContent" style="position:relative;"></div>
+    </div>
 
       <!-- ADD MODULE -->
       <div class="add-module-card" id="addModuleBtn2" onclick="document.getElementById('modalOverlay').classList.add('open')">
@@ -1020,6 +1072,37 @@ const retroItems = [
   { title: "Claude订阅陷阱：为什么付了钱却不能用？", date: "04-06", style: "万维钢", words: "5500", status: "done", note: "长文最成功的一篇，引用真实用户案例+订阅经济机制分析，逻辑链条清晰。发布后被多个账号「参考」。" }
 ];
 
+// ===== TOPIC GRAPH =====
+const topicNodes = [
+  { id: "AI职场", x: 0.50, y: 0.20, size: 10, color: "#3fb950", count: 10, articles: 8, examples: "AI薪资溢价、假情感博主、SBTI、创业失败、AI杀死工作" },
+  { id: "科技趋势", x: 0.75, y: 0.30, size: 7, color: "#58a6ff", count: 6, articles: 4, examples: "千问3.5、GLM-4o、Artemis投资、OpenAI更新" },
+  { id: "课程生成", x: 0.20, y: 0.35, size: 9, color: "#a371f7", count: 9, articles: 12, examples: "100课体系：018/019/023课，情绪价值/Color Walk加餐" },
+  { id: "即梦/图片", x: 0.80, y: 0.50, size: 7, color: "#e3b341", count: 7, articles: 3, examples: "即梦AI指南文章配图、report.html、即梦CLI" },
+  { id: "Skill工具", x: 0.15, y: 0.60, size: 6, color: "#8957e5", count: 6, articles: 5, examples: "wechat-article-writer、harness-engineering、course-generator" },
+  { id: "Harness工程", x: 0.30, y: 0.70, size: 4, color: "#39d353", count: 4, articles: 3, examples: "主流程集成、Token效率+73%、推荐组合优化" },
+  { id: "社科热点", x: 0.60, y: 0.50, size: 4, color: "#db61a2", count: 3, articles: 3, examples: "Z世代主体性、Jonathan Haidt社交媒体研究、情绪价值" },
+  { id: "文化评论", x: 0.70, y: 0.65, size: 3, color: "#388bfd", count: 3, articles: 2, examples: "文化消费、博物馆" },
+  { id: "科学发现", x: 0.85, y: 0.20, size: 2, color: "#58a6ff", count: 2, articles: 1, examples: "阿尔忒弥斯II深空探索" },
+  { id: "调研报告", x: 0.40, y: 0.40, size: 3, color: "#8b949e", count: 3, articles: 2, examples: "GitHub Trending多期、小红书热点" },
+  { id: "系统优化", x: 0.55, y: 0.75, size: 5, color: "#f0883e", count: 5, articles: 4, examples: "记忆层级整理、Sidechain Transcript、记忆同步协议" }
+];
+
+const topicEdges = [
+  { source: "AI职场", target: "科技趋势", weight: 5, reason: "技术背景的职场分析" },
+  { source: "AI职场", target: "社科热点", weight: 4, reason: "Z世代/社会结构视角" },
+  { source: "AI职场", target: "文化评论", weight: 3, reason: "Z世代消费文化" },
+  { source: "科技趋势", target: "即梦/图片", weight: 4, reason: "AI生图/视频工具" },
+  { source: "科技趋势", target: "调研报告", weight: 5, reason: "GitHub Trending选题" },
+  { source: "课程生成", target: "Skill工具", weight: 6, reason: "course-generator+wechat-writer" },
+  { source: "课程生成", target: "Harness工程", weight: 3, reason: "Agent流程复用" },
+  { source: "课程生成", target: "社科热点", weight: 4, reason: "情绪价值课程+心理学期刊" },
+  { source: "Skill工具", target: "Harness工程", weight: 4, reason: "Harness+Claude Code集成" },
+  { source: "Skill工具", target: "系统优化", weight: 5, reason: "多工作空间记忆同步" },
+  { source: "即梦/图片", target: "调研报告", weight: 3, reason: "即梦发现页爬虫" },
+  { source: "社科热点", target: "文化评论", weight: 3, reason: "Z世代文化研究" },
+  { source: "系统优化", target: "调研报告", weight: 2, reason: "数据采集流程" }
+];
+
 // ===== PIPELINE =====
 const pipelineData = {
   hot: [
@@ -1262,6 +1345,133 @@ function renderPipeline() {
   }).join('');
 }
 
+// ===== RENDER: TOPIC GRAPH =====
+function renderTopicGraph() {
+  const el = document.getElementById('topicGraphContent');
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('class', 'graph-svg');
+  svg.setAttribute('viewBox', '0 0 100 100');
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+  // Build node map
+  const nodeMap = {};
+  topicNodes.forEach(n => { nodeMap[n.id] = n; });
+
+  // Draw edges first
+  topicEdges.forEach(e => {
+    const src = nodeMap[e.source];
+    const tgt = nodeMap[e.target];
+    if (!src || !tgt) return;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', src.x * 100);
+    line.setAttribute('y1', src.y * 100);
+    line.setAttribute('x2', tgt.x * 100);
+    line.setAttribute('y2', tgt.y * 100);
+    line.setAttribute('class', 'graph-edge' + (e.weight >= 5 ? ' high' : ''));
+    line.style.stroke = src.color + '88';
+    svg.appendChild(line);
+  });
+
+  // Draw nodes
+  topicNodes.forEach(n => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', 'graph-node');
+    g.setAttribute('transform', `translate(${n.x * 100},${n.y * 100})`);
+
+    const r = 1.2 + (n.size / 10) * 2.5;
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('r', r.toFixed(1));
+    circle.setAttribute('fill', n.color);
+    circle.setAttribute('opacity', '0.85');
+    g.appendChild(circle);
+
+    // White border
+    const border = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    border.setAttribute('r', r.toFixed(1));
+    border.setAttribute('fill', 'none');
+    border.setAttribute('stroke', '#1c2128');
+    border.setAttribute('stroke-width', '0.3');
+    g.appendChild(border);
+
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('dy', '0.35em');
+    text.setAttribute('fill', '#cdd9e5');
+    text.setAttribute('font-size', '2.8');
+    text.setAttribute('font-family', '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif');
+    text.setAttribute('font-weight', '600');
+    text.textContent = n.id;
+    g.appendChild(text);
+
+    // Tooltip
+    g.addEventListener('mouseenter', (e) => {
+      const connected = topicEdges.filter(ed => ed.source === n.id || ed.target === n.id);
+      const connList = connected.map(ed => {
+        const other = ed.source === n.id ? ed.target : ed.source;
+        return `· ${other}（${ed.reason}）`;
+      }).join('<br>');
+      showGraphTooltip(e, `<strong>${n.id}</strong>文章${n.articles}篇·任务${n.count}项<br><span style="color:#8b949e;font-size:10px">${n.examples}</span><div class="graph-conn-list">关联主题：<br>${connList || '无直接关联'}</div>`);
+    });
+    g.addEventListener('mouseleave', hideGraphTooltip);
+    g.addEventListener('mousemove', moveGraphTooltip);
+
+    svg.appendChild(g);
+  });
+
+  // Legend
+  const wrap = document.createElement('div');
+  wrap.className = 'topic-graph-wrap';
+  wrap.appendChild(svg);
+
+  const legend = document.createElement('div');
+  legend.className = 'graph-legend';
+  legend.style.cssText = 'padding: 8px 12px; border-top: 1px solid var(--border);';
+
+  const clusterGroups = [
+    { label: "公众号内容", nodes: ["AI职场", "科技趋势", "文化评论", "科学发现"], color: "#58a6ff" },
+    { label: "课程体系", nodes: ["课程生成", "社科热点", "Harness工程"], color: "#a371f7" },
+    { label: "工具链", nodes: ["Skill工具", "系统优化"], color: "#f0883e" },
+    { label: "数据调研", nodes: ["调研报告", "即梦/图片"], color: "#e3b341" }
+  ];
+
+  clusterGroups.forEach(g => {
+    const item = document.createElement('div');
+    item.className = 'graph-legend-item';
+    item.innerHTML = `<span class="graph-legend-dot" style="background:${g.color}"></span>${g.label}：${g.nodes.join('·')}`;
+    legend.appendChild(item);
+  });
+
+  el.appendChild(wrap);
+  el.appendChild(legend);
+}
+
+function showGraphTooltip(e, html) {
+  let tip = document.getElementById('graphTooltip');
+  if (!tip) {
+    tip = document.createElement('div');
+    tip.id = 'graphTooltip';
+    tip.className = 'graph-tooltip';
+    document.body.appendChild(tip);
+  }
+  tip.innerHTML = html;
+  tip.style.display = 'block';
+  moveGraphTooltip(e);
+}
+
+function moveGraphTooltip(e) {
+  const tip = document.getElementById('graphTooltip');
+  if (!tip) return;
+  const x = e.clientX + 14;
+  const y = e.clientY - 10;
+  tip.style.left = (x + 220 > window.innerWidth ? e.clientX - 234 : x) + 'px';
+  tip.style.top = y + 'px';
+}
+
+function hideGraphTooltip() {
+  const tip = document.getElementById('graphTooltip');
+  if (tip) tip.style.display = 'none';
+}
+
 // ===== RENDER CALENDAR =====
 function renderCalendar() {
   const grid = document.getElementById('calendarGrid');
@@ -1456,8 +1666,9 @@ renderTimeDist();
 renderTagCloud();
 renderStreak();
 renderWeekTrend();
-renderRetro();
-renderPipeline();
+  renderRetro();
+  renderPipeline();
+  renderTopicGraph();
 </script>
 </body>
 </html>
