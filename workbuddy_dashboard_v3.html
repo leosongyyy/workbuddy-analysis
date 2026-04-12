@@ -709,80 +709,7 @@ header {
           <span class="ai-icon">&#x2728;</span>
           <h2>AI 洞察 &amp; 优化建议</h2>
         </div>
-
-        <div class="insight-card" data-insight="1">
-          <div class="insight-title">
-            &#x26A1; 「脉冲式」创作节奏，高价值时段被浪费
-            <span class="insight-tag high">高优先级</span>
-          </div>
-          <div class="insight-summary">22:00-03:00 是产出黄金时段，但大部分碎片任务分散在白天</div>
-          <div class="insight-detail">
-            数据覆盖26天，重要文章全部产出于深夜（22:00-03:00）。白天频繁出现「任务切换」和「试了一下」的空转。凌晨时段认知资源最集中，适合做高密度写作，但碎片任务管理把这段黄金时间切碎了。多工作空间（qclaw/openclaw）的接入进一步扩大了白天空转的可能性。<br><br>
-            <strong>建议：</strong>把白天留给低价值的「维护性任务」（文件整理、报告生成、知识库更新），把深夜整块时间锁定给文章写作。用日程提醒或自动化在22:00切换工作模式。
-          </div>
-        </div>
-
-        <div class="insight-card" data-insight="2">
-          <div class="insight-title">
-            &#x1F4CB; 课程成为第二增长极，但公众号文章主题同质化风险仍在
-            <span class="insight-tag high">高优先级</span>
-          </div>
-          <div class="insight-summary">26天内产出22篇文章 + 12节课程，公众号内容覆盖仍集中在AI职场/职业话题</div>
-          <div class="insight-detail">
-            跨4个工作空间的统计显示：公众号文章（22篇）以AI职场/职业话题为主，课程（12节）来自100课体系已稳定产出。课程方向的差异化（心理学、历史、商业案例）比公众号做得更好，但公众号仍在吃老本。<br><br>
-            同质化意味着读者黏性下降、平台推荐效率降低。公众号需要「信息增量」——同类话题三篇之内要有新视角。<br><br>
-            <strong>建议：</strong>每周至少安排1篇跨领域内容（心理学、历史、商业案例），参考课程体系的选题广度。
-          </div>
-        </div>
-
-        <div class="insight-card" data-insight="3">
-          <div class="insight-title">
-            &#x1F3AF; 爬虫数据资产沉睡，选题-数据闭环未建立
-            <span class="insight-tag medium">中优先级</span>
-          </div>
-          <div class="insight-summary">即梦3599条、小红书多次热点、X.com舆情数据大量采集但二次利用率极低</div>
-          <div class="insight-detail">
-            26天内多平台爬虫采集了大量数据：即梦发现页3599条作品、GitHub Trending 多期记录、小红书热点多次采集、X.com热点分析（Jonathan Haidt等）。这些数据90%处于「采集后闲置」状态。社交媒体研究（04-02）做完没转化为文章，即梦数据做完报告就放着。<br><br>
-            <strong>建议：</strong>建立「数据选题转化流程」——每周固定一天（如周一）用爬虫数据做选题会，从数据中提炼3个可写的角度，明确分配到当周的写作计划中。
-          </div>
-        </div>
-
-        <div class="insight-card" data-insight="4">
-          <div class="insight-title">
-            &#x1F331; 多工作空间带来Skill生态繁荣，但调用分散削弱了单空间深度积累
-            <span class="insight-tag medium">中优先级</span>
-          </div>
-          <div class="insight-summary">4个工作空间累计87个Skills，但跨空间协作场景有限，单空间历史数据难以贯通</div>
-          <div class="insight-detail">
-            当前已同步4个工作空间（Claw/qclaw/openclaw/mac_mini），Skills覆盖全面（course-generator、wechat-article-writer、harness-engineering、xiaohongshu等）。但跨空间调用存在割裂：即梦CLI在qclaw做的，在Claw调用需要重新设置环境。多空间记忆已同步，但Skill配置尚未统一管理。<br><br>
-            <strong>建议：</strong>Skill配置集中管理到~/.workbuddy/skills/，避免重复安装。统一触发词规范，减少跨空间认知负担。
-          </div>
-        </div>
-
-        <div class="insight-card" data-insight="5">
-          <div class="insight-title">
-            &#x1F4C5; 多工作空间记忆已打通，选题积累仍是长期短板
-            <span class="insight-tag medium">中优先级</span>
-          </div>
-          <div class="insight-summary">跨空间数据同步解决了历史断档问题，但选题决策逻辑仍未结构化沉淀</div>
-          <div class="insight-detail">
-            多工作空间扫描协议已建立（4个目录同步），26天历史数据全部可追溯。但「决策历史」——为什么选这个角度、放弃了哪个热点、发布后数据如何——仍未结构化积累。选题Pipeline模块是第一步，但执行层（每个选题的理由记录）还缺失。<br><br>
-            <strong>建议：</strong>在选题Pipeline的四栏基础上，给每个进入「计划中」的选题增加一条「选题理由」注释，推动决策逻辑显性化。
-          </div>
-        </div>
-
-        <div class="insight-card" data-insight="6">
-          <div class="insight-title">
-            &#x1F680; Harness工程已集成但Agent化程度低，主流程复用率有提升空间
-            <span class="insight-tag low">低优先级</span>
-          </div>
-          <div class="insight-summary">Harness Flow + Token缓存效率提升73%，但Agent外循环仍未常态化使用</div>
-          <div class="insight-detail">
-            Harness Engineering主流程已完成集成（Token效率+73%），多工作空间数据汇聚了多种Agent架构经验（Claude Code/WorkBuddy/qlim/CLa।）。但主流程仍以单次任务执行为主，外循环（多步迭代、自我纠错、轨迹回溯）使用频率低，复杂任务的自动化程度受限。<br><br>
-            <strong>建议：</strong>在执行复杂任务前主动使用「Harness Flow规划」——把任务拆成Harness步骤，让每步结果可追溯、可复用。
-          </div>
-        </div>
-
+        <div id="aiInsightsContent"></div>
       </div>
 
       <!-- MOD 8: 选题关联图 -->
@@ -1667,6 +1594,91 @@ function renderWeekTrend() {
   el.innerHTML = chart;
 }
 
+// ===== RENDER: AI 洞察 & 优化建议（动态生成） =====
+function renderAIInsights() {
+  const el = document.getElementById('aiInsightsContent');
+  if (!el) return;
+  const dates = Object.keys(wxReads);
+  const reads = dates.map(d => wxReads[d]);
+  const totalReads = reads.reduce((a,b)=>a+b,0);
+  const totalShares = Object.values(wxEngagement).reduce((a,b)=>a+b.shares,0);
+  const totalFavs  = Object.values(wxEngagement).reduce((a,b)=>a+b.favs,0);
+  const totalArticles = Object.values(wxEngagement).reduce((a,b)=>a+b.articles,0);
+  const days = dates.length;
+  const peakRead = Math.max(...reads);
+  const peakDate = dates[reads.indexOf(peakRead)];
+  const avgRead = (totalReads / days).toFixed(0);
+  const topChannelPct = ((38468 / totalReads) * 100).toFixed(1);
+  const top3Reads = reads.slice().sort((a,b)=>b-a).slice(0,3);
+  const pulseRatio = top3Reads[0] > avgRead * 3 ? '极高' : top3Reads[0] > avgRead * 2 ? '较高' : '正常';
+  const courseTasks = allTasks.filter(t => t.type === 'course' || (t.title && t.title.includes('课程')));
+  const articleTasks = allTasks.filter(t => t.type === 'article' || (t.title && /文章|写作|写稿/.test(t.title)));
+  const courseCount = courseTasks.length;
+  const articleCount = articleTasks.length;
+  const courseVsArticle = courseCount + articleCount > 0 ? (courseCount / (courseCount + articleCount) * 100).toFixed(0) + '%' : '0%';
+  const topSkill = skillStats.length > 0 ? skillStats[0] : null;
+
+  const insights = [
+    {
+      priority: 'high',
+      icon: '&#x26A1;',
+      title: `「脉冲式」创作节奏，均值${avgRead}但峰值${peakRead}，差距${pulseRatio}`,
+      summary: `${days}天产出${totalArticles}篇，日均阅读${avgRead}，峰值集中于推荐渠道单点爆发`,
+      detail: `数据显示阅读高度依赖偶发性大爆款（峰值日${peakDate}贡献${((peakRead/totalReads)*100).toFixed(0)}%流量）。推荐渠道占比${topChannelPct}%，其余渠道激活不足。公众号护城河尚未建立，日常内容缺乏稳定基础阅读。`,
+      suggestion: '建立「常青内容库」：每周固定产出一篇可长期带流量的「知识锚点」型文章（如工具教程、概念科普），与爆款形成互补，降低对单点爆发的依赖。'
+    },
+    {
+      priority: 'high',
+      icon: '&#x1F4CB;',
+      title: `互动比失衡：分享${totalShares}次 / 收藏${totalFavs}次，收藏率${(totalFavs/totalShares*100).toFixed(1)}%`,
+      summary: `收藏量不足分享量的一半，读者「愿意传不愿留」，内容传播属性强但资产沉淀能力弱`,
+      detail: `分享率体现传播力，收藏率体现长期价值。${totalFavs/totalShares < 0.5 ? '收藏/分享比低于0.5，说明内容偏「一次性消费」而非「值得保存」的知识型内容。' : '收藏/分享比相对健康，但仍有提升空间。'}`,
+      suggestion: '在每篇文章结尾增加「认知锚点」：提炼3个可操作的要点或模板，让读者觉得「这篇文章我要留着以后用」，而非只是「这篇文章说得对」。'
+    },
+    {
+      priority: 'medium',
+      icon: '&#x1F3AF;',
+      title: `${articleCount}篇文章 / ${courseCount}节课程，选题同质化风险仍在`,
+      summary: `课程差异化做得比公众号好，公众号仍集中于AI职场/职业话题，${courseVsArticle}课程占比`,
+      detail: `公众号文章数量不少但话题集中度过高，课程方向已覆盖心理学、历史、商业案例等差异化领域。多平台爬虫数据（小红书热点、X.com舆情、即梦作品）大量采集但未转化为文章，选题仍依赖直觉而非数据驱动。`,
+      suggestion: '建立「数据选题会」机制：每周一用爬虫数据（小红书/即梦/X.com）做选题过滤，从数据中提炼3个有差异化的角度，强制分配1个跨领域选题到本周计划中。'
+    },
+    {
+      priority: 'medium',
+      icon: '&#x1F331;',
+      title: `Skill生态${skillStats.length}个，但「深度积累」弱于「广度覆盖」`,
+      summary: `Top Skill「${topSkill ? topSkill.label : '—'}」使用${topSkill ? topSkill.count : 0}次，跨Skill协作场景有限`,
+      detail: `Skills覆盖全面（wechat-article-writer、course-generator、harness-engineering、xiaohongshu等），但单Skill使用深度不足。Harness Engineering集成已完成但外循环（多步迭代、自我纠错）未常态化。`,
+      suggestion: '将常用Skill组合写成固定工作流模板（如「课程生成→公众号写作→GitHub Pages部署」一键触发），减少每次从零启动的认知消耗。'
+    },
+    {
+      priority: 'medium',
+      icon: '&#x1F4C5;',
+      title: '选题Pipeline已建立，但决策逻辑仍未结构化沉淀',
+      summary: `Pipeline四栏运转，但进入「计划中」的选题缺乏「为什么选这个」的理由记录`,
+      detail: `选题积累解决了从零到一的问题，但「决策历史」——热点为什么选、放弃了哪个、发布后数据如何——仍在脑海而非记录中。长期导致同类错误反复出现，无法从历史数据中提炼选题规律。`,
+      suggestion: '在Pipeline每个「计划中」的选题卡片增加一个「选题理由」字段（20字以内），推动决策逻辑显性化，形成可复用的选题决策数据库。'
+    },
+    {
+      priority: 'low',
+      icon: '&#x1F680;',
+      title: 'Harness Flow已集成，Agent化程度仍有提升空间',
+      summary: `Token缓存效率+73%已验证，但复杂任务外循环使用频率低`,
+      detail: `Harness Engineering主流程在多个工作空间验证了效率提升，但以单次任务执行为主，多步迭代、自我纠错、轨迹回溯等外循环能力尚未常态化。`,
+      suggestion: '遇到复杂任务（3步以上的多阶段工作）时，主动使用Harness Flow规划，每步结果留存到memory/，形成可追溯的Agent执行轨迹。'
+    }
+  ];
+
+  const tagMap = { high: '高优先级', medium: '中优先级', low: '低优先级' };
+  el.innerHTML = insights.map((ins, i) => `
+    <div class="insight-card" data-insight="${i+1}">
+      <div class="insight-title">${ins.icon} ${ins.title} <span class="insight-tag ${ins.priority}">${tagMap[ins.priority]}</span></div>
+      <div class="insight-summary">${ins.summary}</div>
+      <div class="insight-detail">${ins.detail}<br><br><strong>建议：</strong>${ins.suggestion}</div>
+    </div>
+  `).join('');
+}
+
 // ===== RENDER: RETRO =====
 function renderRetro() {
   const el = document.getElementById('retroContent');
@@ -2031,7 +2043,8 @@ renderTimeDist();
 renderTagCloud();
 renderStreak();
 renderWeekTrend();
-  renderRetro();
+renderRetro();
+renderAIInsights();
   renderPipeline();
   renderTopicGraph();
   renderWechat();
