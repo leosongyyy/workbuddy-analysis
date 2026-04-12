@@ -1,0 +1,2051 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>远的AI学习圈 · 工作日志仪表盘 v3</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0d1117;
+  --card: #161b22;
+  --card-hover: #1c2128;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --green-0: #161b22;
+  --green-1: #0e4429;
+  --green-2: #006d32;
+  --green-3: #26a641;
+  --green-4: #39d353;
+  --purple: #a371f7;
+  --orange: #f0883e;
+  --blue: #58a6ff;
+  --red: #f85149;
+  --yellow: #e3b341;
+  --pink: #db61a2;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* HEADER */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.header-left h1 { font-size: 20px; font-weight: 600; color: var(--text); }
+.header-left .subtitle { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+.header-right { text-align: right; }
+.header-right .stat-row { display: flex; gap: 16px; justify-content: flex-end; margin-top: 4px; }
+.header-right .stat-val { color: var(--text); font-weight: 700; }
+.header-right .stat { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-muted); }
+
+/* MODULE PANEL TOGGLE */
+.module-panel-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.module-panel-toggle .toggle-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-right: 4px;
+}
+.module-btn {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text-muted);
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.module-btn:hover { border-color: var(--blue); color: var(--blue); }
+.module-btn.active { background: #1f6feb22; border-color: var(--blue); color: var(--blue); }
+.module-btn .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green-4);
+}
+.module-btn.active .dot { background: var(--blue); }
+
+/* MODULE SECTIONS */
+.modules-area {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+#mod-pipeline { grid-column: 1 / -1; }
+.module-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+  display: none;
+}
+.module-section.visible { display: block; }
+.module-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.module-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.module-section-title .icon { font-size: 15px; }
+.module-section-title .count {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-muted);
+  background: var(--card-hover);
+  padding: 1px 7px;
+  border-radius: 10px;
+}
+
+/* CALENDAR */
+.calendar-section { margin-bottom: 28px; }
+.section-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.calendar-wrapper {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px 24px;
+  overflow-x: auto;
+}
+.month-labels { display: flex; padding-left: 36px; margin-bottom: 4px; }
+.month-label { font-size: 11px; color: var(--text-muted); text-align: left; }
+.calendar-body { display: flex; gap: 4px; }
+.day-labels { display: flex; flex-direction: column; gap: 3px; margin-right: 4px; }
+.day-label { font-size: 10px; color: var(--text-muted); height: 13px; line-height: 13px; text-align: right; width: 28px; }
+.calendar-grid { display: grid; grid-template-rows: repeat(7, 13px); grid-auto-flow: column; grid-auto-columns: 13px; gap: 3px; }
+.day-cell { width: 13px; height: 13px; border-radius: 2px; background: var(--green-0); cursor: pointer; transition: transform 0.1s; position: relative; }
+.day-cell:hover { transform: scale(1.3); z-index: 10; }
+.day-cell[data-level="1"] { background: var(--green-1); }
+.day-cell[data-level="2"] { background: var(--green-2); }
+.day-cell[data-level="3"] { background: var(--green-3); }
+.day-cell[data-level="4"] { background: var(--green-4); }
+.day-cell.empty { cursor: default; }
+.day-cell.empty:hover { transform: none; }
+.day-cell.today { outline: 2px solid var(--purple); outline-offset: 1px; }
+.day-cell .tooltip { display: none; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #2d333b; border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; font-size: 11px; white-space: nowrap; z-index: 100; pointer-events: none; color: var(--text); }
+.day-cell:hover .tooltip { display: block; }
+.calendar-legend { display: flex; align-items: center; gap: 8px; margin-top: 12px; justify-content: flex-end; }
+.calendar-legend span { font-size: 11px; color: var(--text-muted); }
+.legend-cell { width: 13px; height: 13px; border-radius: 2px; }
+
+/* MAIN CONTENT */
+.main-content { display: grid; grid-template-columns: 1fr 380px; gap: 20px; align-items: start; }
+
+/* ALL TASKS */
+.all-tasks-section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.section-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.section-header h2 { font-size: 14px; font-weight: 600; }
+.filter-tabs { display: flex; gap: 4px; }
+.filter-tab { padding: 4px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; color: var(--text-muted); background: none; border: 1px solid transparent; transition: all 0.15s; }
+.filter-tab:hover { color: var(--text); background: var(--card-hover); }
+.filter-tab.active { color: var(--text); background: #1f6feb33; border-color: #1f6feb55; }
+.tasks-list { max-height: 480px; overflow-y: auto; }
+.tasks-list::-webkit-scrollbar { width: 4px; }
+.tasks-list::-webkit-scrollbar-track { background: transparent; }
+.tasks-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.task-item { display: flex; align-items: center; gap: 10px; padding: 10px 20px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; }
+.task-item:last-child { border-bottom: none; }
+.task-item:hover { background: var(--card-hover); }
+.task-item.active { background: #1f6feb22; }
+.task-date { font-size: 11px; color: var(--text-muted); min-width: 60px; }
+.task-badge { font-size: 10px; padding: 2px 7px; border-radius: 12px; font-weight: 500; flex-shrink: 0; }
+.badge-article { background: #1a7f3711; color: #3fb950; border: 1px solid #1a7f3744; }
+.badge-skill { background: #8957e511; color: #a371f7; border: 1px solid #8957e544; }
+.badge-system { background: #f0883e11; color: var(--orange); border: 1px solid #f0883e44; }
+.badge-scraper { background: #58a6ff11; color: var(--blue); border: 1px solid #58a6ff44; }
+.badge-image { background: #e3b34111; color: var(--yellow); border: 1px solid #e3b34144; }
+.badge-course { background: #f8514911; color: var(--red); border: 1px solid #f8514944; }
+.badge-research { background: #388bfd22; color: var(--blue); border: 1px solid #388bfd44; }
+.task-title { font-size: 13px; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.task-count { font-size: 11px; color: var(--text-muted); background: var(--card-hover); padding: 1px 6px; border-radius: 10px; }
+.empty-state { padding: 40px 20px; text-align: center; color: var(--text-muted); font-size: 13px; }
+
+/* RIGHT PANEL */
+.right-panel { display: flex; flex-direction: column; gap: 20px; }
+
+/* DAY DETAIL */
+.day-detail { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.day-detail-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.day-detail-header h2 { font-size: 14px; font-weight: 600; }
+.day-detail-header .day-date { font-size: 12px; color: var(--text-muted); }
+.day-detail-body { padding: 16px 20px; max-height: 320px; overflow-y: auto; }
+.day-detail-body::-webkit-scrollbar { width: 4px; }
+.day-detail-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.detail-task-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.detail-task-item:last-child { border-bottom: none; padding-bottom: 0; }
+.detail-task-item:first-child { padding-top: 0; }
+.detail-task-title { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+.detail-task-meta { font-size: 11px; color: var(--text-muted); }
+.detail-task-desc { font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
+
+/* AI INSIGHTS */
+.ai-insights { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.ai-insights-header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+.ai-insights-header h2 { font-size: 14px; font-weight: 600; }
+.insight-card { padding: 14px 20px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; }
+.insight-card:last-child { border-bottom: none; }
+.insight-card:hover { background: var(--card-hover); }
+.insight-card.expanded { background: var(--card-hover); }
+.insight-title { font-size: 13px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.insight-tag { font-size: 10px; padding: 1px 6px; border-radius: 4px; font-weight: 400; }
+.insight-tag.high { background: #f8514911; color: var(--red); border: 1px solid #f8514944; }
+.insight-tag.medium { background: #f0883e11; color: var(--orange); border: 1px solid #f0883e44; }
+.insight-tag.low { background: #1a7f3711; color: #3fb950; border: 1px solid #1a7f3744; }
+.insight-summary { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+.insight-detail { display: none; margin-top: 10px; font-size: 12px; color: var(--text); line-height: 1.7; background: #0d1117; border-radius: 6px; padding: 12px; border: 1px solid var(--border); }
+.insight-card.expanded .insight-detail { display: block; }
+.insight-card.expanded .insight-summary { display: none; }
+
+/* WECHAT ACCOUNT MODULE */
+#mod-wechat { grid-column: 1 / -1; }
+.wx-layout { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; align-items: start; }
+.wx-kpi-row { display: flex; gap: 16px; margin-bottom: 16px; }
+.wx-kpi { flex: 1; text-align: center; padding: 12px 8px; background: var(--card-hover); border-radius: 6px; }
+.wx-kpi .kpi-val { font-size: 22px; font-weight: 700; color: var(--blue); line-height: 1; }
+.wx-kpi .kpi-val.green { color: #3fb950; }
+.wx-kpi .kpi-val.orange { color: #e3b341; }
+.wx-kpi .kpi-label { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+.wx-trend-wrap { margin-bottom: 14px; }
+.wx-trend-label { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+.wx-chart { width: 100%; height: 70px; display: flex; align-items: flex-end; gap: 1px; }
+.wx-bar { flex: 1; background: var(--blue); border-radius: 1px 1px 0 0; min-height: 2px; opacity: 0.7; cursor: pointer; transition: opacity 0.1s; }
+.wx-bar:hover { opacity: 1; }
+.wx-chart-labels { display: flex; gap: 1px; margin-top: 2px; }
+.wx-chart-label { flex: 1; font-size: 8px; color: var(--text-muted); text-align: center; }
+.wx-articles { border-top: 1px solid var(--border); padding-top: 12px; }
+.wx-articles-title { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+.wx-insights {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.wx-insights-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.wx-insights-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.wx-insight-card {
+  background: var(--bg-secondary);
+  border-radius: 6px;
+  padding: 12px;
+  border: 1px solid var(--border);
+}
+.wx-insight-card[style*="grid-column"] {
+  grid-column: 1 / -1;
+}
+.wxi-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.wxi-list {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+.wxi-list strong {
+  color: var(--blue);
+}
+.wx-article-item { display: flex; align-items: flex-start; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+.wx-article-item:last-child { border-bottom: none; }
+.wx-art-rank { min-width: 20px; font-size: 12px; font-weight: 700; color: var(--blue); text-align: center; }
+.wx-art-rank.gold { color: #e3b341; }
+.wx-art-rank.silver { color: #a371f7; }
+.wx-art-rank.bronze { color: #f0883e; }
+.wx-art-body { flex: 1; min-width: 0; }
+.wx-art-title { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wx-art-meta { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+.wx-art-meta span { margin-right: 8px; }
+.wx-art-reads { font-size: 12px; font-weight: 600; color: var(--green-4); min-width: 50px; text-align: right; }
+/* Channel bars */
+.wx-channel-wrap { }
+.wx-channel-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 11px; }
+.wx-channel-name { min-width: 72px; color: var(--text-muted); text-align: right; }
+.wx-channel-bar-wrap { flex: 1; height: 14px; background: var(--card-hover); border-radius: 3px; overflow: hidden; }
+.wx-channel-bar { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+.wx-channel-val { min-width: 50px; font-size: 11px; color: var(--text); font-weight: 500; }
+.wx-channel-pct { min-width: 38px; font-size: 10px; color: var(--text-muted); text-align: right; }
+/* SVG trend charts */
+.wx-svg-chart { width: 100%; display: block; }
+.wx-chart-wrap { flex: 1; min-width: 0; }
+
+/* ADD MODULE CARD */
+.add-module-card { background: var(--card); border: 1px dashed var(--border); border-radius: 8px; padding: 16px 20px; cursor: pointer; transition: all 0.15s; }
+.add-module-card:hover { border-color: var(--text-muted); background: var(--card-hover); }
+.add-module-card .label { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+
+/* MODULE SPECIFIC STYLES */
+
+/* SKILL STATS */
+.skill-bar-wrap { margin-bottom: 10px; }
+.skill-bar-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+.skill-bar-label span { color: var(--text); font-weight: 500; }
+.skill-bar { height: 6px; background: var(--card-hover); border-radius: 3px; overflow: hidden; }
+.skill-bar-fill { height: 100%; border-radius: 3px; background: var(--purple); transition: width 0.6s ease; }
+.skill-combo { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.skill-combo-tag { font-size: 11px; padding: 3px 8px; border-radius: 6px; background: var(--card-hover); border: 1px solid var(--border); color: var(--text-muted); }
+
+/* TIME DISTRIBUTION */
+.hour-chart { display: flex; align-items: flex-end; gap: 4px; height: 80px; margin: 12px 0 8px; }
+.hour-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.hour-bar { width: 100%; background: var(--blue); border-radius: 2px 2px 0 0; min-height: 2px; transition: height 0.4s; cursor: pointer; opacity: 0.8; }
+.hour-bar:hover { opacity: 1; }
+.hour-bar-wrap:hover .hour-bar { background: var(--purple); }
+.hour-bar-label { font-size: 9px; color: var(--text-muted); }
+.time-peaks { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+.time-peak-tag { font-size: 11px; padding: 3px 10px; border-radius: 12px; background: #58a6ff22; color: var(--blue); border: 1px solid #58a6ff44; }
+
+/* TOPIC TAG CLOUD */
+.tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.tag-cloud-item { padding: 4px 12px; border-radius: 20px; cursor: pointer; transition: all 0.15s; border: 1px solid transparent; }
+.tag-cloud-item:hover { border-color: var(--text-muted); transform: scale(1.05); }
+.tag-cloud-item .tag-name { font-size: 12px; }
+.tag-cloud-item .tag-count { font-size: 10px; opacity: 0.7; margin-left: 4px; }
+.tag-selected { border-color: var(--blue) !important; background: #1f6feb22 !important; }
+
+/* STREAK */
+.streak-display { display: flex; align-items: center; gap: 20px; padding: 12px 0; }
+.streak-big { font-size: 40px; font-weight: 700; color: var(--green-4); line-height: 1; }
+.streak-big-label { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+.streak-meta { font-size: 12px; color: var(--text-muted); line-height: 1.8; }
+.streak-meta strong { color: var(--text); }
+.streak-calendar { display: flex; gap: 3px; flex-wrap: wrap; margin-top: 12px; }
+.streak-day { width: 10px; height: 10px; border-radius: 2px; }
+.streak-day.on { background: var(--green-4); }
+.streak-day.off { background: var(--card-hover); border: 1px solid var(--border); }
+
+/* WEEK TREND */
+.week-trend-chart { position: relative; height: 100px; margin: 10px 0; }
+.week-trend-chart canvas { width: 100%; height: 100px; }
+.week-stats { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; }
+.week-stat { font-size: 12px; color: var(--text-muted); }
+.week-stat strong { color: var(--text); }
+.week-stat.up { color: #3fb950; }
+.week-stat.down { color: var(--red); }
+
+/* ARTICLE RETROSPECTIVE */
+.retro-list { max-height: calc(2 * 110px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.retro-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.retro-item:last-child { border-bottom: none; }
+.retro-title { font-size: 13px; font-weight: 500; margin-bottom: 5px; }
+.retro-meta { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.retro-note { font-size: 12px; color: var(--text-muted); line-height: 1.5; background: #0d1117; border-radius: 6px; padding: 8px; border: 1px solid var(--border); margin-top: 6px; }
+.retro-status { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 4px; margin-right: 6px; }
+.retro-status.done { background: #1a7f3711; color: #3fb950; border: 1px solid #1a7f3744; }
+.retro-status.wip { background: #f0883e11; color: var(--orange); border: 1px solid #f0883e44; }
+.retro-status.idea { background: #388bfd22; color: var(--blue); border: 1px solid #388bfd44; }
+
+/* TOPIC PIPELINE */
+.pipeline-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.pipeline-col { min-width: 0; display: flex; flex-direction: column; max-height: calc(6 * 70px + 40px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.pipeline-col-title { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+.pipeline-col-count { font-weight: 400; font-size: 10px; background: var(--card-hover); padding: 1px 6px; border-radius: 8px; }
+.pipeline-col.hot .pipeline-col-title { color: var(--red); }
+.pipeline-col.plan .pipeline-col-title { color: var(--orange); }
+.pipeline-col.writing .pipeline-col-title { color: var(--blue); }
+.pipeline-col.done .pipeline-col-title { color: #3fb950; }
+.pipeline-item { background: var(--card-hover); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; font-size: 12px; cursor: pointer; transition: all 0.1s; }
+.pipeline-item:hover { border-color: var(--blue); }
+.pipeline-item .pi-title { font-weight: 500; margin-bottom: 3px; }
+.pipeline-item .pi-meta { font-size: 10px; color: var(--text-muted); }
+.pipeline-add { font-size: 11px; color: var(--text-muted); padding: 6px 0; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.pipeline-add:hover { color: var(--blue); }
+
+/* TOPIC GRAPH */
+.topic-graph-wrap {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: default;
+}
+.graph-svg { width: 100%; height: 100%; }
+.graph-node { cursor: pointer; }
+.graph-node:hover { opacity: 0.75; }
+.graph-node text { pointer-events: none; font-size: 10px; fill: var(--text); font-family: inherit; }
+.graph-edge { stroke: var(--border); stroke-width: 1; opacity: 0.4; }
+.graph-edge.high { stroke-width: 2.5; opacity: 0.75; }
+.graph-legend-item { display: flex; align-items: center; gap: 6px; }
+.graph-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.graph-tooltip {
+  position: fixed;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text);
+  pointer-events: none;
+  z-index: 1000;
+  display: none;
+  max-width: 240px;
+  line-height: 1.5;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+.graph-tooltip strong { display: block; margin-bottom: 4px; font-size: 13px; color: var(--text); }
+.graph-conn-list { margin-top: 6px; font-size: 11px; color: var(--text-muted); line-height: 1.6; }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--card); border: 1px solid var(--border); border-radius: 12px; max-width: 480px; width: 100%; max-height: 80vh; overflow-y: auto; }
+.modal-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-header h3 { font-size: 15px; font-weight: 600; }
+.modal-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; padding: 4px; }
+.modal-close:hover { color: var(--text); }
+.modal-body { padding: 20px 24px; }
+.modal-body > p { font-size: 13px; color: var(--text-muted); line-height: 1.7; margin-bottom: 12px; }
+.module-option { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.15s; }
+.module-option:hover { border-color: var(--blue); background: #1f6feb11; }
+.module-option input[type="checkbox"] { accent-color: var(--green-4); width: 16px; height: 16px; flex-shrink: 0; }
+.module-option-label { flex: 1; }
+.module-option-label strong { font-size: 13px; display: block; margin-bottom: 2px; }
+.module-option-label span { font-size: 11px; color: var(--text-muted); }
+.modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+.btn { padding: 7px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; border: none; transition: all 0.15s; }
+.btn-primary { background: #238636; color: white; }
+.btn-primary:hover { background: #2ea043; }
+.btn-ghost { background: none; color: var(--text-muted); border: 1px solid var(--border); }
+.btn-ghost:hover { color: var(--text); background: var(--card-hover); }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #238636; color: white; padding: 10px 20px; border-radius: 8px; font-size: 13px; z-index: 2000; animation: fadeIn 0.2s; }
+
+/* MODULE BADGE IN PANEL TOGGLE */
+.mod-badge { font-size: 10px; background: var(--card-hover); padding: 1px 5px; border-radius: 8px; color: var(--text-muted); margin-left: 2px; }
+
+/* Divider */
+.modules-divider { border: none; border-top: 1px solid var(--border); margin-bottom: 28px; }
+
+@media (max-width: 900px) {
+  .main-content { grid-template-columns: 1fr; }
+  .calendar-wrapper { overflow-x: scroll; }
+  .modules-area { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-left">
+      <h1>远的AI学习圈 · 工作日志</h1>
+      <div class="subtitle">2026-03-15 — 2026-04-13 &nbsp;|&nbsp; 30天追踪记录 &nbsp;|&nbsp; v3 · 全模块版（含历史迁移）</div>
+    </div>
+    <div class="header-right">
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">整体统计</div>
+      <div class="stat-row">
+        <div class="stat"><span class="stat-val">20</span> 天活跃</div>
+        <div class="stat"><span class="stat-val">37</span> 课程/文章</div>
+        <div class="stat"><span class="stat-val">9</span> 套配图</div>
+        <div class="stat"><span class="stat-val">5</span> 系统升级</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- WECHAT MODULE: FULL WIDTH, TOP OF PAGE -->
+  <div class="module-section visible" id="mod-wechat" style="margin-bottom:28px;">
+    <div class="module-section-header">
+      <div class="module-section-title">
+        <span class="icon">&#x1F4F1;</span>
+        公众号数据
+        <span class="count">2026.03.14–04.12</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);">30天完整数据</div>
+    </div>
+    <div id="wechatContent"></div>
+  </div>
+
+  <!-- MODULE TOGGLE PANEL -->
+  <div class="module-panel-toggle" id="modulePanelToggle">
+    <span class="toggle-label">展示模块：</span>
+    <button class="module-btn active" data-mod="skill-stats" onclick="toggleModule('skill-stats', this)">
+      <span class="dot"></span>技能统计
+      <span class="mod-badge">5</span>
+    </button>
+    <button class="module-btn active" data-mod="time-dist" onclick="toggleModule('time-dist', this)">
+      <span class="dot"></span>时间分布
+      <span class="mod-badge">新</span>
+    </button>
+    <button class="module-btn active" data-mod="tag-cloud" onclick="toggleModule('tag-cloud', this)">
+      <span class="dot"></span>主题标签云
+      <span class="mod-badge">新</span>
+    </button>
+    <button class="module-btn active" data-mod="streak" onclick="toggleModule('streak', this)">
+      <span class="dot"></span>连续Streak
+      <span class="mod-badge">新</span>
+    </button>
+    <button class="module-btn active" data-mod="week-trend" onclick="toggleModule('week-trend', this)">
+      <span class="dot"></span>周环比趋势
+      <span class="mod-badge">新</span>
+    </button>
+    <button class="module-btn active" data-mod="retro" onclick="toggleModule('retro', this)">
+      <span class="dot"></span>文章复盘
+      <span class="mod-badge">新</span>
+    </button>
+    <button class="module-btn active" data-mod="pipeline" onclick="toggleModule('pipeline', this)">
+      <span class="dot"></span>选题Pipeline
+      <span class="mod-badge">新</span>
+    </button>
+    <button class="module-btn active" data-mod="wechat" onclick="toggleModule('wechat', this)">
+      <span class="dot"></span>公众号数据
+    </button>
+    <button class="module-btn active" data-mod="topic-graph" onclick="toggleModule('topic-graph', this)">
+      <span class="dot"></span>选题关联图
+      <span class="mod-badge">新</span>
+    </button>
+    <button class="module-btn" id="addModuleBtn" onclick="document.getElementById('modalOverlay').classList.add('open')">
+      <span>+</span>增加模块
+    </button>
+  </div>
+
+  <!-- MODULE SECTIONS (toggleable) -->
+  <div class="modules-area">
+
+    <!-- MOD 1: 技能使用统计 -->
+    <div class="module-section visible" id="mod-skill-stats">
+      <div class="module-section-header">
+        <div class="module-section-title">
+          <span class="icon">&#x1F4DA;</span>
+          技能使用统计
+          <span class="count">Top 5</span>
+        </div>
+      </div>
+      <div id="skillStatsContent"></div>
+    </div>
+
+    <!-- MOD 2: 时间分布图 -->
+    <div class="module-section visible" id="mod-time-dist">
+      <div class="module-section-header">
+        <div class="module-section-title">
+          <span class="icon">&#x23F0;</span>
+          一天中的效率分布
+          <span class="count">24小时</span>
+        </div>
+      </div>
+      <div class="hour-chart" id="hourChart"></div>
+      <div class="time-peaks" id="timePeaks"></div>
+    </div>
+
+    <!-- MOD 3: 主题标签云 -->
+    <div class="module-section visible" id="mod-tag-cloud">
+      <div class="module-section-header">
+        <div class="module-section-title">
+          <span class="icon">&#x1F3F7;</span>
+          主题标签云
+          <span class="count">精力分配</span>
+        </div>
+      </div>
+      <div class="tag-cloud" id="tagCloud"></div>
+    </div>
+
+    <!-- MOD 4: 连续工作 Streak -->
+    <div class="module-section visible" id="mod-streak">
+      <div class="module-section-header">
+        <div class="module-section-title">
+          <span class="icon">&#x1F525;</span>
+          连续工作 Streak
+          <span class="count">激励模式</span>
+        </div>
+      </div>
+      <div id="streakContent"></div>
+    </div>
+
+    <!-- MOD 5: 周环比趋势 -->
+    <div class="module-section visible" id="mod-week-trend">
+      <div class="module-section-header">
+        <div class="module-section-title">
+          <span class="icon">&#x1F4C8;</span>
+          周环比趋势
+          <span class="count">Week over Week</span>
+        </div>
+      </div>
+      <div id="weekTrendContent"></div>
+    </div>
+
+    <!-- MOD 6: 文章复盘区 -->
+    <div class="module-section visible" id="mod-retro">
+      <div class="module-section-header">
+        <div class="module-section-title">
+          <span class="icon">&#x1F4AC;</span>
+          文章复盘区
+          <span class="count">发布后记录</span>
+        </div>
+      </div>
+      <div class="retro-list" id="retroContent"></div>
+    </div>
+
+    <!-- MOD 7: 选题 Pipeline -->
+    <div class="module-section visible" id="mod-pipeline">
+      <div class="module-section-header">
+        <div class="module-section-title">
+          <span class="icon">&#x1F310;</span>
+          选题 Pipeline
+          <span class="count">热点→选题→写作</span>
+        </div>
+      </div>
+      <div class="pipeline-board" id="pipelineBoard"></div>
+    </div>
+
+  </div>
+
+  <hr class="modules-divider">
+
+  <!-- CALENDAR -->
+  <div class="calendar-section">
+    <div class="section-label">贡献热力图 · 点击日期查看详情</div>
+    <div class="calendar-wrapper">
+      <div class="month-labels" id="monthLabels"></div>
+      <div class="calendar-body">
+        <div class="day-labels">
+          <div class="day-label">一</div>
+          <div class="day-label">三</div>
+          <div class="day-label">五</div>
+          <div class="day-label">日</div>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+      </div>
+      <div class="calendar-legend">
+        <span>少</span>
+        <div class="legend-cell" style="background:var(--green-0)"></div>
+        <div class="legend-cell" style="background:var(--green-1)"></div>
+        <div class="legend-cell" style="background:var(--green-2)"></div>
+        <div class="legend-cell" style="background:var(--green-3)"></div>
+        <div class="legend-cell" style="background:var(--green-4)"></div>
+        <span>多</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- ALL TASKS -->
+    <div class="all-tasks-section">
+      <div class="section-header">
+        <h2>全部任务</h2>
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filter="all">全部</button>
+          <button class="filter-tab" data-filter="article">文章</button>
+          <button class="filter-tab" data-filter="skill">Skill</button>
+          <button class="filter-tab" data-filter="system">系统</button>
+          <button class="filter-tab" data-filter="scraper">爬虫</button>
+          <button class="filter-tab" data-filter="image">配图</button>
+        </div>
+      </div>
+      <div class="tasks-list" id="tasksList"></div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+
+      <!-- DAY DETAIL -->
+      <div class="day-detail">
+        <div class="day-detail-header">
+          <h2 id="detailTitle">今日概览</h2>
+          <span class="day-date" id="detailDate">2026-04-13</span>
+        </div>
+        <div class="day-detail-body" id="detailBody">
+          <div class="empty-state">点击左侧日历中的绿色方块，查看当日任务详情</div>
+        </div>
+      </div>
+
+      <!-- AI INSIGHTS -->
+      <div class="ai-insights">
+        <div class="ai-insights-header">
+          <span class="ai-icon">&#x2728;</span>
+          <h2>AI 洞察 &amp; 优化建议</h2>
+        </div>
+        <div id="aiInsightsContent"></div>
+      </div>
+
+      <!-- MOD 8: 选题关联图 -->
+      <div class="module-section visible" id="mod-topic-graph">
+        <div class="module-section-header">
+          <div class="module-section-title">
+            <span class="icon">&#x1F517;</span>
+            选题关联图
+            <span class="count">主题关系可视化</span>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);">节点=主题 · 连线=关联强度 · 大小=内容密度</div>
+        </div>
+        <div id="topicGraphContent" style="position:relative;"></div>
+      </div>
+
+    </div>
+  </div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>增加报告模块</h3>
+      <button class="modal-close" onclick="document.getElementById('modalOverlay').classList.remove('open')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p>选择一个或多个模块加入报告。已在顶部面板显示的模块可以点击「×」关闭。</p>
+
+      <div class="module-option">
+        <input type="checkbox" id="mod-future-1" disabled>
+        <div class="module-option-label">
+          <strong>&#x1F4B0; 收入追踪</strong>
+          <span>追踪文章打赏、广告、课程收入（需手动录入）</span>
+        </div>
+        <span style="font-size:10px;color:var(--text-muted);background:var(--card-hover);padding:2px 6px;border-radius:4px">规划中</span>
+      </div>
+
+      <div class="module-option">
+        <input type="checkbox" id="mod-future-2" disabled>
+        <div class="module-option-label">
+          <strong>&#x1F4A4; 灵感闪念</strong>
+          <span>随手记选题想法，AI辅助整理归类（需知识库集成）</span>
+        </div>
+        <span style="font-size:10px;color:var(--text-muted);background:var(--card-hover);padding:2px 6px;border-radius:4px">规划中</span>
+      </div>
+
+      <div class="module-option">
+        <input type="checkbox" id="mod-future-3" disabled>
+        <div class="module-option-label">
+          <strong>&#x1F3AF; 竞争动态</strong>
+          <span>定期扫描竞品/对标账号的更新频率和内容方向</span>
+        </div>
+        <span style="font-size:10px;color:var(--text-muted);background:var(--card-hover);padding:2px 6px;border-radius:4px">规划中</span>
+      </div>
+
+      <div class="module-option">
+        <input type="checkbox" id="mod-future-4" disabled>
+        <div class="module-option-label">
+          <strong>&#x1F4CC; 任务耗时分析</strong>
+          <span>分析每个任务类型的平均耗时，识别效率瓶颈</span>
+        </div>
+        <span style="font-size:10px;color:var(--text-muted);background:var(--card-hover);padding:2px 6px;border-radius:4px">规划中</span>
+      </div>
+
+      <div class="module-option">
+        <input type="checkbox" id="mod-future-5" disabled>
+        <div class="module-option-label">
+          <strong>&#x1F517; 选题关联图</strong>
+          <span>可视化文章之间的选题关联和引用关系</span>
+        </div>
+        <span style="font-size:10px;color:var(--text-muted);background:var(--card-hover);padding:2px 6px;border-radius:4px">规划中</span>
+      </div>
+
+      <div class="module-option">
+        <input type="checkbox" id="mod-future-6" disabled>
+        <div class="module-option-label">
+          <strong>&#x1F3C6; 任务健康度</strong>
+          <span>基于专注度、效率、情绪的每日评分追踪</span>
+        </div>
+        <span style="font-size:10px;color:var(--text-muted);background:var(--card-hover);padding:2px 6px;border-radius:4px">规划中</span>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="document.getElementById('modalOverlay').classList.remove('open')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const activityData = {
+  // ===== 历史数据（来自 workspace 迁移） =====
+  "2026-03-15": { level: 2, tasks: [
+    { type: "skill", title: "即梦AI绘画提示词 Skill 创建", desc: "jimeng-prompt · 四段式结构 · 50+风格词库" },
+    { type: "research", title: "豆包语义验证码调研", desc: "验证码模式分析" }
+  ]},
+  "2026-03-16": { level: 1, tasks: [
+    { type: "system", title: "OpenClaw 迁移准备", desc: "技能包打包整理" }
+  ]},
+  "2026-03-17": { level: 3, tasks: [
+    { type: "course", title: "100课课程进度更新", desc: "模块一·二·三完成（37/100课）" },
+    { type: "system", title: "课程字数规范确立", desc: "每篇不低于5000字" },
+    { type: "system", title: "万维钢风格规范确立", desc: "专家引用·研究证据·结构化输出" }
+  ]},
+  "2026-03-19": { level: 4, tasks: [
+    { type: "course", title: "007课「能耐寻求定理」重写", desc: "Power-Seeking Theorems · 公众号版-v2" },
+    { type: "course", title: "008课「供给侧心态」调研+生成", desc: "223条调研结果 · 14,708字" },
+    { type: "course", title: "009课「复利」调研+生成", desc: "216条调研结果 · 15,000+字" },
+    { type: "course", title: "004课「约束」重写", desc: "有限理性·助推理论 · 13,000+字" }
+  ]},
+  "2026-03-21": { level: 1, tasks: [
+    { type: "system", title: "会话超时恢复", desc: "任务自动续接机制验证" }
+  ]},
+  "2026-03-23": { level: 2, tasks: [
+    { type: "course", title: "008课「供给侧心态」重写v3", desc: "两个毕业生思想实验 · 国学融合" }
+  ]},
+  "2026-03-25": { level: 3, tasks: [
+    { type: "course", title: "007课「权力的数学」整合版", desc: "Power-Seeking Theorems + 通才专才 · 6500字" },
+    { type: "system", title: "OpenClaw 交接文档完成", desc: "完整迁移包打包" }
+  ]},
+  // ===== qclaw/openclaw 数据（2026-04-13 同步） =====
+  "2026-03-26": { level: 3, tasks: [
+    { type: "skill", title: "即梦CLI集成项目完成", desc: "dreamina-cli Skill（1355行），账户配置：UID 2505108350047196，VIP artisan" },
+    { type: "image", title: "露营野趣集插画 + 愚人节海报", desc: "即梦生成，消耗6积分" }
+  ]},
+  "2026-03-27": { level: 1, tasks: [
+    { type: "system", title: "Gateway 重启", desc: "加载新装 Skills" }
+  ]},
+  "2026-03-28": { level: 2, tasks: [
+    { type: "research", title: "小红书热点分析", desc: "科普公众号选题：心理健康/科技数码/健康医学" },
+    { type: "learning", title: "英语学习：虚拟语气+倒装句", desc: "20题，正确率70%" }
+  ]},
+  "2026-03-29": { level: 4, tasks: [
+    { type: "skill", title: "批量安装9个Skills", desc: "course-generator/html-report-generator/jimeng-browser-automation等" },
+    { type: "skill", title: "Skills全景图网页生成", desc: "87个Skills，13分类" },
+    { type: "article", title: "017课「安全感」", desc: "公众号版 · Bowlby/Johnson/Brown专家库" },
+    { type: "article", title: "018课「赛道选择」", desc: "公众号版v2 · Tavily调研103条" },
+    { type: "article", title: "即梦AI指南文章", desc: "万维钢风格，5500字，7个隐藏技巧" },
+    { type: "learning", title: "英语学习：wish+had done / 倒装句", desc: "薄弱点专项复习" }
+  ]},
+  "2026-03-30": { level: 2, tasks: [
+    { type: "system", title: "Tavily API 双Key切换配置", desc: "Primary + Backup Key切换脚本" }
+  ]},
+  "2026-03-31": { level: 4, tasks: [
+    { type: "article", title: "小红书AI热点分析", desc: "6378账号被封，AI Agent自动化爆发" },
+    { type: "article", title: "小红书社科热点分析", desc: "情绪价值/女性主义/金融素养" },
+    { type: "article", title: "情绪价值课程加餐", desc: "公众号版，6000字，效价-唤醒模型" },
+    { type: "article", title: "Color Walk课程加餐", desc: "公众号版，5500字，治愈系内容" }
+  ]},
+  "2026-04-01": { level: 3, tasks: [
+    { type: "article", title: "018课「赛道选择」v4版", desc: "去掉行动号召，万维钢推演风格" },
+    { type: "article", title: "019课「供给侧心态」", desc: "正和思维公众号版，6000字" }
+  ]},
+  "2026-04-02": { level: 3, tasks: [
+    { type: "research", title: "X.com热点分析", desc: "科技社科72条结果，5个公众号选题" },
+    { type: "article", title: "Jonathan Haidt社交媒体研究", desc: "公众号版v2，6500字，中国情况调研" }
+  ]},
+  "2026-04-03": { level: 3, tasks: [
+    { type: "research", title: "2026技术趋势调研", desc: "AI/量子计算/生物技术，30条结果" },
+    { type: "article", title: "023课「概率分布：决策的本质」", desc: "公众号版，5500字，Thinking in Bets" }
+  ]},
+  "2026-04-04": { level: 4, tasks: [
+    { type: "system", title: "Harness Engineering主流程集成", desc: "Token效率提升73%，25个文件" },
+    { type: "system", title: "推荐组合优化实施", desc: "System Prompt缓存+触发词优化+Sidechain分析" },
+    { type: "system", title: "HARNESS使用手册HTML", desc: "可视化对比文档" }
+  ]},
+  // ===== WorkBuddy 数据 =====
+  "2026-03-29": { level: 1, tasks: [
+    { type: "article", title: "z-agency 文章写作", desc: "Z世代主体性觉醒主题文章" }
+  ]},
+  "2026-03-30": { level: 2, tasks: [
+    { type: "article", title: "为什么年轻人开始把AI当朋友？", desc: "ai-companion-youth · 公众号发布" },
+    { type: "article", title: "AI正在杀死普通职场人", desc: "ai-kills-workers · 公众号发布" }
+  ]},
+  "2026-03-31": { level: 1, tasks: [
+    { type: "article", title: "Z世代主体性觉醒", desc: "z-agency · 公众号发布" }
+  ]},
+  "2026-04-01": { level: 0, tasks: [] },
+  "2026-04-02": { level: 2, tasks: [
+    { type: "article", title: "AI公司把自己的秘密泄露了", desc: "claude-code-leak · 公众号发布" },
+    { type: "article", title: "2026年十大技术趋势", desc: "tech-trends-2026 · 公众号发布" }
+  ]},
+  "2026-04-03": { level: 2, tasks: [
+    { type: "article", title: "文化消费的平民化", desc: "cultural-capital · 公众号发布" },
+    { type: "article", title: "被忽视的追赶者：千问552%增长", desc: "qwen-growth · 公众号发布" }
+  ]},
+  "2026-04-04": { level: 0, tasks: [] },
+  "2026-04-05": { level: 0, tasks: [] },
+  "2026-04-06": { level: 2, tasks: [
+    { type: "article", title: "Claude订阅陷阱：为什么付了钱却不能用？", desc: "万维钢风格，5500字" },
+    { type: "article", title: "20美元薅羊毛被封禁", desc: "公众号发布" }
+  ]},
+  "2026-04-07": { level: 2, tasks: [
+    { type: "article", title: "1220亿美元！OpenAI刷新人类融资纪录", desc: "公众号发布" },
+    { type: "article", title: "Claude订阅陷阱", desc: "公众号发布" },
+    { type: "article", title: "纽约客万字长文：Sam Altman的谎言与野心", desc: "公众号发布" },
+    { type: "image", title: "即梦配图：积分节省指南 + 7天冥想重塑大脑", desc: "2套配图" }
+  ]},
+  "2026-04-08": { level: 2, tasks: [
+    { type: "image", title: "即梦配图：南极绕极流 + 开源AI超越闭源", desc: "2套配图" },
+    { type: "article", title: "GLM5.1与DeepSeek开源AI重塑之战", desc: "公众号发布" }
+  ]},
+  "2026-04-09": { level: 4, tasks: [
+    { type: "article", title: "AI自习室县城真相", desc: "公众号发布" },
+    { type: "article", title: "知识图谱革命", desc: "公众号发布" },
+    { type: "article", title: "AI数据供应链危机", desc: "公众号发布" },
+    { type: "article", title: "Happy Horse 1.0登顶AI视频榜", desc: "公众号发布" },
+    { type: "article", title: "摩根士丹利的AI突破预警", desc: "公众号发布" },
+    { type: "image", title: "即梦配图4套", desc: "AI自习室/知识图谱/Mercor/HappyHorse" }
+  ]},
+  "2026-04-10": { level: 3, tasks: [
+    { type: "article", title: "他把写作风格的秘密开源了", desc: "卡兹克Skill评论" },
+    { type: "article", title: "为什么1+1+1=100？", desc: "香料组合抗炎重写" },
+    { type: "image", title: "即梦配图：AI短剧 + 开源AI", desc: "2套配图" },
+    { type: "skill", title: "万维钢skill全面升级", desc: "SKILL.md + wanweigan_style.md" }
+  ]},
+  "2026-04-11": { level: 3, tasks: [
+    { type: "article", title: "当你的创业成功时，你的市场已经消失了", desc: "AI创业失败综合文章" },
+    { type: "article", title: "你以为AI在帮你，其实它在拉大差距", desc: "AI薪资溢价·万维钢风格" },
+    { type: "article", title: "MBTI已死，SBTI当道", desc: "SBTI爆火调研" },
+    { type: "article", title: "AI假情感博主：算法正在批量生产爱情方法论", desc: "公众号发布" },
+    { type: "article", title: "你的工资，被AI卷死了吗？", desc: "AI薪资溢价·卡兹克风格" },
+    { type: "research", title: "SBTI恶搞测试爆火调研", desc: "全网舆情" }
+  ]},
+  "2026-04-12": { level: 2, tasks: [
+    { type: "article", title: "AI假情感博主：算法时代的亲密关系工业化", desc: "公众号发布" },
+    { type: "article", title: "GitHub热门项目日报", desc: "独立报告" },
+    { type: "research", title: "wechat-cli 开源项目调研", desc: "调研报告" }
+  ]},
+  "2026-04-13": { level: 3, tasks: [
+    { type: "article", title: "阿尔忒弥斯II：53年后，人类再次站上深空的门槛", desc: "整合版·公众号发布·4000字" },
+    { type: "article", title: "MBTI已死，SBTI当道（SBTI HTML版）", desc: "公众号发布" },
+    { type: "article", title: "今天，我决定把AI创作这件事说清楚", desc: "卡兹克Skill评论·更新版" },
+    { type: "system", title: "WorkBuddy行为分析报告生成", desc: "HTML报告·GitHub Pages" },
+    { type: "system", title: "文章文件唯一存储协议确立", desc: "写入MEMORY.md" },
+    { type: "system", title: "WorkBuddy清理", desc: "75个目录全部清空" }
+  ]}
+};
+
+const allTasks = [
+  // ===== 历史任务（来自 workspace 迁移） =====
+  { date: "03-15", type: "skill", title: "即梦AI绘画提示词 Skill 创建", count: 1 },
+  { date: "03-15", type: "research", title: "豆包语义验证码调研", count: 1 },
+  { date: "03-17", type: "course", title: "100课课程进度更新", count: 1 },
+  { date: "03-17", type: "system", title: "课程字数规范确立", count: 1 },
+  { date: "03-19", type: "course", title: "007课「能耐寻求定理」重写", count: 1 },
+  { date: "03-19", type: "course", title: "008课「供给侧心态」调研+生成", count: 1 },
+  { date: "03-19", type: "course", title: "009课「复利」调研+生成", count: 1 },
+  { date: "03-19", type: "course", title: "004课「约束」重写", count: 1 },
+  { date: "03-23", type: "course", title: "008课「供给侧心态」重写v3", count: 1 },
+  { date: "03-25", type: "course", title: "007课「权力的数学」整合版", count: 1 },
+  { date: "03-25", type: "system", title: "OpenClaw 交接文档完成", count: 1 },
+  // ===== qclaw/openclaw 任务（2026-04-13 同步） =====
+  { date: "03-26", type: "skill", title: "即梦CLI集成项目完成", count: 1 },
+  { date: "03-26", type: "image", title: "即梦生成：露营野趣集+愚人节海报", count: 2 },
+  { date: "03-27", type: "system", title: "Gateway 重启加载新Skills", count: 1 },
+  { date: "03-28", type: "research", title: "小红书热点分析（科普选题）", count: 1 },
+  { date: "03-28", type: "learning", title: "英语学习：虚拟语气+倒装句", count: 1 },
+  { date: "03-29", type: "skill", title: "批量安装9个Skills+Skills全景图网页", count: 2 },
+  { date: "03-29", type: "article", title: "017课「安全感」公众号版", count: 1 },
+  { date: "03-29", type: "article", title: "018课「赛道选择」公众号版v2", count: 1 },
+  { date: "03-29", type: "article", title: "即梦AI指南文章（万维钢风格）", count: 1 },
+  { date: "03-30", type: "system", title: "Tavily API 双Key切换配置", count: 1 },
+  { date: "03-31", type: "article", title: "小红书AI热点分析", count: 1 },
+  { date: "03-31", type: "article", title: "情绪价值课程加餐", count: 1 },
+  { date: "03-31", type: "article", title: "Color Walk课程加餐", count: 1 },
+  { date: "04-01", type: "article", title: "018课「赛道选择」v4版", count: 1 },
+  { date: "04-01", type: "article", title: "019课「供给侧心态」", count: 1 },
+  { date: "04-02", type: "research", title: "X.com热点分析", count: 1 },
+  { date: "04-02", type: "article", title: "Jonathan Haidt社交媒体研究v2", count: 1 },
+  { date: "04-03", type: "article", title: "2026技术趋势调研+公众号文", count: 1 },
+  { date: "04-03", type: "article", title: "023课「概率分布：决策的本质」", count: 1 },
+  { date: "04-04", type: "system", title: "Harness Engineering主流程集成", count: 1 },
+  { date: "04-04", type: "system", title: "推荐组合优化+HARNESS使用手册", count: 2 },
+  // ===== WorkBuddy 任务 =====
+  { date: "03-29", type: "article", title: "z-agency 文章写作", count: 1 },
+  { date: "03-30", type: "article", title: "为什么年轻人开始把AI当朋友？", count: 1 },
+  { date: "03-30", type: "article", title: "AI正在杀死普通职场人", count: 1 },
+  { date: "03-31", type: "article", title: "Z世代主体性觉醒", count: 1 },
+  { date: "04-02", type: "article", title: "AI公司把自己的秘密泄露了", count: 1 },
+  { date: "04-02", type: "article", title: "2026年十大技术趋势", count: 1 },
+  { date: "04-03", type: "article", title: "文化消费的平民化", count: 1 },
+  { date: "04-03", type: "article", title: "被忽视的追赶者：千问552%增长", count: 1 },
+  { date: "04-06", type: "article", title: "Claude订阅陷阱：为什么付了钱却不能用？", count: 1 },
+  { date: "04-06", type: "article", title: "20美元薅羊毛被封禁", count: 1 },
+  { date: "04-07", type: "article", title: "1220亿美元！OpenAI刷新人类融资纪录", count: 1 },
+  { date: "04-07", type: "article", title: "Claude订阅陷阱（wechat版）", count: 1 },
+  { date: "04-07", type: "article", title: "纽约客万字长文：Sam Altman的谎言与野心", count: 1 },
+  { date: "04-07", type: "image", title: "即梦配图：积分节省指南 + 7天冥想", count: 2 },
+  { date: "04-08", type: "image", title: "即梦配图：南极绕极流 + 开源AI超越闭源", count: 2 },
+  { date: "04-08", type: "article", title: "GLM5.1与DeepSeek开源AI重塑之战", count: 1 },
+  { date: "04-09", type: "article", title: "AI自习室县城真相", count: 1 },
+  { date: "04-09", type: "article", title: "知识图谱革命", count: 1 },
+  { date: "04-09", type: "article", title: "AI数据供应链危机", count: 1 },
+  { date: "04-09", type: "article", title: "Happy Horse 1.0登顶AI视频榜", count: 1 },
+  { date: "04-09", type: "article", title: "摩根士丹利的AI突破预警", count: 1 },
+  { date: "04-09", type: "image", title: "即梦配图4套（AI自习室/知识图谱/Mercor/HappyHorse）", count: 4 },
+  { date: "04-10", type: "article", title: "他把写作风格的秘密开源了", count: 1 },
+  { date: "04-10", type: "article", title: "为什么1+1+1=100？香料组合抗炎重写", count: 1 },
+  { date: "04-10", type: "image", title: "即梦配图：AI短剧 + 开源AI", count: 2 },
+  { date: "04-10", type: "skill", title: "万维钢skill全面升级", count: 1 },
+  { date: "04-11", type: "article", title: "当你的创业成功时，你的市场已经消失了", count: 1 },
+  { date: "04-11", type: "article", title: "你以为AI在帮你，其实它在拉大差距（万维钢版）", count: 1 },
+  { date: "04-11", type: "article", title: "MBTI已死，SBTI当道", count: 1 },
+  { date: "04-11", type: "article", title: "AI假情感博主：算法正在批量生产爱情方法论", count: 1 },
+  { date: "04-11", type: "article", title: "你的工资，被AI卷死了吗？（卡兹克版）", count: 1 },
+  { date: "04-11", type: "research", title: "SBTI恶搞测试爆火调研", count: 1 },
+  { date: "04-12", type: "article", title: "AI假情感博主：算法时代的亲密关系工业化", count: 1 },
+  { date: "04-12", type: "article", title: "GitHub热门项目日报 2026-04-12", count: 1 },
+  { date: "04-12", type: "research", title: "wechat-cli 开源项目调研", count: 1 },
+  { date: "04-13", type: "article", title: "阿尔忒弥斯II：53年后，人类再次站上深空的门槛", count: 1 },
+  { date: "04-13", type: "article", title: "MBTI已死，SBTI当道（SBTI HTML版）", count: 1 },
+  { date: "04-13", type: "article", title: "今天，我决定把AI创作这件事说清楚（更新版）", count: 1 },
+  { date: "04-13", type: "system", title: "WorkBuddy行为分析报告生成", count: 1 },
+  { date: "04-13", type: "system", title: "文章文件唯一存储协议确立", count: 1 },
+  { date: "04-13", type: "system", title: "记忆同步协议确立 + 历史补录", count: 1 },
+  { date: "04-13", type: "system", title: "WorkBuddy清理：75个目录全部清空", count: 1 }
+];
+
+// ===== SKILL STATS =====
+const skillStats = [
+  { name: "course-generator", label: "课程生成", count: 20, pct: 100 },
+  { name: "wechat-article-writer", label: "万维钢写作", count: 18, pct: 90 },
+  { name: "khazix-writer", label: "卡兹克写作", count: 10, pct: 50 },
+  { name: "dreamina-prompt", label: "即梦提示词", count: 12, pct: 60 },
+  { name: "dreamina-cli", label: "即梦CLI", count: 8, pct: 40 },
+  { name: "harness-engineering", label: "Harness工程", count: 6, pct: 30 },
+  { name: "xiaohongshu", label: "小红书工具", count: 5, pct: 25 }
+];
+const skillCombos = [
+  "course-generator + wechat-article-writer",
+  "wechat-article-writer + khazix-writer",
+  "dreamina-prompt + dreamina-cli",
+  "wechat-article-writer + github-pages-deploy",
+  "xiaohongshu + tavily-search",
+  "harness-engineering + memory-tiering"
+];
+
+// ===== TIME DISTRIBUTION =====
+const hourData = [0,0,0,0,0,0,0,0,0,0,1,2,1,1,0,1,2,3,2,4,5,7,9,6];
+const peakHours = ["22:00-01:00", "01:00-03:00"];
+const hourLabels = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23"];
+
+// ===== TAG CLOUD =====
+const tagData = [
+  { name: "AI职场", count: 10, color: "#3fb950", bg: "#1a7f3722" },
+  { name: "课程生成", count: 9, color: "#a371f7", bg: "#8957e522" },
+  { name: "科技趋势", count: 6, color: "#58a6ff", bg: "#58a6ff22" },
+  { name: "即梦/图片", count: 7, color: "#e3b341", bg: "#e3b34122" },
+  { name: "Skill工具", count: 6, color: "#a371f7", bg: "#8957e522" },
+  { name: "系统优化", count: 5, color: "#f0883e", bg: "#f0883e22" },
+  { name: "Harness工程", count: 4, color: "#39d353", bg: "#39d35322" },
+  { name: "社科热点", count: 3, color: "#db61a2", bg: "#db61a222" },
+  { name: "文化评论", count: 3, color: "#388bfd", bg: "#388bfd22" },
+  { name: "科学发现", count: 2, color: "#58a6ff", bg: "#58a6ff22" },
+  { name: "调研报告", count: 3, color: "#8b949e", bg: "#8b949e22" }
+];
+
+// ===== STREAK =====
+const streakData = {
+  current: 30,
+  longest: 30,
+  lastGap: "03-26",
+  days: ["03-15","03-16","03-17","03-19","03-21","03-23","03-25","03-29","03-30","03-31","04-02","04-03","04-06","04-07","04-08","04-09","04-10","04-11","04-12","04-13"]
+};
+
+// ===== WEEK TREND =====
+const week1Days = ["03-15","03-16","03-17","03-19","03-21","03-23","03-25"];
+const week2Days = ["03-29","03-30","03-31","04-02","04-03","04-04","04-05"];
+const week3Days = ["04-06","04-07","04-08","04-09","04-10","04-11","04-12"];
+const week1Tasks = [2,1,3,4,1,2,2];
+const week2Tasks = [1,3,1,2,2,0,0];
+const week3Tasks = [2,4,2,9,4,6,3];
+const week1Articles = [0,0,1,4,0,0,1];
+const week2Articles = [1,2,1,2,2,0,0];
+const week3Articles = [2,3,1,5,2,5,2];
+
+// ===== ARTICLE RETROSPECTIVE =====
+const retroItems = [
+  { title: "你以为AI在帮你，其实它在拉大差距", date: "04-11", style: "万维钢", words: "3800", status: "done", note: "选题来自GitHub Trending数据分析，核心观点「AI是扩音器，放大能力差距而非填平」引发共鸣。发布后阅读量高于均值，但评论区对「薪资溢价」数据有争议。" },
+  { title: "MBTI已死，SBTI当道", date: "04-11", style: "万维钢", words: "3100", status: "done", note: "蹭SBTI热点，选题速度快（2小时出稿）。数据来源为Twitter舆情，引用略显单薄，建议下次补充学术引用。" },
+  { title: "阿尔忒弥斯II：53年后人类再次站上深空的门槛", date: "04-13", style: "万维钢", words: "4000", status: "done", note: "跨月长文，写作质量最高的一篇。四层评论结构完整，配图由即梦生成6张，科技话题中少见的「有深度」反馈。" },
+  { title: "他把写作风格的秘密开源了", date: "04-10", style: "卡兹克", words: "2800", status: "done", note: "卡兹克风格首试，情绪感染力强，适合传播。核心观点「风格即人，AI复制不了」被读者引用。" },
+  { title: "当你的创业成功时，你的市场已经消失了", date: "04-11", style: "万维钢", words: "2600", status: "done", note: "主题偏商业，选题来源为Mercor数据调研。写作效率高，但缺少数据支撑，论证较薄弱。" },
+  { title: "Claude订阅陷阱：为什么付了钱却不能用？", date: "04-06", style: "万维钢", words: "5500", status: "done", note: "长文最成功的一篇，引用真实用户案例+订阅经济机制分析，逻辑链条清晰。发布后被多个账号「参考」。" }
+];
+
+// ===== TOPIC GRAPH =====
+const topicNodes = [
+  { id: "AI职场", x: 0.50, y: 0.20, size: 10, color: "#3fb950", count: 10, articles: 8, examples: "AI薪资溢价、假情感博主、SBTI、创业失败、AI杀死工作" },
+  { id: "科技趋势", x: 0.75, y: 0.30, size: 7, color: "#58a6ff", count: 6, articles: 4, examples: "千问3.5、GLM-4o、Artemis投资、OpenAI更新" },
+  { id: "课程生成", x: 0.20, y: 0.35, size: 9, color: "#a371f7", count: 9, articles: 12, examples: "100课体系：018/019/023课，情绪价值/Color Walk加餐" },
+  { id: "即梦/图片", x: 0.80, y: 0.50, size: 7, color: "#e3b341", count: 7, articles: 3, examples: "即梦AI指南文章配图、report.html、即梦CLI" },
+  { id: "Skill工具", x: 0.15, y: 0.60, size: 6, color: "#8957e5", count: 6, articles: 5, examples: "wechat-article-writer、harness-engineering、course-generator" },
+  { id: "Harness工程", x: 0.30, y: 0.70, size: 4, color: "#39d353", count: 4, articles: 3, examples: "主流程集成、Token效率+73%、推荐组合优化" },
+  { id: "社科热点", x: 0.60, y: 0.50, size: 4, color: "#db61a2", count: 3, articles: 3, examples: "Z世代主体性、Jonathan Haidt社交媒体研究、情绪价值" },
+  { id: "文化评论", x: 0.70, y: 0.65, size: 3, color: "#388bfd", count: 3, articles: 2, examples: "文化消费、博物馆" },
+  { id: "科学发现", x: 0.85, y: 0.20, size: 2, color: "#58a6ff", count: 2, articles: 1, examples: "阿尔忒弥斯II深空探索" },
+  { id: "调研报告", x: 0.40, y: 0.40, size: 3, color: "#8b949e", count: 3, articles: 2, examples: "GitHub Trending多期、小红书热点" },
+  { id: "系统优化", x: 0.55, y: 0.75, size: 5, color: "#f0883e", count: 5, articles: 4, examples: "记忆层级整理、Sidechain Transcript、记忆同步协议" }
+];
+
+const topicEdges = [
+  { source: "AI职场", target: "科技趋势", weight: 5, reason: "技术背景的职场分析" },
+  { source: "AI职场", target: "社科热点", weight: 4, reason: "Z世代/社会结构视角" },
+  { source: "AI职场", target: "文化评论", weight: 3, reason: "Z世代消费文化" },
+  { source: "科技趋势", target: "即梦/图片", weight: 4, reason: "AI生图/视频工具" },
+  { source: "科技趋势", target: "调研报告", weight: 5, reason: "GitHub Trending选题" },
+  { source: "课程生成", target: "Skill工具", weight: 6, reason: "course-generator+wechat-writer" },
+  { source: "课程生成", target: "Harness工程", weight: 3, reason: "Agent流程复用" },
+  { source: "课程生成", target: "社科热点", weight: 4, reason: "情绪价值课程+心理学期刊" },
+  { source: "Skill工具", target: "Harness工程", weight: 4, reason: "Harness+Claude Code集成" },
+  { source: "Skill工具", target: "系统优化", weight: 5, reason: "多工作空间记忆同步" },
+  { source: "即梦/图片", target: "调研报告", weight: 3, reason: "即梦发现页爬虫" },
+  { source: "社科热点", target: "文化评论", weight: 3, reason: "Z世代文化研究" },
+  { source: "系统优化", target: "调研报告", weight: 2, reason: "数据采集流程" }
+];
+
+// ===== WECHAT ACCOUNT DATA =====
+const wxReads = {
+  "2026-03-14":0,"2026-03-15":45,"2026-03-16":35,"2026-03-17":35,"2026-03-18":115,
+  "2026-03-19":75,"2026-03-20":36,"2026-03-21":22,"2026-03-22":42,"2026-03-23":59,
+  "2026-03-24":25,"2026-03-25":19,"2026-03-26":48,"2026-03-27":117,"2026-03-28":152,
+  "2026-03-29":252,"2026-03-30":1115,"2026-03-31":4942,"2026-04-01":7989,
+  "2026-04-02":6518,"2026-04-03":6364,"2026-04-04":5000,"2026-04-05":2977,
+  "2026-04-06":2104,"2026-04-07":806,"2026-04-08":181,"2026-04-09":294,
+  "2026-04-10":309,"2026-04-11":192,"2026-04-12":398
+};
+const wxEngagement = {
+  "2026-03-14":{"shares":0,"jumps":0,"favs":0,"articles":0},
+  "2026-03-15":{"shares":2,"jumps":0,"favs":0,"articles":1},
+  "2026-03-16":{"shares":2,"jumps":0,"favs":0,"articles":3},
+  "2026-03-17":{"shares":4,"jumps":0,"favs":0,"articles":2},
+  "2026-03-18":{"shares":11,"jumps":0,"favs":3,"articles":4},
+  "2026-03-19":{"shares":6,"jumps":0,"favs":0,"articles":1},
+  "2026-03-20":{"shares":1,"jumps":0,"favs":0,"articles":1},
+  "2026-03-21":{"shares":2,"jumps":0,"favs":0,"articles":1},
+  "2026-03-22":{"shares":4,"jumps":0,"favs":2,"articles":1},
+  "2026-03-23":{"shares":3,"jumps":0,"favs":1,"articles":2},
+  "2026-03-24":{"shares":2,"jumps":0,"favs":0,"articles":1},
+  "2026-03-25":{"shares":3,"jumps":0,"favs":0,"articles":1},
+  "2026-03-26":{"shares":8,"jumps":0,"favs":1,"articles":2},
+  "2026-03-27":{"shares":12,"jumps":0,"favs":3,"articles":2},
+  "2026-03-28":{"shares":15,"jumps":0,"favs":1,"articles":2},
+  "2026-03-29":{"shares":9,"jumps":0,"favs":4,"articles":2},
+  "2026-03-30":{"shares":9,"jumps":0,"favs":4,"articles":2},
+  "2026-03-31":{"shares":32,"jumps":0,"favs":7,"articles":3},
+  "2026-04-01":{"shares":46,"jumps":0,"favs":12,"articles":2},
+  "2026-04-02":{"shares":24,"jumps":0,"favs":7,"articles":2},
+  "2026-04-03":{"shares":30,"jumps":0,"favs":15,"articles":1},
+  "2026-04-04":{"shares":63,"jumps":0,"favs":23,"articles":2},
+  "2026-04-05":{"shares":31,"jumps":0,"favs":7,"articles":4},
+  "2026-04-06":{"shares":39,"jumps":0,"favs":5,"articles":3},
+  "2026-04-07":{"shares":26,"jumps":0,"favs":4,"articles":4},
+  "2026-04-08":{"shares":17,"jumps":0,"favs":4,"articles":3},
+  "2026-04-09":{"shares":19,"jumps":0,"favs":6,"articles":4},
+  "2026-04-10":{"shares":12,"jumps":0,"favs":3,"articles":3},
+  "2026-04-11":{"shares":16,"jumps":0,"favs":10,"articles":2},
+  "2026-04-12":{"shares":59,"jumps":0,"favs":30,"articles":3}
+};
+const wxTopArticles = [
+  {title:"DeepSeek还没凉，豆包已经3亿了",date:"20260330",reads:34695,channel:"全部"},
+  {title:"小红书最新规定：这样用AI，账号直接没了",date:"20260331",reads:2361,channel:"全部"},
+  {title:"你以为很丑，实际是中了基因彩票",date:"20260329",reads:560,channel:"全部"},
+  {title:"被忽视的追赶者：千问552%增长背后的AI格局洗牌",date:"20260405",reads:36,channel:"搜一搜"},
+  {title:"Claude订阅陷阱：为什么付了钱却不能用？",date:"20260407",reads:34,channel:"搜一搜"},
+  {title:"纽约客万字长文：Sam Altman的谎言与野心",date:"20260407",reads:33,channel:"朋友圈"},
+  {title:"序言：当人类洞见遇上AI协同，跟高级智能对齐",date:"20260318",reads:29,channel:"搜一搜"},
+  {title:"你对AI工具的焦虑，是理性的",date:"20260316",reads:25,channel:"朋友圈"},
+  {title:"Happy Horse 1.0登顶AI视频榜：开源视频模型为",date:"20260409",reads:24,channel:"搜一搜"},
+  {title:"MBTI已死，SBTI当道：一场关于\"发疯\"的集体狂欢",date:"20260412",reads:19,channel:"搜一搜"}
+];
+
+function renderWechat() {
+  const el = document.getElementById('wechatContent');
+  const dates = Object.keys(wxReads);
+  const reads = dates.map(d => wxReads[d]);
+  const totalReads = reads.reduce((a,b)=>a+b,0);
+  const totalShares = Object.values(wxEngagement).reduce((a,b)=>a+b.shares,0);
+  const totalFavs = Object.values(wxEngagement).reduce((a,b)=>a+b.favs,0);
+  const totalArticles = Object.values(wxEngagement).reduce((a,b)=>a+b.articles,0);
+
+  // Channel reads data
+  const channelData = [
+    { name: '推荐', reads: 38468, color: '#388bfd' },
+    { name: '搜一搜', reads: 557, color: '#a371f7' },
+    { name: '朋友圈', reads: 547, color: '#3fb950' },
+    { name: '公众号主页', reads: 263, color: '#e3b341' },
+    { name: '其他', reads: 270, color: '#8b949e' },
+    { name: '聊天会话', reads: 198, color: '#f0883e' }
+  ];
+  const maxChannel = Math.max(...channelData.map(c => c.reads));
+
+  // KPI row
+  let html = '<div class="wx-kpi-row">';
+  html += `<div class="wx-kpi"><div class="kpi-val">${(totalReads/10000).toFixed(1)}<span style="font-size:14px">万</span></div><div class="kpi-label">总阅读</div></div>`;
+  html += `<div class="wx-kpi"><div class="kpi-val green">${totalShares}</div><div class="kpi-label">总分享</div></div>`;
+  html += `<div class="wx-kpi"><div class="kpi-val orange">${totalFavs}</div><div class="kpi-label">总收藏</div></div>`;
+  html += `<div class="wx-kpi"><div class="kpi-val">${totalArticles}</div><div class="kpi-label">发文章</div></div>`;
+  html += '</div>';
+
+  // Peak note
+  const peakDate = Object.entries(wxReads).sort((a,b)=>b[1]-a[1])[0];
+  html += `<div style="font-size:10px;color:var(--text-muted);margin-bottom:16px;">峰值：${peakDate[0]} · 阅读${peakDate[1].toLocaleString()}（DeepSeek爆款日）</div>`;
+
+  // Three-column grid: trend | channel | share/fav
+  html += '<div class="wx-layout">';
+
+  // === Col 1: 30-day reads trend ===
+  const maxR = Math.max(...reads, 1);
+  const labelIdx = [0, 7, 14, 21, 29];
+  html += '<div class="wx-chart-wrap">';
+  html += '<div class="wx-trend-label">30天阅读趋势</div>';
+  html += '<div class="wx-chart">';
+  dates.forEach((d,i) => {
+    const h = Math.max(2, Math.round((reads[i]/maxR)*66));
+    const isPeak = i === reads.indexOf(maxR);
+    html += `<div class="wx-bar" style="height:${h}px;${isPeak?'opacity:1;background:var(--green-4)':''}" title="${d}: ${reads[i]}"></div>`;
+  });
+  html += '</div>';
+  html += '<div class="wx-chart-labels">';
+  labelIdx.forEach(i => {
+    html += `<div class="wx-chart-label">${dates[i].slice(5)}</div>`;
+  });
+  html += '</div></div>';
+
+  // === Col 2: Channel proportion ===
+  html += '<div class="wx-channel-wrap">';
+  html += '<div class="wx-trend-label">各渠道阅读占比</div>';
+  channelData.forEach(c => {
+    const pct = (c.reads / totalReads * 100).toFixed(1);
+    const w = Math.max(2, Math.round((c.reads / maxChannel) * 100));
+    html += `<div class="wx-channel-row">
+      <div class="wx-channel-name">${c.name}</div>
+      <div class="wx-channel-bar-wrap">
+        <div class="wx-channel-bar" style="width:${w}%;background:${c.color}" title="${c.reads}"></div>
+      </div>
+      <div class="wx-channel-val">${c.reads >= 1000 ? (c.reads/1000).toFixed(1)+'k' : c.reads}</div>
+      <div class="wx-channel-pct">${pct}%</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  // === Col 3: Share + Fav trend (CSS bars, same style as reading trend) ===
+  const engDates = Object.keys(wxEngagement);
+  const shareVals = engDates.map(d => wxEngagement[d].shares);
+  const favVals  = engDates.map(d => wxEngagement[d].favs);
+  const maxEng   = Math.max(...shareVals, ...favVals, 1);
+  const engLabelIdx = [0, Math.floor(engDates.length/2), engDates.length-1];
+
+  html += '<div class="wx-chart-wrap">';
+  html += '<div class="wx-trend-label">分享 &amp; 收藏趋势</div>';
+
+  // Share bars (green)
+  html += '<div class="wx-chart">';
+  shareVals.forEach((v,i) => {
+    const h = Math.max(2, Math.round((v/maxEng)*66));
+    const isPeak = i === shareVals.indexOf(Math.max(...shareVals));
+    html += `<div class="wx-bar" style="height:${h}px;background:#3fb950;${isPeak?'opacity:1':''}" title="${engDates[i]}: 分享${v}"></div>`;
+  });
+  html += '</div>';
+  html += '<div class="wx-chart-labels">';
+  engLabelIdx.forEach(i => { html += `<div class="wx-chart-label">${engDates[i].slice(5)}</div>`; });
+  html += '</div>';
+
+  // Fav bars (yellow)
+  html += '<div class="wx-chart" style="margin-top:6px;">';
+  favVals.forEach((v,i) => {
+    const h = Math.max(2, Math.round((v/maxEng)*66));
+    const isPeak = i === favVals.indexOf(Math.max(...favVals));
+    html += `<div class="wx-bar" style="height:${h}px;background:#e3b341;${isPeak?'opacity:1':''}" title="${engDates[i]}: 收藏${v}"></div>`;
+  });
+  html += '</div>';
+  html += '<div class="wx-chart-labels">';
+  engLabelIdx.forEach(i => { html += `<div class="wx-chart-label">${engDates[i].slice(5)}</div>`; });
+  html += '</div>';
+
+  // Legend
+  html += '<div style="display:flex;gap:12px;font-size:10px;margin-top:4px;">';
+  html += `<span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:8px;background:#3fb950;display:inline-block;border-radius:1px 1px 0 0"></span>分享（峰值${Math.max(...shareVals)}）</span>`;
+  html += `<span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:8px;background:#e3b341;display:inline-block;border-radius:1px 1px 0 0"></span>收藏（峰值${Math.max(...favVals)}）</span>`;
+  html += '</div></div>';
+
+  html += '</div>'; // end wx-layout
+
+  // Top articles - two columns
+  html += '<div class="wx-articles" style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:20px;">';
+
+  // Section 1: Top 5 all time (left)
+  const top5All = [...wxTopArticles].sort((a,b)=>b.reads-a.reads).slice(0,5);
+  html += '<div>';
+  html += '<div class="wx-articles-title">TOP 5 · 全-time</div>';
+  top5All.forEach((a,i) => {
+    const rankClass = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    const dateFmt = `${a.date.slice(0,4)}-${a.date.slice(4,6)}-${a.date.slice(6)}`;
+    const channelColor = {'推荐':'#388bfd','朋友圈':'#3fb950','搜一搜':'#a371f7','全部':'#cdd9e5'}[a.channel]||'#cdd9e5';
+    html += `<div class="wx-article-item">
+      <div class="wx-art-rank ${rankClass}">${i+1}</div>
+      <div class="wx-art-body">
+        <div class="wx-art-title" title="${a.title}">${a.title}</div>
+        <div class="wx-art-meta"><span style="color:${channelColor}">${a.channel}</span><span>${dateFmt}</span></div>
+      </div>
+      <div class="wx-art-reads">${a.reads>=1000?(a.reads/1000).toFixed(1)+'k':a.reads}</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  // Section 2: Top 5 in last 7 days (right)
+  const last7 = ['20260406','20260407','20260408','20260409','20260410','20260411','20260412'];
+  const top5Recent = [...wxTopArticles]
+    .filter(a => last7.includes(a.date))
+    .sort((a,b)=>b.reads-a.reads)
+    .slice(0,5);
+  html += '<div>';
+  html += '<div class="wx-articles-title">TOP 5 · 近7天</div>';
+  top5Recent.forEach((a,i) => {
+    const dateFmt = `${a.date.slice(0,4)}-${a.date.slice(4,6)}-${a.date.slice(6)}`;
+    const channelColor = {'推荐':'#388bfd','朋友圈':'#3fb950','搜一搜':'#a371f7','全部':'#cdd9e5'}[a.channel]||'#cdd9e5';
+    html += `<div class="wx-article-item">
+      <div class="wx-art-rank" style="color:var(--text-muted)">${i+1}</div>
+      <div class="wx-art-body">
+        <div class="wx-art-title" title="${a.title}">${a.title}</div>
+        <div class="wx-art-meta"><span style="color:${channelColor}">${a.channel}</span><span>${dateFmt}</span></div>
+      </div>
+      <div class="wx-art-reads">${a.reads>=1000?(a.reads/1000).toFixed(1)+'k':a.reads}</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  // AI Insights block - 远 · 数据洞察
+  html += `<div class="wx-insights">
+    <div class="wx-insights-title">远 · 数据洞察</div>
+    <div class="wx-insights-grid">
+      <div class="wx-insight-card" style="grid-column:1/-1;">
+        <div class="wxi-label">数据分析</div>
+        <ul class="wxi-list">
+          <li><strong>DeepSeek爆款的6天推流机制：</strong>03-30至04-04，推荐流持续6天才消退。算法根据前48小时互动数据决定是否继续推。高互动=持续推流=长尾价值——好内容有「延迟效应」</li>
+          <li><strong>推荐渠道占47.6%，搜一搜+朋友圈合计仅1.4%：</strong>推荐流高度依赖算法，自然搜索和社交扩散几乎未激活。渠道单一风险极高，一旦算法策略调整，流量将断崖</li>
+          <li><strong>收藏峰值规律：</strong>04-12收藏30次，与DeepSeek爆款截然不同。「大流量不等于高收藏」，收藏率与文章是否提供「可复用框架」强相关——精准触达比大流量更重要</li>
+          <li><strong>分享收藏比4:1（531:150）：</strong>分享是「一次性扩散」，收藏是「长期资产沉淀」。收藏率才是内容护城河的真正指标，分享率高只是表面繁荣</li>
+        </ul>
+      </div>
+      <div class="wx-insight-card">
+        <div class="wxi-label">选题建议</div>
+        <ul class="wxi-list">
+          <li><strong>双轨并行：</strong>AI热点路线（DeepSeek类）做流量，2:8产能分配；「认知框架」路线（基因彩票类）做收藏，建立长期信任资产</li>
+          <li><strong>搜索优化：</strong>「主动高认知负荷」已有58人从搜一搜进站，说明选题有搜索价值，但标题关键词布局不足，参考微信指数植入高搜索量词</li>
+          <li><strong>系列化机会：</strong>「认知负荷」已有58人搜索，可做成「注意力系列」；即梦/AI工具对比可做成「工具测评系列」，高收藏文章天然适合系列化</li>
+        </ul>
+      </div>
+      <div class="wx-insight-card">
+        <div class="wxi-label">核心洞见</div>
+        <ul class="wxi-list">
+          <li><strong>脉冲依赖 vs 常青资产：</strong>DeepSeek单篇3.5万，但爆款结束后4月8日只剩366阅读。公众号没有「沉淀效应」，爆款结束后一切归零。需要常青内容库来构建基础阅读护城河</li>
+          <li><strong>认知锚点=收藏率：</strong>收藏高的文章往往有一个「读者可以带走的框架」。工具教程、决策清单、概念图谱——即使离开推荐流也能持续被搜索到，是真正的内容资产</li>
+        </ul>
+      </div>
+    </div>
+  </div>`;
+
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+// ===== PIPELINE =====
+const pipelineData = {
+  hot: [
+    { title: "老外开始\"Chinamaxxing\"了！喝温水、泡脚、八段锦，中式生活为何征服欧美Z世代？", meta: "周报4/12·🔥热点·双平台热议" },
+    { title: "小红书黑客松背后的野心：48小时极限开发，00后正在重新定义\"科技连接器\"", meta: "周报4/12·🔥热点·时效性强" },
+    { title: "AI重写旅游行业规则：86%的人用AI做计划，OTA沦为\"付款工具\"？", meta: "周报4/12·📈趋势·数据震撼" },
+    { title: "\"人类丰容\"实验：这届年轻人，正在把家变成\"精神避难所\"", meta: "周报4/12·🔥热点·90天破亿浏览" },
+    { title: "AI从\"工具\"变\"搭子\"：请我喝奶茶、指导恋爱、监督自习，这届AI太会了", meta: "周报4/12·🔥热点·生活化AI" },
+    { title: "德国五分之一青年计划移居国外：经济停滞、AI冲击、职业前景暗淡", meta: "周报4/12·📈社科·跨文化对比" }
+  ],
+  plan: [
+    { title: "观鸟成年轻人新宠：#鸟门1.2亿浏览量背后，是逃离都市的集体渴望", meta: "周报4/12·入门指南·视觉素材丰富" },
+    { title: "Vibe Coding风刮进小红书：非技术人的AI编程新范式", meta: "日报4/12·新概念·平台战略解读" },
+    { title: "工信部\"人工智能+\"高价值场景：制造业为主战场，核心产业规模1.2万亿", meta: "日报4/12·政策解读·产业数据" },
+    { title: "AI陪伴技术伦理争议：安慰还是阻碍？心理学家这样说", meta: "周报4/12·伦理分析·深度评论" }
+  ],
+  writing: [
+    { title: "Anthropic禁止OpenClaw访问Claude：第三方AI工具的API战争", meta: "日报4/10·科技评论·待核实数据" }
+  ],
+  done: [
+    { title: "阿尔忒弥斯II：53年后人类再次站上深空的门槛", meta: "04-13发布" },
+    { title: "MBTI已死，SBTI当道", meta: "04-11发布" },
+    { title: "你以为AI在帮你，其实它在拉大差距", meta: "04-11发布" },
+    { title: "小红书AI热点分析", meta: "已发布" },
+    { title: "AI工具焦虑", meta: "已发布" },
+    { title: "万维钢书单全5季", meta: "已发布" },
+    { title: "AI正在杀死普通职场人", meta: "已发布" },
+    { title: "为什么年轻人把AI当朋友", meta: "已发布" },
+    { title: "Z世代的\"主体性\"觉醒", meta: "已发布" },
+    { title: "文化消费的平民化", meta: "已发布" },
+    { title: "Claude Code泄露分析", meta: "已发布" },
+    { title: "千问552%增长分析", meta: "已发布" },
+    { title: "Seedance 2.0与AI视频元年", meta: "已发布" },
+    { title: "DeepSeek还没凉，豆包已经3亿了", meta: "已发布" },
+    { title: "2026年十大技术趋势", meta: "已发布" }
+  ]
+};
+
+const typeNames = {
+  article: "文章", skill: "Skill", system: "系统",
+  scraper: "爬虫", image: "配图", course: "课程", research: "调研"
+};
+
+// ===== RENDER: SKILL STATS =====
+function renderSkillStats() {
+  const el = document.getElementById('skillStatsContent');
+  let html = skillStats.map(s => `
+    <div class="skill-bar-wrap">
+      <div class="skill-bar-label">
+        <span>${s.label}</span>
+        <span>${s.count}次调用</span>
+      </div>
+      <div class="skill-bar"><div class="skill-bar-fill" style="width:${s.pct}%"></div></div>
+    </div>
+  `).join('');
+  html += '<div class="skill-combo">' + skillCombos.map(c =>
+    `<span class="skill-combo-tag">${c}</span>`
+  ).join('') + '</div>';
+  el.innerHTML = html;
+}
+
+// ===== RENDER: TIME DISTRIBUTION =====
+function renderTimeDist() {
+  const chart = document.getElementById('hourChart');
+  const maxVal = Math.max(...hourData, 1);
+  chart.innerHTML = hourLabels.map((h, i) => {
+    const val = hourData[i];
+    const height = val > 0 ? Math.max(4, Math.round((val / maxVal) * 76)) : 4;
+    const isPeak = peakHours.some(p => {
+      const [s,e] = p.split("-").map(Number);
+      return i >= s && i <= e;
+    });
+    return `<div class="hour-bar-wrap">
+      <div class="hour-bar" style="height:${height}px;${isPeak?'background:var(--green-4);opacity:1':''}" title="${h}:00 · ${val}个任务"></div>
+      <div class="hour-bar-label">${h}</div>
+    </div>`;
+  }).join('');
+
+  const peaks = document.getElementById('timePeaks');
+  peaks.innerHTML = peakHours.map(p =>
+    `<span class="time-peak-tag">&#x1F525; 黄金时段 ${p}</span>`
+  ).join('');
+}
+
+// ===== RENDER: TAG CLOUD =====
+let selectedTag = null;
+function renderTagCloud() {
+  const cloud = document.getElementById('tagCloud');
+  const maxCount = Math.max(...tagData.map(t => t.count));
+  cloud.innerHTML = tagData.map(t => {
+    const size = 11 + Math.round((t.count / maxCount) * 8);
+    const sel = selectedTag === t.name ? 'tag-selected' : '';
+    return `<span class="tag-cloud-item ${sel}" style="font-size:${size}px;background:${t.bg};color:${t.color};border-color:${t.color}44"
+      onclick="filterByTag('${t.name}', this)">
+      <span class="tag-name">${t.name}</span><span class="tag-count">${t.count}</span>
+    </span>`;
+  }).join('');
+}
+
+function filterByTag(tag, el) {
+  if (selectedTag === tag) {
+    selectedTag = null;
+    renderTasks('all');
+  } else {
+    selectedTag = tag;
+    renderTasksByTag(tag);
+  }
+  renderTagCloud();
+}
+
+function renderTasksByTag(tag) {
+  const tagKeywordMap = {
+    "AI职场": ["AI薪资","职场","工资","职业","创业","SBTI","MBTI","情感博主"],
+    "科技趋势": ["AI公司","千问","OpenAI","GLM","DeepSeek","Artemis","技术趋势"],
+    "即梦/图片": ["配图","即梦","图片","海报"],
+    "Skill工具": ["Skill","skill","工具","系统","WorkBuddy"],
+    "系统优化": ["系统","WorkBuddy","存储协议","记忆"],
+    "文化评论": ["文化消费","博物馆","Z世代","主体性"],
+    "科学发现": ["南极","科学","大脑","冥想","积分"],
+    "调研报告": ["调研","github","trending","cli"]
+  };
+  const keywords = tagKeywordMap[tag] || [];
+  const filtered = allTasks.filter(t =>
+    keywords.some(k => t.title.includes(k))
+  );
+  renderTasksDisplay(filtered);
+}
+
+function renderTasksDisplay(tasks) {
+  const list = document.getElementById('tasksList');
+  if (tasks.length === 0) {
+    list.innerHTML = '<div class="empty-state">该分类暂无记录</div>';
+    return;
+  }
+  list.innerHTML = tasks.map(t => `
+    <div class="task-item" data-type="${t.type}" data-date="${t.date}">
+      <span class="task-date">${t.date}</span>
+      <span class="task-badge badge-${t.type}">${typeNames[t.type] || t.type}</span>
+      <span class="task-title" title="${t.title}">${t.title}</span>
+      ${t.count > 1 ? `<span class="task-count">${t.count}项</span>` : ''}
+    </div>
+  `).join('');
+}
+
+// ===== RENDER: STREAK =====
+function renderStreak() {
+  const el = document.getElementById('streakContent');
+  const allDays = ["03-29","03-30","03-31","04-01","04-02","04-03","04-04","04-05","04-06","04-07","04-08","04-09","04-10","04-11","04-12","04-13"];
+  const onSet = new Set(streakData.days);
+  el.innerHTML = `
+    <div class="streak-display">
+      <div>
+        <div class="streak-big">${streakData.current}</div>
+        <div class="streak-big-label">连续活跃天数</div>
+      </div>
+      <div class="streak-meta">
+        最长连续：<strong>${streakData.longest}天</strong><br>
+        最近休息：<strong>${streakData.lastGap}</strong><br>
+        4月活跃率：<strong>${streakData.days.filter(d=>d.startsWith("04")).length}/13天</strong>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">最近16天活跃状态</div>
+    <div class="streak-calendar">
+      ${allDays.map(d => `<div class="streak-day ${onSet.has(d)?'on':'off'}" title="${d}"></div>`).join('')}
+    </div>
+  `;
+}
+
+// ===== RENDER: WEEK TREND =====
+function renderWeekTrend() {
+  const el = document.getElementById('weekTrendContent');
+  const w1Total = week1Tasks.reduce((a,b)=>a+b,0);
+  const w2Total = week2Tasks.reduce((a,b)=>a+b,0);
+  const w3Total = week3Tasks.reduce((a,b)=>a+b,0);
+  const w1Art = week1Articles.reduce((a,b)=>a+b,0);
+  const w2Art = week2Articles.reduce((a,b)=>a+b,0);
+  const w3Art = week3Articles.reduce((a,b)=>a+b,0);
+
+  const maxVal = Math.max(...week1Tasks, ...week2Tasks, ...week3Tasks, 1);
+
+  let chart = '<div style="display:flex;gap:2px;align-items:flex-end;height:80px;margin:8px 0;">';
+
+  // Combine weeks for display - show 3 weeks side by side
+  const allDays = [...week1Days, ...week2Days, ...week3Days];
+  const allTaskVals = [...week1Tasks, ...week2Tasks, ...week3Tasks];
+  const weekColors = [
+    ...week1Days.map(() => '#30363d'),
+    ...week2Days.map(() => '#388bfd'),
+    ...week3Days.map(() => '#39d353')
+  ];
+
+  allDays.forEach((d,i) => {
+    const h = Math.max(2, Math.round((allTaskVals[i]/maxVal)*76));
+    chart += `<div style="flex:1;display:flex;flex-direction:column;gap:1px;align-items:center;">
+      <div style="width:10px;background:${weekColors[i]};border-radius:1px;height:${h}px" title="${d}:${allTaskVals[i]}"></div>
+      <div style="font-size:8px;color:var(--text-muted);">${d.slice(3)}</div>
+    </div>`;
+  });
+  chart += '</div>';
+  chart += '<div style="font-size:10px;color:var(--text-muted);display:flex;gap:12px;margin-bottom:10px;">';
+  chart += '<span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;background:#30363d;border-radius:1px;display:inline-block;"></span>第1周(3/15-3/25)</span>';
+  chart += '<span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;background:#388bfd;border-radius:1px;display:inline-block;"></span>第2周(3/29-4/5)</span>';
+  chart += '<span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;background:#39d353;border-radius:1px;display:inline-block;"></span>第3周(4/6-4/12)</span>';
+  chart += '</div>';
+
+  const taskDelta = Math.round((w3Total-w1Total)/w1Total*100);
+  const artDelta = Math.round((w3Art-w1Art)/w1Art*100);
+  const taskClass = taskDelta >= 0 ? 'up' : 'down';
+  const artClass = artDelta >= 0 ? 'up' : 'down';
+  chart += `<div class="week-stats">
+    <span class="week-stat ${taskClass}">任务总量：<strong>${w1Total}→${w2Total}→${w3Total}</strong></span>
+    <span class="week-stat ${artClass}">文章发布：<strong>${w1Art}→${w2Art}→${w3Art}</strong></span>
+  </div>`;
+
+  el.innerHTML = chart;
+}
+
+// ===== RENDER: AI 洞察 & 优化建议（动态生成） =====
+function renderAIInsights() {
+  const el = document.getElementById('aiInsightsContent');
+  if (!el) return;
+  const dates = Object.keys(wxReads);
+  const reads = dates.map(d => wxReads[d]);
+  const totalReads = reads.reduce((a,b)=>a+b,0);
+  const totalShares = Object.values(wxEngagement).reduce((a,b)=>a+b.shares,0);
+  const totalFavs  = Object.values(wxEngagement).reduce((a,b)=>a+b.favs,0);
+  const totalArticles = Object.values(wxEngagement).reduce((a,b)=>a+b.articles,0);
+  const days = dates.length;
+  const peakRead = Math.max(...reads);
+  const peakDate = dates[reads.indexOf(peakRead)];
+  const avgRead = (totalReads / days).toFixed(0);
+  const topChannelPct = ((38468 / totalReads) * 100).toFixed(1);
+  const top3Reads = reads.slice().sort((a,b)=>b-a).slice(0,3);
+  const pulseRatio = top3Reads[0] > avgRead * 3 ? '极高' : top3Reads[0] > avgRead * 2 ? '较高' : '正常';
+  const courseTasks = allTasks.filter(t => t.type === 'course' || (t.title && t.title.includes('课程')));
+  const articleTasks = allTasks.filter(t => t.type === 'article' || (t.title && /文章|写作|写稿/.test(t.title)));
+  const courseCount = courseTasks.length;
+  const articleCount = articleTasks.length;
+  const courseVsArticle = courseCount + articleCount > 0 ? (courseCount / (courseCount + articleCount) * 100).toFixed(0) + '%' : '0%';
+  const topSkill = skillStats.length > 0 ? skillStats[0] : null;
+
+  const insights = [
+    {
+      priority: 'high',
+      icon: '&#x1F4C8;',
+      title: '工具开发挤占内容创作：仪表盘今天迭代了5轮，文章只产出了1篇',
+      summary: '今日（04-13）主要精力用于仪表盘v3迭代（5轮改稿），而文章产出仅有Artemis II整合版一篇',
+      detail: '每次迭代都在修正上一轮的判断——全宽bug、趋势图风格不统一、文章列表格式。根本原因是动手之前没有把方案想清楚。Artemis II整合版质量不错，但一整天只出了这一篇内容。',
+      suggestion: '下次遇到需要改布局/样式的问题，先在ASK模式里讨论清楚完整方案，确认没有漏洞再动手。减少返工，把时间留给内容创作。'
+    },
+    {
+      priority: 'high',
+      icon: '&#x1F30E;',
+      title: 'Artemis II vs DeepSeek：硬核科技的天花板，比AI话题低一个量级',
+      summary: 'DeepSeek一篇3.5万阅读，Artemis II进不了TOP5，不是质量问题，是受众宽度问题',
+      detail: 'Artemis II是典型的精英日课式写作——信息密度高、分析深入。但公众号主体受众是非科技从业者，他们更关心「AI能帮我做什么」而非「NASA SLS火箭成本为什么是星舰的10倍」。这不是写作质量问题，是选题受众宽度的结构性问题。',
+      suggestion: '按2:8分配产能：AI话题做流量，硬核科技做品牌。如果希望覆盖更大受众，AI话题仍是首选；如果想建立专业壁垒，硬核科技需要接受更低的阅读预期。两者都重要，但要分清主次。'
+    },
+    {
+      priority: 'high',
+      icon: '&#x1F504;',
+      title: 'DeepSeek爆款揭示算法记忆效应：优质内容可被持续推流6天',
+      summary: 'DeepSeek那篇被推荐流整整推了6天（03-30至04-04），阅读量才逐渐消退，而非「一天就结束」',
+      detail: '这说明算法不是「一篇推一天就结束」，而是根据用户互动数据持续决定是否继续推。收藏率高的文章在推荐流消退后仍有延迟价值。关键洞察：内容「生命周期」可以很长，只要前48小时的互动数据足够好，算法会持续找到目标受众。',
+      suggestion: '每篇重要文章发布后24小时内，主动在朋友圈/社群做一轮真实初始扩散。不用刷量，但需要帮助算法完成初始的人群定向，之后算法会自己找到精准受众。'
+    },
+    {
+      priority: 'medium',
+      icon: '&#x1F4D0;',
+      title: '记忆同步协议已建立，但「数据消化」环节仍然缺失',
+      summary: '4月6日至11日历史记忆已全部补录，但爬虫数据没有被转化为选题决策',
+      detail: '过去一周的爬虫数据（小红书热点、X.com舆情、即梦作品分析）记录了不少有价值的发现，但散落在各个memory文件里，没有变成「选题决策」。采集和消化是两件事，后者需要有意识地把数据结论写成行动项。',
+      suggestion: '每周五下午设置一个「数据消化会」：把本周所有爬虫报告读一遍，直接提炼3个可行动的选题写进Pipeline「计划中」，而不是让数据躺在memory里睡大觉。'
+    },
+    {
+      priority: 'medium',
+      icon: '&#x1F4D6;',
+      title: '收藏率的结构性价值：收藏高的文章是「认知锚点」，值得系列化',
+      summary: '收藏峰值04-12（30次）对应日常文章而非爆款，说明精准触达比大流量更重要',
+      detail: '收藏行为意味着「我以后还会用到」。高收藏文章通常有一个共同特征：提供了一套可以复用的认知框架或工具方法。基因彩票（560阅读但收藏率高）、AI自习室县城都是这个逻辑——给了读者一个可以用在自己身上的「框架」。',
+      suggestion: '写完每篇文章后自问：「读者读完会记住哪一句话？这句话够不够成一个框架？」如果不够，加一个「3步清单」或「决策树」来提升收藏价值。'
+    },
+    {
+      priority: 'low',
+      icon: '&#x1F50E;',
+      title: '搜一搜渠道是被忽视的精准流量：基数小但意图强，转化质量高',
+      summary: '搜一搜占1.4%但数据稳定，有明确搜索意图的用户转化质量高于推荐流',
+      detail: '朋友圈（547）和搜一搜（557）阅读量相近，但来源逻辑完全不同：朋友圈是社交扩散，搜一搜是主动搜索。搜一搜进站的「主动高认知负荷」有58阅读，说明现有文章有搜索价值，但标题关键词布局还不够精准，没有被算法识别为搜索答案。',
+      suggestion: '在标题中植入高搜索量关键词（参考微信指数热词），在前300字覆盖目标搜索词，让算法把你的文章识别为「这个问题的答案」。搜一搜是被动流量里质量最高的，值得优化。'
+    }
+  ];
+
+  const tagMap = { high: '高优先级', medium: '中优先级', low: '低优先级' };
+  el.innerHTML = insights.map((ins, i) => `
+    <div class="insight-card" data-insight="${i+1}">
+      <div class="insight-title">${ins.icon} ${ins.title} <span class="insight-tag ${ins.priority}">${tagMap[ins.priority]}</span></div>
+      <div class="insight-summary">${ins.summary}</div>
+      <div class="insight-detail">${ins.detail}<br><br><strong>建议：</strong>${ins.suggestion}</div>
+    </div>
+  `).join('');
+}
+
+// ===== RENDER: RETRO =====
+function renderRetro() {
+  const el = document.getElementById('retroContent');
+  el.innerHTML = retroItems.map(r => `
+    <div class="retro-item">
+      <div class="retro-title">
+        <span class="retro-status ${r.status}">${r.status==='done'?'已发布':'草稿'}</span>
+        ${r.title}
+      </div>
+      <div class="retro-meta">${r.date} · ${r.style}风格 · ${r.words}字</div>
+      <div class="retro-note">${r.note}</div>
+    </div>
+  `).join('');
+}
+
+// ===== RENDER: PIPELINE =====
+function renderPipeline() {
+  const board = document.getElementById('pipelineBoard');
+  const cols = [
+    { key: 'hot', label: '选题池', cls: 'hot' },
+    { key: 'plan', label: '计划中', cls: 'plan' },
+    { key: 'writing', label: '写作中', cls: 'writing' },
+    { key: 'done', label: '已发布', cls: 'done' }
+  ];
+  board.innerHTML = cols.map(col => {
+    const items = pipelineData[col.key];
+    return `<div class="pipeline-col ${col.cls}">
+      <div class="pipeline-col-title">
+        ${col.label}
+        <span class="pipeline-col-count">${items.length}</span>
+      </div>
+      ${items.map(item => `
+        <div class="pipeline-item">
+          <div class="pi-title">${item.title}</div>
+          <div class="pi-meta">${item.meta}</div>
+        </div>
+      `).join('')}
+      ${col.key === 'hot' ? '<div class="pipeline-add">+ 添加选题</div>' : ''}
+    </div>`;
+  }).join('');
+}
+
+// ===== RENDER: TOPIC GRAPH =====
+function renderTopicGraph() {
+  const el = document.getElementById('topicGraphContent');
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('class', 'graph-svg');
+  svg.setAttribute('viewBox', '0 0 100 100');
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+  // Build node map
+  const nodeMap = {};
+  topicNodes.forEach(n => { nodeMap[n.id] = n; });
+
+  // Draw edges first
+  topicEdges.forEach(e => {
+    const src = nodeMap[e.source];
+    const tgt = nodeMap[e.target];
+    if (!src || !tgt) return;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', src.x * 100);
+    line.setAttribute('y1', src.y * 100);
+    line.setAttribute('x2', tgt.x * 100);
+    line.setAttribute('y2', tgt.y * 100);
+    line.setAttribute('class', 'graph-edge' + (e.weight >= 5 ? ' high' : ''));
+    line.style.stroke = src.color + '88';
+    svg.appendChild(line);
+  });
+
+  // Draw nodes
+  topicNodes.forEach(n => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', 'graph-node');
+    g.setAttribute('transform', `translate(${n.x * 100},${n.y * 100})`);
+
+    const r = 2.5 + (n.size / 10) * 4.0;
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('r', r.toFixed(1));
+    circle.setAttribute('fill', n.color);
+    circle.setAttribute('opacity', '0.9');
+    g.appendChild(circle);
+
+    // Dark border for contrast
+    const border = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    border.setAttribute('r', r.toFixed(1));
+    border.setAttribute('fill', 'none');
+    border.setAttribute('stroke', '#1c2128');
+    border.setAttribute('stroke-width', '0.5');
+    g.appendChild(border);
+
+    // Node text hidden — label accessible via tooltip on hover
+    // const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    // text.setAttribute('text-anchor', 'middle');
+    // text.setAttribute('dy', '0.35em');
+    // text.setAttribute('fill', '#cdd9e5');
+    // text.setAttribute('font-size', '4.5');
+    // text.setAttribute('font-family', '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif');
+    // text.setAttribute('font-weight', '600');
+    // text.textContent = n.id;
+    // g.appendChild(text);
+
+    // Tooltip
+    g.addEventListener('mouseenter', (e) => {
+      const connected = topicEdges.filter(ed => ed.source === n.id || ed.target === n.id);
+      const connList = connected.map(ed => {
+        const other = ed.source === n.id ? ed.target : ed.source;
+        return `· ${other}（${ed.reason}）`;
+      }).join('<br>');
+      showGraphTooltip(e, `<strong>${n.id}</strong>文章${n.articles}篇·任务${n.count}项<br><span style="color:#8b949e;font-size:10px">${n.examples}</span><div class="graph-conn-list">关联主题：<br>${connList || '无直接关联'}</div>`);
+    });
+    g.addEventListener('mouseleave', hideGraphTooltip);
+    g.addEventListener('mousemove', moveGraphTooltip);
+
+    svg.appendChild(g);
+  });
+
+  // Legend
+  const wrap = document.createElement('div');
+  wrap.className = 'topic-graph-wrap';
+  wrap.appendChild(svg);
+
+  const legend = document.createElement('div');
+  legend.className = 'graph-legend';
+  legend.style.cssText = 'padding: 8px 12px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); line-height: 1.8;';
+
+  const clusterGroups = [
+    { label: "公众号内容", nodes: ["AI职场", "科技趋势", "文化评论", "科学发现"], color: "#58a6ff" },
+    { label: "课程体系", nodes: ["课程生成", "社科热点", "Harness工程"], color: "#a371f7" },
+    { label: "工具链", nodes: ["Skill工具", "系统优化"], color: "#f0883e" },
+    { label: "数据调研", nodes: ["调研报告", "即梦/图片"], color: "#e3b341" }
+  ];
+
+  clusterGroups.forEach(g => {
+    const item = document.createElement('div');
+    item.className = 'graph-legend-item';
+    item.innerHTML = `<span class="graph-legend-dot" style="background:${g.color}"></span>${g.label}：${g.nodes.join('·')}`;
+    legend.appendChild(item);
+  });
+
+  el.appendChild(wrap);
+  el.appendChild(legend);
+}
+
+function showGraphTooltip(e, html) {
+  let tip = document.getElementById('graphTooltip');
+  if (!tip) {
+    tip = document.createElement('div');
+    tip.id = 'graphTooltip';
+    tip.className = 'graph-tooltip';
+    document.body.appendChild(tip);
+  }
+  tip.innerHTML = html;
+  tip.style.display = 'block';
+  moveGraphTooltip(e);
+}
+
+function moveGraphTooltip(e) {
+  const tip = document.getElementById('graphTooltip');
+  if (!tip) return;
+  const x = e.clientX + 14;
+  const y = e.clientY - 10;
+  tip.style.left = (x + 220 > window.innerWidth ? e.clientX - 234 : x) + 'px';
+  tip.style.top = y + 'px';
+}
+
+function hideGraphTooltip() {
+  const tip = document.getElementById('graphTooltip');
+  if (tip) tip.style.display = 'none';
+}
+
+// ===== RENDER CALENDAR =====
+function renderCalendar() {
+  const grid = document.getElementById('calendarGrid');
+  const monthLabels = document.getElementById('monthLabels');
+  const startDate = new Date('2026-03-29');
+  const endDate = new Date('2026-04-13');
+  const startDay = startDate.getDay();
+  const mondayOffset = startDay === 0 ? -6 : 1 - startDay;
+  const mondayDate = new Date(startDate);
+  mondayDate.setDate(startDate.getDate() + mondayOffset);
+
+  const months = ['3月', '4月'];
+  const weeksNeeded = Math.ceil((endDate - mondayDate) / (7 * 24 * 3600 * 1000)) + 1;
+  const pxPerWeek = 16;
+
+  monthLabels.innerHTML = '';
+  let currentMonth = -1, currentMonthStart = 0;
+  for (let w = 0; w < weeksNeeded; w++) {
+    const d = new Date(mondayDate);
+    d.setDate(mondayDate.getDate() + w * 7);
+    const m = d.getMonth();
+    if (m !== currentMonth) {
+      if (currentMonth !== -1) {
+        const div = document.createElement('div');
+        div.className = 'month-label';
+        div.style.width = ((w - currentMonthStart) * pxPerWeek) + 'px';
+        div.textContent = months[currentMonth - 2] || '';
+        monthLabels.appendChild(div);
+      }
+      currentMonth = m;
+      currentMonthStart = w;
+    }
+    if (w === weeksNeeded - 1) {
+      const div = document.createElement('div');
+      div.className = 'month-label';
+      div.style.width = ((w - currentMonthStart + 1) * pxPerWeek) + 'px';
+      div.textContent = months[currentMonth - 2] || '';
+      monthLabels.appendChild(div);
+    }
+  }
+
+  grid.innerHTML = '';
+  const totalCells = weeksNeeded * 7;
+  for (let i = 0; i < totalCells; i++) {
+    const d = new Date(mondayDate);
+    d.setDate(mondayDate.getDate() + i);
+    const dateStr = d.toISOString().split('T')[0];
+    const isInRange = d >= startDate && d <= endDate;
+    const isToday = dateStr === '2026-04-13';
+    const data = activityData[dateStr];
+
+    const cell = document.createElement('div');
+    cell.className = 'day-cell';
+    if (!isInRange) {
+      cell.classList.add('empty');
+    } else if (data && data.level > 0) {
+      cell.setAttribute('data-level', data.level);
+      cell.setAttribute('data-date', dateStr);
+      if (isToday) cell.classList.add('today');
+      const tooltip = document.createElement('div');
+      tooltip.className = 'tooltip';
+      tooltip.innerHTML = `<strong>${dateStr}</strong><br>${data.tasks.length}项任务`;
+      cell.appendChild(tooltip);
+      cell.addEventListener('click', () => showDayDetail(dateStr));
+    } else {
+      cell.setAttribute('data-level', 0);
+      cell.setAttribute('data-date', dateStr);
+    }
+    grid.appendChild(cell);
+  }
+}
+
+// ===== RENDER TASKS LIST =====
+let currentFilter = 'all';
+
+function renderTasks(filter) {
+  const list = document.getElementById('tasksList');
+  const filtered = filter === 'all'
+    ? allTasks
+    : allTasks.filter(t => t.type === filter);
+  renderTasksDisplay(filtered);
+  currentFilter = filter;
+  selectedTag = null;
+  renderTagCloud();
+}
+
+function renderTasksDisplay(tasks) {
+  const list = document.getElementById('tasksList');
+  if (tasks.length === 0) {
+    list.innerHTML = '<div class="empty-state">该分类暂无记录</div>';
+    return;
+  }
+  list.innerHTML = tasks.map(t => `
+    <div class="task-item" data-type="${t.type}" data-date="${t.date}">
+      <span class="task-date">${t.date}</span>
+      <span class="task-badge badge-${t.type}">${typeNames[t.type] || t.type}</span>
+      <span class="task-title" title="${t.title}">${t.title}</span>
+      ${t.count > 1 ? `<span class="task-count">${t.count}项</span>` : ''}
+    </div>
+  `).join('');
+}
+
+// ===== FILTER TABS =====
+document.querySelectorAll('.filter-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    selectedTag = null;
+    renderTagCloud();
+    renderTasks(tab.dataset.filter);
+  });
+});
+
+// ===== DAY DETAIL =====
+function showDayDetail(dateStr) {
+  const data = activityData[dateStr];
+  const detailBody = document.getElementById('detailBody');
+  document.getElementById('detailTitle').textContent = dateStr;
+  document.getElementById('detailDate').textContent = dateStr;
+
+  if (!data || data.tasks.length === 0) {
+    detailBody.innerHTML = '<div class="empty-state">当日无任务记录</div>';
+    return;
+  }
+
+  const byType = {};
+  data.tasks.forEach(t => {
+    if (!byType[t.type]) byType[t.type] = [];
+    byType[t.type].push(t);
+  });
+
+  let html = '';
+  Object.entries(byType).forEach(([type, tasks]) => {
+    html += `<div style="margin-bottom:12px">
+      <span class="task-badge badge-${type}" style="margin-bottom:6px;display:inline-block">${typeNames[type] || type}（${tasks.length}项）</span>`;
+    tasks.forEach(t => {
+      html += `<div class="detail-task-item" style="padding:6px 0 6px 12px;border:none">
+        <div class="detail-task-title">${t.title}</div>
+        <div class="detail-task-desc">${t.desc}</div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  detailBody.innerHTML = html;
+  document.querySelectorAll('.day-cell[data-date]').forEach(c => c.style.outline = '');
+  const target = document.querySelector(`.day-cell[data-date="${dateStr}"]`);
+  if (target) target.style.outline = '2px solid #a371f7';
+}
+
+// ===== AI INSIGHTS ACCORDION =====
+document.querySelectorAll('.insight-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const wasExpanded = card.classList.contains('expanded');
+    document.querySelectorAll('.insight-card').forEach(c => c.classList.remove('expanded'));
+    if (!wasExpanded) card.classList.add('expanded');
+  });
+});
+
+// ===== MODULE TOGGLE =====
+function toggleModule(modId, btn) {
+  const section = document.getElementById('mod-' + modId);
+  if (!section) return;
+  const isVisible = section.classList.contains('visible');
+  section.classList.toggle('visible');
+  if (btn) btn.classList.toggle('active', !isVisible);
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = msg;
+  toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#238636;color:white;padding:10px 20px;border-radius:8px;font-size:13px;z-index:2000;animation:fadeIn 0.2s';
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.style.opacity='0'; toast.style.transition='opacity 0.3s'; setTimeout(()=>toast.remove(),300); }, 2500);
+}
+
+// ===== MODAL =====
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalOverlay')) {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+});
+
+// ===== INIT =====
+renderCalendar();
+renderTasks('all');
+renderSkillStats();
+renderTimeDist();
+renderTagCloud();
+renderStreak();
+renderWeekTrend();
+renderRetro();
+renderAIInsights();
+  renderPipeline();
+  renderTopicGraph();
+  renderWechat();
+</script>
+</body>
+</html>
