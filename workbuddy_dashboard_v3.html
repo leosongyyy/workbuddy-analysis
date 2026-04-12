@@ -1327,8 +1327,11 @@ function renderWechat() {
 
   // Top articles
   html += '<div class="wx-articles" style="margin-top:16px;">';
-  html += '<div class="wx-articles-title">TOP 10 热门文章</div>';
-  wxTopArticles.slice(0,8).forEach((a,i) => {
+
+  // Section 1: Top 5 all time
+  const top5All = [...wxTopArticles].sort((a,b)=>b.reads-a.reads).slice(0,5);
+  html += '<div class="wx-articles-title">TOP 5 · 全-time</div>';
+  top5All.forEach((a,i) => {
     const rankClass = i===0?'gold':i===1?'silver':i===2?'bronze':'';
     const dateFmt = `${a.date.slice(0,4)}-${a.date.slice(4,6)}-${a.date.slice(6)}`;
     const channelColor = {'推荐':'#388bfd','朋友圈':'#3fb950','搜一搜':'#a371f7','全部':'#cdd9e5'}[a.channel]||'#cdd9e5';
@@ -1341,6 +1344,27 @@ function renderWechat() {
       <div class="wx-art-reads">${a.reads>=1000?(a.reads/1000).toFixed(1)+'k':a.reads}</div>
     </div>`;
   });
+
+  // Section 2: Top 5 in last 3 days
+  const last3 = ['20260410','20260411','20260412'];
+  const top5Recent = [...wxTopArticles]
+    .filter(a => last3.includes(a.date))
+    .sort((a,b)=>b.reads-a.reads)
+    .slice(0,5);
+  html += '<div class="wx-articles-title" style="margin-top:14px;">TOP 5 · 近3天</div>';
+  top5Recent.forEach((a,i) => {
+    const dateFmt = `${a.date.slice(0,4)}-${a.date.slice(4,6)}-${a.date.slice(6)}`;
+    const channelColor = {'推荐':'#388bfd','朋友圈':'#3fb950','搜一搜':'#a371f7','全部':'#cdd9e5'}[a.channel]||'#cdd9e5';
+    html += `<div class="wx-article-item">
+      <div class="wx-art-rank" style="color:var(--text-muted)">${i+1}</div>
+      <div class="wx-art-body">
+        <div class="wx-art-title" title="${a.title}">${a.title}</div>
+        <div class="wx-art-meta"><span style="color:${channelColor}">${a.channel}</span><span>${dateFmt}</span></div>
+      </div>
+      <div class="wx-art-reads">${a.reads>=1000?(a.reads/1000).toFixed(1)+'k':a.reads}</div>
+    </div>`;
+  });
+
   html += '</div>';
   el.innerHTML = html;
 }
