@@ -1347,14 +1347,14 @@ function renderWechat() {
   });
   html += '</div>';
 
-  // Section 2: Top 5 in last 3 days (right)
-  const last3 = ['20260410','20260411','20260412'];
+  // Section 2: Top 5 in last 7 days (right)
+  const last7 = ['20260406','20260407','20260408','20260409','20260410','20260411','20260412'];
   const top5Recent = [...wxTopArticles]
-    .filter(a => last3.includes(a.date))
+    .filter(a => last7.includes(a.date))
     .sort((a,b)=>b.reads-a.reads)
     .slice(0,5);
   html += '<div>';
-  html += '<div class="wx-articles-title">TOP 5 · 近3天</div>';
+  html += '<div class="wx-articles-title">TOP 5 · 近7天</div>';
   top5Recent.forEach((a,i) => {
     const dateFmt = `${a.date.slice(0,4)}-${a.date.slice(4,6)}-${a.date.slice(6)}`;
     const channelColor = {'推荐':'#388bfd','朋友圈':'#3fb950','搜一搜':'#a371f7','全部':'#cdd9e5'}[a.channel]||'#cdd9e5';
