@@ -452,6 +452,19 @@ header {
     </div>
   </header>
 
+  <!-- WECHAT MODULE: FULL WIDTH, TOP OF PAGE -->
+  <div class="module-section visible" id="mod-wechat" style="margin-bottom:28px;">
+    <div class="module-section-header">
+      <div class="module-section-title">
+        <span class="icon">&#x1F4F1;</span>
+        公众号数据
+        <span class="count">2026.03.14–04.12</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);">30天完整数据</div>
+    </div>
+    <div id="wechatContent"></div>
+  </div>
+
   <!-- MODULE TOGGLE PANEL -->
   <div class="module-panel-toggle" id="modulePanelToggle">
     <span class="toggle-label">展示模块：</span>
@@ -729,39 +742,20 @@ header {
       </div>
 
       <!-- MOD 8: 选题关联图 -->
-    <div class="module-section visible" id="mod-topic-graph">
-      <div class="module-section-header">
-        <div class="module-section-title">
-          <span class="icon">&#x1F517;</span>
-          选题关联图
-          <span class="count">主题关系可视化</span>
-        </div>
-        <div style="font-size:11px;color:var(--text-muted);">节点=主题 · 连线=关联强度 · 大小=内容密度</div>
-      </div>
-      <div id="topicGraphContent" style="position:relative;"></div>
-    </div>
-
-      <!-- MOD: 公众号数据 (full-width, in modules-area above) -->
-      <div class="module-section visible" id="mod-wechat">
+      <div class="module-section visible" id="mod-topic-graph">
         <div class="module-section-header">
           <div class="module-section-title">
-            <span class="icon">&#x1F4F1;</span>
-            公众号数据
-            <span class="count">2026.03.14–04.12</span>
+            <span class="icon">&#x1F517;</span>
+            选题关联图
+            <span class="count">主题关系可视化</span>
           </div>
-          <div style="font-size:11px;color:var(--text-muted);">30天完整数据</div>
+          <div style="font-size:11px;color:var(--text-muted);">节点=主题 · 连线=关联强度 · 大小=内容密度</div>
         </div>
-        <div id="wechatContent"></div>
-      </div>
-
-      <!-- ADD MODULE -->
-      <div class="add-module-card" id="addModuleBtn2" onclick="document.getElementById('modalOverlay').classList.add('open')">
-        <div class="label">&#x2795; 增加模块（未来模块预览）</div>
+        <div id="topicGraphContent" style="position:relative;"></div>
       </div>
 
     </div>
   </div>
-</div>
 
 <!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay">
