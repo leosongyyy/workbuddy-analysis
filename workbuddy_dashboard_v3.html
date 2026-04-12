@@ -328,25 +328,27 @@ header {
 .graph-node { cursor: pointer; }
 .graph-node:hover { opacity: 0.75; }
 .graph-node text { pointer-events: none; font-size: 10px; fill: var(--text); font-family: inherit; }
-.graph-edge { stroke: var(--border); stroke-width: 1; opacity: 0.35; }
-.graph-edge.high { stroke-width: 2.5; opacity: 0.7; }
+.graph-edge { stroke: var(--border); stroke-width: 1; opacity: 0.4; }
+.graph-edge.high { stroke-width: 2.5; opacity: 0.75; }
+.graph-legend-item { display: flex; align-items: center; gap: 6px; }
+.graph-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .graph-tooltip {
   position: fixed;
-  background: #2d333b;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 10px 14px;
   font-size: 12px;
   color: var(--text);
   pointer-events: none;
   z-index: 1000;
   display: none;
-  max-width: 220px;
+  max-width: 240px;
   line-height: 1.5;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
 }
-.graph-tooltip strong { display: block; margin-bottom: 4px; font-size: 13px; }
-.graph-conn-list { margin-top: 6px; font-size: 10px; color: var(--text-muted); line-height: 1.6; }
+.graph-tooltip strong { display: block; margin-bottom: 4px; font-size: 13px; color: var(--text); }
+.graph-conn-list { margin-top: 6px; font-size: 11px; color: var(--text-muted); line-height: 1.6; }
 
 /* MODAL */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
@@ -1378,27 +1380,27 @@ function renderTopicGraph() {
     g.setAttribute('class', 'graph-node');
     g.setAttribute('transform', `translate(${n.x * 100},${n.y * 100})`);
 
-    const r = 1.2 + (n.size / 10) * 2.5;
+    const r = 2.5 + (n.size / 10) * 4.0;
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     circle.setAttribute('r', r.toFixed(1));
     circle.setAttribute('fill', n.color);
-    circle.setAttribute('opacity', '0.85');
+    circle.setAttribute('opacity', '0.9');
     g.appendChild(circle);
 
-    // White border
+    // Dark border for contrast
     const border = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     border.setAttribute('r', r.toFixed(1));
     border.setAttribute('fill', 'none');
     border.setAttribute('stroke', '#1c2128');
-    border.setAttribute('stroke-width', '0.3');
+    border.setAttribute('stroke-width', '0.5');
     g.appendChild(border);
 
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     text.setAttribute('text-anchor', 'middle');
     text.setAttribute('dy', '0.35em');
     text.setAttribute('fill', '#cdd9e5');
-    text.setAttribute('font-size', '2.8');
-    text.setAttribute('font-family', '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif');
+    text.setAttribute('font-size', '4.5');
+    text.setAttribute('font-family', '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif');
     text.setAttribute('font-weight', '600');
     text.textContent = n.id;
     g.appendChild(text);
@@ -1425,7 +1427,7 @@ function renderTopicGraph() {
 
   const legend = document.createElement('div');
   legend.className = 'graph-legend';
-  legend.style.cssText = 'padding: 8px 12px; border-top: 1px solid var(--border);';
+  legend.style.cssText = 'padding: 8px 12px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); line-height: 1.8;';
 
   const clusterGroups = [
     { label: "公众号内容", nodes: ["AI职场", "科技趋势", "文化评论", "科学发现"], color: "#58a6ff" },
