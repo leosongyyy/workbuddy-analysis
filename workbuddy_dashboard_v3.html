@@ -288,8 +288,9 @@ header {
 .week-stat.down { color: var(--red); }
 
 /* ARTICLE RETROSPECTIVE */
-.retro-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
-.retro-item:last-child { border-bottom: none; padding-bottom: 0; }
+.retro-list { max-height: calc(2 * 110px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.retro-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.retro-item:last-child { border-bottom: none; }
 .retro-title { font-size: 13px; font-weight: 500; margin-bottom: 5px; }
 .retro-meta { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
 .retro-note { font-size: 12px; color: var(--text-muted); line-height: 1.5; background: #0d1117; border-radius: 6px; padding: 8px; border: 1px solid var(--border); margin-top: 6px; }
@@ -523,7 +524,7 @@ header {
           <span class="count">发布后记录</span>
         </div>
       </div>
-      <div id="retroContent"></div>
+      <div class="retro-list" id="retroContent"></div>
     </div>
 
     <!-- MOD 7: 选题 Pipeline -->
