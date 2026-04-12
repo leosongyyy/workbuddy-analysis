@@ -1395,15 +1395,16 @@ function renderTopicGraph() {
     border.setAttribute('stroke-width', '0.5');
     g.appendChild(border);
 
-    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.setAttribute('text-anchor', 'middle');
-    text.setAttribute('dy', '0.35em');
-    text.setAttribute('fill', '#cdd9e5');
-    text.setAttribute('font-size', '4.5');
-    text.setAttribute('font-family', '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif');
-    text.setAttribute('font-weight', '600');
-    text.textContent = n.id;
-    g.appendChild(text);
+    // Node text hidden — label accessible via tooltip on hover
+    // const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    // text.setAttribute('text-anchor', 'middle');
+    // text.setAttribute('dy', '0.35em');
+    // text.setAttribute('fill', '#cdd9e5');
+    // text.setAttribute('font-size', '4.5');
+    // text.setAttribute('font-family', '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif');
+    // text.setAttribute('font-weight', '600');
+    // text.textContent = n.id;
+    // g.appendChild(text);
 
     // Tooltip
     g.addEventListener('mouseenter', (e) => {
