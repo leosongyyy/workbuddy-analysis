@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>远的AI学习圈 · 工作日志仪表盘</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0d1117;
+  --card: #161b22;
+  --card-hover: #1c2128;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --green-0: #161b22;
+  --green-1: #0e4429;
+  --green-2: #006d32;
+  --green-3: #26a641;
+  --green-4: #39d353;
+  --purple: #a371f7;
+  --orange: #f0883e;
+  --blue: #58a6ff;
+  --red: #f85149;
+  --yellow: #e3b341;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.header-left h1 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.header-left .subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.header-right {
+  text-align: right;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.header-right .stat-row {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.header-right .stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.header-right .stat-val {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ===== CALENDAR SECTION ===== */
+.calendar-section {
+  margin-bottom: 32px;
+}
+
+.section-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.calendar-wrapper {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px 24px;
+  overflow-x: auto;
+}
+
+.month-labels {
+  display: flex;
+  padding-left: 36px;
+  margin-bottom: 4px;
+}
+
+.month-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: left;
+}
+
+.calendar-body {
+  display: flex;
+  gap: 4px;
+}
+
+.day-labels {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-right: 4px;
+}
+
+.day-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  height: 13px;
+  line-height: 13px;
+  text-align: right;
+  width: 28px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-rows: repeat(7, 13px);
+  grid-auto-flow: column;
+  grid-auto-columns: 13px;
+  gap: 3px;
+}
+
+.day-cell {
+  width: 13px;
+  height: 13px;
+  border-radius: 2px;
+  background: var(--green-0);
+  cursor: pointer;
+  transition: transform 0.1s;
+  position: relative;
+}
+
+.day-cell:hover {
+  transform: scale(1.3);
+  z-index: 10;
+}
+
+.day-cell[data-level="1"] { background: var(--green-1); }
+.day-cell[data-level="2"] { background: var(--green-2); }
+.day-cell[data-level="3"] { background: var(--green-3); }
+.day-cell[data-level="4"] { background: var(--green-4); }
+
+.day-cell.empty {
+  cursor: default;
+}
+
+.day-cell.empty:hover { transform: none; }
+
+.day-cell.today {
+  outline: 2px solid var(--purple);
+  outline-offset: 1px;
+}
+
+.day-cell .tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2d333b;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  white-space: nowrap;
+  z-index: 100;
+  pointer-events: none;
+  color: var(--text);
+}
+
+.day-cell:hover .tooltip {
+  display: block;
+}
+
+.calendar-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  justify-content: flex-end;
+}
+
+.calendar-legend span {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.legend-cell {
+  width: 13px;
+  height: 13px;
+  border-radius: 2px;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 20px;
+  align-items: start;
+}
+
+/* ===== ALL TASKS ===== */
+.all-tasks-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-header h2 {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.filter-tab {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  color: var(--text-muted);
+  background: none;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+}
+
+.filter-tab:hover {
+  color: var(--text);
+  background: var(--card-hover);
+}
+
+.filter-tab.active {
+  color: var(--text);
+  background: #1f6feb33;
+  border-color: #1f6feb55;
+}
+
+.tasks-list {
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.tasks-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.tasks-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tasks-list::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.task-item:last-child { border-bottom: none; }
+.task-item:hover { background: var(--card-hover); }
+.task-item.active { background: #1f6feb22; }
+
+.task-date {
+  font-size: 11px;
+  color: var(--text-muted);
+  min-width: 60px;
+}
+
+.task-badge {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 12px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.badge-article { background: #1a7f3711; color: #3fb950; border: 1px solid #1a7f3744; }
+.badge-skill { background: #8957e511; color: #a371f7; border: 1px solid #8957e544; }
+.badge-system { background: #f0883e11; color: var(--orange); border: 1px solid #f0883e44; }
+.badge-scraper { background: #58a6ff11; color: var(--blue); border: 1px solid #58a6ff44; }
+.badge-image { background: #e3b34111; color: var(--yellow); border: 1px solid #e3b34144; }
+.badge-course { background: #f8514911; color: var(--red); border: 1px solid #f8514944; }
+.badge-research { background: #388bfd22; color: var(--blue); border: 1px solid #388bfd44; }
+
+.task-title {
+  font-size: 13px;
+  color: var(--text);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task-count {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--card-hover);
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ===== RIGHT PANEL ===== */
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Day Detail */
+.day-detail {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.day-detail-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.day-detail-header h2 {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.day-detail-header .day-date {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.day-detail-body {
+  padding: 16px 20px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.day-detail-body::-webkit-scrollbar { width: 4px; }
+.day-detail-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.detail-task-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail-task-item:last-child { border-bottom: none; padding-bottom: 0; }
+.detail-task-item:first-child { padding-top: 0; }
+
+.detail-task-title {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.detail-task-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.detail-task-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+/* AI Insights */
+.ai-insights {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.ai-insights-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-insights-header h2 {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ai-insights-header .ai-icon {
+  font-size: 14px;
+}
+
+.insight-card {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.insight-card:last-child { border-bottom: none; }
+.insight-card:hover { background: var(--card-hover); }
+.insight-card.expanded { background: var(--card-hover); }
+
+.insight-title {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.insight-tag {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 400;
+}
+
+.insight-tag.high { background: #f8514911; color: var(--red); border: 1px solid #f8514944; }
+.insight-tag.medium { background: #f0883e11; color: var(--orange); border: 1px solid #f0883e44; }
+.insight-tag.low { background: #1a7f3711; color: #3fb950; border: 1px solid #1a7f3744; }
+
+.insight-summary {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.insight-detail {
+  display: none;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.7;
+  background: #0d1117;
+  border-radius: 6px;
+  padding: 12px;
+  border: 1px solid var(--border);
+}
+
+.insight-card.expanded .insight-detail { display: block; }
+.insight-card.expanded .insight-summary { display: none; }
+
+/* Add Module */
+.add-module-card {
+  background: var(--card);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.add-module-card:hover {
+  border-color: var(--text-muted);
+  background: var(--card-hover);
+}
+
+.add-module-card .label {
+  font-size: 13px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px;
+}
+
+.modal-close:hover { color: var(--text); }
+
+.modal-body {
+  padding: 20px 24px;
+}
+
+.modal-body p {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+.module-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.module-option:hover {
+  border-color: var(--blue);
+  background: #1f6feb11;
+}
+
+.module-option input[type="checkbox"] {
+  accent-color: var(--green-4);
+  width: 16px;
+  height: 16px;
+}
+
+.module-option-label {
+  flex: 1;
+}
+
+.module-option-label strong {
+  font-size: 13px;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.module-option-label span {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.btn {
+  padding: 7px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+}
+
+.btn-primary {
+  background: #238636;
+  color: white;
+}
+
+.btn-primary:hover { background: #2ea043; }
+
+.btn-ghost {
+  background: none;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.btn-ghost:hover {
+  color: var(--text);
+  background: var(--card-hover);
+}
+
+@media (max-width: 900px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+  .calendar-wrapper {
+    overflow-x: scroll;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-left">
+      <h1>远的AI学习圈 · 工作日志</h1>
+      <div class="subtitle">2026-03-29 — 2026-04-13 &nbsp;|&nbsp; 15天追踪记录</div>
+    </div>
+    <div class="header-right">
+      <div>整体统计</div>
+      <div class="stat-row">
+        <div class="stat"><span class="stat-val">15</span> 天活跃</div>
+        <div class="stat"><span class="stat-val">16</span> 篇文章</div>
+        <div class="stat"><span class="stat-val">9</span> 套配图</div>
+        <div class="stat"><span class="stat-val">3</span> 项系统升级</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CALENDAR -->
+  <div class="calendar-section">
+    <div class="section-label">贡献热力图 · 点击日期查看详情</div>
+    <div class="calendar-wrapper">
+      <div class="month-labels" id="monthLabels"></div>
+      <div class="calendar-body">
+        <div class="day-labels">
+          <div class="day-label">一</div>
+          <div class="day-label">三</div>
+          <div class="day-label">五</div>
+          <div class="day-label">日</div>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+      </div>
+      <div class="calendar-legend">
+        <span>少</span>
+        <div class="legend-cell" style="background:var(--green-0)"></div>
+        <div class="legend-cell" style="background:var(--green-1)"></div>
+        <div class="legend-cell" style="background:var(--green-2)"></div>
+        <div class="legend-cell" style="background:var(--green-3)"></div>
+        <div class="legend-cell" style="background:var(--green-4)"></div>
+        <span>多</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- ALL TASKS -->
+    <div class="all-tasks-section">
+      <div class="section-header">
+        <h2>全部任务</h2>
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filter="all">全部</button>
+          <button class="filter-tab" data-filter="article">文章</button>
+          <button class="filter-tab" data-filter="skill">Skill</button>
+          <button class="filter-tab" data-filter="system">系统</button>
+          <button class="filter-tab" data-filter="scraper">爬虫</button>
+          <button class="filter-tab" data-filter="image">配图</button>
+        </div>
+      </div>
+      <div class="tasks-list" id="tasksList"></div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+
+      <!-- DAY DETAIL -->
+      <div class="day-detail">
+        <div class="day-detail-header">
+          <h2 id="detailTitle">今日概览</h2>
+          <span class="day-date" id="detailDate">2026-04-13</span>
+        </div>
+        <div class="day-detail-body" id="detailBody">
+          <div class="empty-state">点击左侧日历中的绿色方块，查看当日任务详情</div>
+        </div>
+      </div>
+
+      <!-- AI INSIGHTS -->
+      <div class="ai-insights">
+        <div class="ai-insights-header">
+          <span class="ai-icon">&#x2728;</span>
+          <h2>AI 洞察 &amp; 优化建议</h2>
+        </div>
+
+        <div class="insight-card" data-insight="1">
+          <div class="insight-title">
+            &#x26A1; 「脉冲式」创作节奏，高价值时段被浪费
+            <span class="insight-tag high">高优先级</span>
+          </div>
+          <div class="insight-summary">22:00-03:00 是产出黄金时段，但大部分碎片任务分散在白天</div>
+          <div class="insight-detail">
+            数据清晰显示：所有重要文章都产出于深夜（22:00-03:00），而白天频繁出现「任务切换」和「试了一下」的空转。凌晨时段认知资源最集中，适合做高密度写作，但目前的碎片任务管理把这段黄金时间切碎了。<br><br>
+            <strong>建议：</strong>把白天留给低价值的「维护性任务」（文件整理、报告生成、知识库更新），把深夜整块时间锁定给文章写作。用日程提醒或自动化在22:00切换工作模式。
+          </div>
+        </div>
+
+        <div class="insight-card" data-insight="2">
+          <div class="insight-title">
+            &#x1F4CB; 文章产出质量高于数量，但覆盖主题过于集中
+            <span class="insight-tag high">高优先级</span>
+          </div>
+          <div class="insight-summary">16篇文章中，AI职场/职业话题占8篇，同质化风险较高</div>
+          <div class="insight-detail">
+            统计16篇已发布文章：AI职场话题（AI薪资、假情感博主、创业失败、AI杀死工作）占比50%，其余分布在科技趋势、文化评论、科学发现。<br><br>
+            同质化意味着读者黏性下降、平台推荐效率降低。公众号需要「信息增量」——同类话题三篇之内要有新视角，否则读者会感到重复。<br><br>
+            <strong>建议：</strong>每周至少安排1篇跨领域内容（心理学、历史、商业案例），即使热度略低，也是差异化策略。AI职场话题内部也可以用「不同职业」「不同年龄段」「不同国家」来制造新鲜感。
+          </div>
+        </div>
+
+        <div class="insight-card" data-insight="3">
+          <div class="insight-title">
+            &#x1F4C1; 一个主题 = 多个任务目录，文件散落两处
+            <span class="insight-tag high">高优先级</span>
+          </div>
+          <div class="insight-summary">平均每篇文章触发2.7个任务目录，文件分布在龙虾和WorkBuddy两处</div>
+          <div class="insight-detail">
+            这是4月9日单日35个任务目录的根本原因。一个文章主题进来，研究、写作、配图、发布分别创建了子任务，每个子任务又可能新建目录，导致「一个任务=多个目录」呈倍数扩张。<br><br>
+            这也是今天整理文件时发现版本混乱的原因——同一篇文章的HTML在龙虾有一个版本，在WorkBuddy另一个任务里又有另一个版本。<br><br>
+            <strong>建议（已执行）：</strong>确立「文章文件唯一存储协议」——所有文章产出只存龙虾目录，WorkBuddy任务目录不保留产出文件，只保留memory/日志。
+          </div>
+        </div>
+
+        <div class="insight-card" data-insight="4">
+          <div class="insight-title">
+            &#x1F3AF; 爬虫数据利用率极低，数据资产沉睡
+            <span class="insight-tag medium">中优先级</span>
+          </div>
+          <div class="insight-summary">即梦爬虫、GitHub Trending、小红书数据大量采集但几乎未被二次利用</div>
+          <div class="insight-detail">
+            15天内爬虫采集了大量数据：<br>
+            &bull; 即梦发现页3599条作品数据<br>
+            &bull; GitHub Trending 多期记录<br>
+            &bull; 小红书热点数据多次采集<br><br>
+            这些数据目前只产出了零散的报告和配图，90%的数据处于「采集后闲置」状态。更重要的是：从数据到选题的转化链路没有建立起来——爬虫发现了热点，但没有被系统化地转化为文章选题。<br><br>
+            <strong>建议：</strong>建立「数据选题转化流程」——每周固定一天（如周一）用爬虫数据做选题会，从数据中提炼3个可写的角度，明确分配到当周的写作计划中。
+          </div>
+        </div>
+
+        <div class="insight-card" data-insight="5">
+          <div class="insight-title">
+            &#x1F331; Skill体系两极分化，高频Skill被过度使用
+            <span class="insight-tag medium">中优先级</span>
+          </div>
+          <div class="insight-summary">wechat-article-writer 和 khazix-writer 使用最频繁，但部分Skill从未使用</div>
+          <div class="insight-detail">
+            当前配置的Skills约20个，核心使用的只有wechat-article-writer（万维钢风格）和khazix-writer（卡兹克风格）。这两个skill在15天内各被调用10+次，而课程生成、IMA知识库、GitHub热门监控等Skill几乎没有使用记录。<br><br>
+            Skills是「AI能力的杠杆」——用好一个Skill可以成倍提升效率。但目前的状态是「买了很多工具，只用了两件」。<br><br>
+            <strong>建议：</strong>每周解锁一个新Skill的实践场景，比如本周尝试IMA知识库管理（把积累的研究素材入库），下周尝试github-trending自动化监控。
+          </div>
+        </div>
+
+        <div class="insight-card" data-insight="6">
+          <div class="insight-title">
+            &#x1F4C5; 历史记忆断档，选题缺乏系统性积累
+            <span class="insight-tag medium">中优先级</span>
+          </div>
+          <div class="insight-summary">3月29日-4月5日无有效日报记录，无法回溯早期选题决策逻辑</div>
+          <div class="insight-detail">
+            清理75个任务目录后，日报虽然已经合并到Claw memory，但3月底到4月初（3/29-4/5）这一周的内容基本空白——没有详细的会话记录，只有sidechain中的少量摘要。<br><br>
+            这意味着：早期做了哪些探索、放弃了哪些选题、为什么选择了某个角度——这些「决策历史」都丢失了。选题积累是公众号竞争力的核心，当你不记得自己写过什么、为什么写，重复踩坑的概率就会增加。<br><br>
+            <strong>建议：</strong>在文章产出目录中增加「文章复盘.md」——每篇已发布文章，记录当时的选题理由、数据来源、修改过程、发布后的初步反馈。即使没有正式发布后数据，这个文档也是未来选题的重要参考。
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ADD MODULE -->
+      <div class="add-module-card" id="addModuleBtn">
+        <div class="label">&#x2795; 增加模块</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>增加报告模块</h3>
+      <button class="modal-close" id="modalClose">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p>选择一个或多个模块加入报告。每个模块会占用一定页面空间，建议按需选择。</p>
+
+      <div class="module-option">
+        <input type="checkbox" id="mod1" checked>
+        <div class="module-option-label">
+          <strong>&#x1F4CA; 产出热力图</strong>
+          <span>区分「有外部产出」vs「仅内部记录」的任务，用深浅不同颜色显示</span>
+        </div>
+      </div>
+
+      <div class="module-option">
+        <input type="checkbox" id="mod2">
+        <div class="module-option-label">
+          <strong>&#x1F4DA; 技能使用统计</strong>
+          <span>哪个Skill用得最多、平均耗时、最常用组合</span>
+        </div>
+      </div>
+
+      <div class="module-option">
+        <input type="checkbox" id="mod3">
+        <div class="module-option-label">
+          <strong>&#x23F0; 时间分布图</strong>
+          <span>一天中哪个时段效率最高，识别你的创作黄金窗口</span>
+        </div>
+      </div>
+
+      <div class="module-option">
+        <input type="checkbox" id="mod4">
+        <div class="module-option-label">
+          <strong>&#x1F3F7; 主题标签云</strong>
+          <span>公众号/爬虫/课程/工具等主题占比，可视化你的精力分配</span>
+        </div>
+      </div>
+
+      <div class="module-option">
+        <input type="checkbox" id="mod5">
+        <div class="module-option-label">
+          <strong>&#x1F525; 连续工作 Streak</strong>
+          <span>最长连续有产出的天数，激励保持节奏</span>
+        </div>
+      </div>
+
+      <div class="module-option">
+        <input type="checkbox" id="mod6">
+        <div class="module-option-label">
+          <strong>&#x1F4C8; 周环比趋势</strong>
+          <span>本周 vs 上周的任务量、产出量对比，用折线图展示</span>
+        </div>
+      </div>
+
+      <div class="module-option">
+        <input type="checkbox" id="mod7">
+        <div class="module-option-label">
+          <strong>&#x1F4AC; 文章复盘区</strong>
+          <span>每篇文章发布后的简短复盘：选题理由、数据来源、修改记录</span>
+        </div>
+      </div>
+
+      <div class="module-option">
+        <input type="checkbox" id="mod8">
+        <div class="module-option-label">
+          <strong>&#x1F310; 选题 Pipeline</strong>
+          <span>从爬虫热点 → 选题池 → 写作计划的完整流转看板</span>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="modalCancel">取消</button>
+      <button class="btn btn-primary" id="modalConfirm">添加已选模块</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const activityData = {
+  "2026-03-29": { level: 1, tasks: [
+    { type: "article", title: "z-agency 文章写作", desc: "Z世代主体性觉醒主题文章" }
+  ]},
+  "2026-03-30": { level: 2, tasks: [
+    { type: "article", title: "为什么年轻人开始把AI当朋友？", desc: "ai-companion-youth · 公众号发布" },
+    { type: "article", title: "AI正在杀死普通职场人", desc: "ai-kills-workers · 公众号发布" }
+  ]},
+  "2026-03-31": { level: 1, tasks: [
+    { type: "article", title: "Z世代主体性觉醒", desc: "z-agency · 公众号发布" }
+  ]},
+  "2026-04-01": { level: 0, tasks: [] },
+  "2026-04-02": { level: 2, tasks: [
+    { type: "article", title: "AI公司把自己的秘密泄露了", desc: "claude-code-leak · 公众号发布" },
+    { type: "article", title: "2026年十大技术趋势", desc: "tech-trends-2026 · 公众号发布" }
+  ]},
+  "2026-04-03": { level: 2, tasks: [
+    { type: "article", title: "文化消费的平民化", desc: "cultural-capital · 公众号发布" },
+    { type: "article", title: "被忽视的追赶者：千问552%增长", desc: "qwen-growth · 公众号发布" }
+  ]},
+  "2026-04-04": { level: 0, tasks: [] },
+  "2026-04-05": { level: 0, tasks: [] },
+  "2026-04-06": { level: 2, tasks: [
+    { type: "article", title: "Claude订阅陷阱：为什么付了钱却不能用？", desc: "claude-subscription-article · 万维钢风格，5500字" },
+    { type: "article", title: "20美元薅羊毛被封禁", desc: "openclaw-anthropic-article · 公众号发布" }
+  ]},
+  "2026-04-07": { level: 2, tasks: [
+    { type: "article", title: "1220亿美元！OpenAI刷新人类融资纪录", desc: "wechat-articles-2026-04-07 · 公众号发布" },
+    { type: "article", title: "Claude订阅陷阱", desc: "wechat-articles-2026-04-07 · 公众号发布" },
+    { type: "article", title: "纽约客万字长文：Sam Altman的谎言与野心", desc: "wechat-articles-2026-04-07 · 公众号发布" },
+    { type: "image", title: "即梦配图：积分节省指南 + 7天冥想重塑大脑", desc: "2套配图 × 4张（cover + 3内容图）" }
+  ]},
+  "2026-04-08": { level: 2, tasks: [
+    { type: "image", title: "即梦配图：南极绕极流 + 开源AI超越闭源", desc: "2套配图 × 4张" },
+    { type: "article", title: "GLM5.1与DeepSeek开源AI重塑之战", desc: "现代思维工具10讲 · 公众号发布" }
+  ]},
+  "2026-04-09": { level: 4, tasks: [
+    { type: "article", title: "AI自习室县城真相", desc: "公众号发布 · 即梦配图4张" },
+    { type: "article", title: "知识图谱革命：AI从批改助手到学习推手", desc: "公众号发布 · 即梦配图4张" },
+    { type: "article", title: "AI数据供应链危机：Mercor被黑震动行业", desc: "公众号发布 · 即梦配图4张" },
+    { type: "article", title: "Happy Horse 1.0登顶AI视频榜", desc: "公众号发布 · 即梦配图4张" },
+    { type: "article", title: "摩根士丹利的AI突破预警", desc: "公众号发布" },
+    { type: "image", title: "即梦配图：AI自习室县城真相", desc: "4张配图" },
+    { type: "image", title: "即梦配图：知识图谱革命", desc: "4张配图" },
+    { type: "image", title: "即梦配图：AI数据供应链危机", desc: "4张配图" },
+    { type: "image", title: "即梦配图：Happy Horse 1.0", desc: "4张配图" }
+  ]},
+  "2026-04-10": { level: 3, tasks: [
+    { type: "article", title: "他把写作风格的秘密开源了", desc: "卡兹克Skill评论 · 公众号发布" },
+    { type: "article", title: "为什么1+1+1=100？", desc: "香料组合抗炎重写 · 公众号发布" },
+    { type: "image", title: "即梦配图：AI短剧成本重塑内容产业", desc: "4张配图" },
+    { type: "image", title: "即梦配图：开源AI超越闭源", desc: "4张配图" },
+    { type: "skill", title: "万维钢skill全面升级", desc: "SKILL.md + wanweigan_style.md + style_examples.md" }
+  ]},
+  "2026-04-11": { level: 3, tasks: [
+    { type: "article", title: "当你的创业成功时，你的市场已经消失了", desc: "AI创业失败综合文章 · 公众号发布" },
+    { type: "article", title: "你以为AI在帮你，其实它在拉大差距", desc: "AI薪资溢价 · 万维钢风格 · 公众号发布" },
+    { type: "article", title: "MBTI已死，SBTI当道", desc: "SBTI爆火调研 · 万维钢风格 · 公众号发布" },
+    { type: "article", title: "AI假情感博主：算法正在批量生产爱情方法论", desc: "公众号发布" },
+    { type: "research", title: "SBTI恶搞测试爆火调研", desc: "全网舆情 + 数据分析" },
+    { type: "article", title: "你的工资，被AI卷死了吗？", desc: "AI薪资溢价卡兹克风格 · 公众号发布" }
+  ]},
+  "2026-04-12": { level: 2, tasks: [
+    { type: "article", title: "AI假情感博主：算法时代的亲密关系工业化", desc: "公众号发布" },
+    { type: "article", title: "GitHub热门项目日报", desc: "github-trending-20260412 · 独立报告" },
+    { type: "research", title: "wechat-cli 开源项目调研", desc: "GitHub: freestylefly/wechat-cli · 调研报告" }
+  ]},
+  "2026-04-13": { level: 3, tasks: [
+    { type: "article", title: "阿尔忒弥斯II：53年后，人类再次站上深空的门槛", desc: "Artemis-II整合版 · 公众号发布 · 4000字" },
+    { type: "article", title: "MBTI已死，SBTI当道（SBTI HTML版）", desc: "sbti-analysis · 公众号发布" },
+    { type: "article", title: "今天，我决定把AI创作这件事说清楚", desc: "卡兹克Skill评论 · 更新版覆盖" },
+    { type: "system", title: "WorkBuddy行为分析报告生成", desc: "HTML报告 · 部署GitHub Pages" },
+    { type: "system", title: "文章文件唯一存储协议确立", desc: "写入MEMORY.md核心常驻" },
+    { type: "system", title: "记忆同步协议确立", desc: "每日双向同步 + 历史补录" },
+    { type: "system", title: "WorkBuddy清理", desc: "75个任务目录 + automation遗留目录全部清空" }
+  ]}
+};
+
+// All tasks flat list
+const allTasks = [
+  { date: "03-29", type: "article", title: "z-agency 文章写作", count: 1 },
+  { date: "03-30", type: "article", title: "为什么年轻人开始把AI当朋友？", count: 1 },
+  { date: "03-30", type: "article", title: "AI正在杀死普通职场人", count: 1 },
+  { date: "03-31", type: "article", title: "Z世代主体性觉醒", count: 1 },
+  { date: "04-02", type: "article", title: "AI公司把自己的秘密泄露了", count: 1 },
+  { date: "04-02", type: "article", title: "2026年十大技术趋势", count: 1 },
+  { date: "04-03", type: "article", title: "文化消费的平民化：博物馆打卡算不算新型文化资本？", count: 1 },
+  { date: "04-03", type: "article", title: "被忽视的追赶者：千问552%增长背后的AI格局洗牌", count: 1 },
+  { date: "04-06", type: "article", title: "Claude订阅陷阱：为什么付了钱却不能用？", count: 1 },
+  { date: "04-06", type: "article", title: "20美元薅羊毛被封禁：AI订阅经济的边界在哪里？", count: 1 },
+  { date: "04-07", type: "article", title: "1220亿美元！OpenAI刷新人类融资纪录", count: 1 },
+  { date: "04-07", type: "article", title: "Claude订阅陷阱（wechat-articles版）", count: 1 },
+  { date: "04-07", type: "article", title: "纽约客万字长文：Sam Altman的谎言与野心", count: 1 },
+  { date: "04-07", type: "image", title: "即梦配图：积分节省指南 + 7天冥想重塑大脑", count: 2 },
+  { date: "04-08", type: "image", title: "即梦配图：南极绕极流 + 开源AI超越闭源", count: 2 },
+  { date: "04-08", type: "article", title: "GLM5.1与DeepSeek开源AI重塑之战", count: 1 },
+  { date: "04-09", type: "article", title: "AI自习室县城真相", count: 1 },
+  { date: "04-09", type: "article", title: "知识图谱革命：AI从批改助手到学习推手", count: 1 },
+  { date: "04-09", type: "article", title: "AI数据供应链危机：Mercor被黑震动行业", count: 1 },
+  { date: "04-09", type: "article", title: "Happy Horse 1.0登顶AI视频榜", count: 1 },
+  { date: "04-09", type: "article", title: "摩根士丹利的AI突破预警", count: 1 },
+  { date: "04-09", type: "image", title: "即梦配图4套（AI自习室/知识图谱/Mercor/HappyHorse）", count: 4 },
+  { date: "04-10", type: "article", title: "他把写作风格的秘密开源了（卡兹克Skill评论）", count: 1 },
+  { date: "04-10", type: "article", title: "为什么1+1+1=100？香料组合抗炎重写", count: 1 },
+  { date: "04-10", type: "image", title: "即梦配图：AI短剧 + 开源AI", count: 2 },
+  { date: "04-10", type: "skill", title: "万维钢skill全面升级", count: 1 },
+  { date: "04-11", type: "article", title: "当你的创业成功时，你的市场已经消失了", count: 1 },
+  { date: "04-11", type: "article", title: "你以为AI在帮你，其实它在拉大差距（万维钢版）", count: 1 },
+  { date: "04-11", type: "article", title: "MBTI已死，SBTI当道", count: 1 },
+  { date: "04-11", type: "article", title: "AI假情感博主：算法正在批量生产爱情方法论", count: 1 },
+  { date: "04-11", type: "article", title: "你的工资，被AI卷死了吗？（卡兹克版）", count: 1 },
+  { date: "04-11", type: "research", title: "SBTI恶搞测试爆火调研", count: 1 },
+  { date: "04-12", type: "article", title: "AI假情感博主：算法时代的亲密关系工业化", count: 1 },
+  { date: "04-12", type: "article", title: "GitHub热门项目日报 2026-04-12", count: 1 },
+  { date: "04-12", type: "research", title: "wechat-cli 开源项目调研", count: 1 },
+  { date: "04-13", type: "article", title: "阿尔忒弥斯II：53年后，人类再次站上深空的门槛", count: 1 },
+  { date: "04-13", type: "article", title: "MBTI已死，SBTI当道（SBTI HTML版）", count: 1 },
+  { date: "04-13", type: "article", title: "今天，我决定把AI创作这件事说清楚（更新版）", count: 1 },
+  { date: "04-13", type: "system", title: "WorkBuddy行为分析报告生成", count: 1 },
+  { date: "04-13", type: "system", title: "文章文件唯一存储协议确立", count: 1 },
+  { date: "04-13", type: "system", title: "记忆同步协议确立 + 历史补录", count: 1 },
+  { date: "04-13", type: "system", title: "WorkBuddy清理：75个目录全部清空", count: 1 }
+];
+
+const typeNames = {
+  article: "文章",
+  skill: "Skill",
+  system: "系统",
+  scraper: "爬虫",
+  image: "配图",
+  course: "课程",
+  research: "调研"
+};
+
+// ===== RENDER CALENDAR =====
+function renderCalendar() {
+  const grid = document.getElementById('calendarGrid');
+  const monthLabels = document.getElementById('monthLabels');
+
+  const startDate = new Date('2026-03-29');
+  const endDate = new Date('2026-04-13');
+
+  // Get the Monday of the week containing startDate
+  const startDay = startDate.getDay(); // 0=Sun
+  const mondayOffset = startDay === 0 ? -6 : 1 - startDay;
+  const mondayDate = new Date(startDate);
+  mondayDate.setDate(startDate.getDate() + mondayOffset);
+
+  // Build month labels
+  const months = ['3月', '4月'];
+  const weeksNeeded = Math.ceil((endDate - mondayDate) / (7 * 24 * 3600 * 1000)) + 1;
+  const pxPerWeek = 16; // 13px cell + 3px gap
+
+  monthLabels.innerHTML = '';
+  let currentMonth = -1;
+  let currentMonthStart = 0;
+  for (let w = 0; w < weeksNeeded; w++) {
+    const d = new Date(mondayDate);
+    d.setDate(mondayDate.getDate() + w * 7);
+    const m = d.getMonth();
+    if (m !== currentMonth) {
+      if (currentMonth !== -1) {
+        const w2 = w - currentMonthStart;
+        const div = document.createElement('div');
+        div.className = 'month-label';
+        div.style.width = (w2 * pxPerWeek) + 'px';
+        div.textContent = months[currentMonth - 2] || '';
+        monthLabels.appendChild(div);
+      }
+      currentMonth = m;
+      currentMonthStart = w;
+    }
+    if (w === weeksNeeded - 1) {
+      const w2 = w - currentMonthStart + 1;
+      const div = document.createElement('div');
+      div.className = 'month-label';
+      div.style.width = (w2 * pxPerWeek) + 'px';
+      div.textContent = months[currentMonth - 2] || '';
+      monthLabels.appendChild(div);
+    }
+  }
+
+  // Build grid
+  grid.innerHTML = '';
+  const totalCells = weeksNeeded * 7;
+
+  for (let i = 0; i < totalCells; i++) {
+    const d = new Date(mondayDate);
+    d.setDate(mondayDate.getDate() + i);
+    const dateStr = d.toISOString().split('T')[0];
+    const isInRange = d >= startDate && d <= endDate;
+    const isToday = dateStr === '2026-04-13';
+    const data = activityData[dateStr];
+
+    const cell = document.createElement('div');
+    cell.className = 'day-cell';
+
+    if (!isInRange) {
+      cell.classList.add('empty');
+    } else if (data && data.level > 0) {
+      cell.setAttribute('data-level', data.level);
+      cell.setAttribute('data-date', dateStr);
+      if (isToday) cell.classList.add('today');
+      const count = data.tasks.length;
+      const tooltip = document.createElement('div');
+      tooltip.className = 'tooltip';
+      tooltip.innerHTML = `<strong>${dateStr}</strong><br>${count}项任务`;
+      cell.appendChild(tooltip);
+      cell.addEventListener('click', () => showDayDetail(dateStr));
+    } else {
+      cell.setAttribute('data-level', 0);
+      cell.setAttribute('data-date', dateStr);
+    }
+
+    grid.appendChild(cell);
+  }
+}
+
+// ===== RENDER TASKS LIST =====
+let currentFilter = 'all';
+
+function renderTasks(filter) {
+  const list = document.getElementById('tasksList');
+  const filtered = filter === 'all'
+    ? allTasks
+    : allTasks.filter(t => t.type === filter);
+
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="empty-state">该分类暂无记录</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(t => `
+    <div class="task-item" data-type="${t.type}" data-date="${t.date}">
+      <span class="task-date">${t.date}</span>
+      <span class="task-badge badge-${t.type}">${typeNames[t.type] || t.type}</span>
+      <span class="task-title" title="${t.title}">${t.title}</span>
+      ${t.count > 1 ? `<span class="task-count">${t.count}项</span>` : ''}
+    </div>
+  `).join('');
+}
+
+// ===== FILTER TABS =====
+document.querySelectorAll('.filter-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentFilter = tab.dataset.filter;
+    renderTasks(currentFilter);
+  });
+});
+
+// ===== DAY DETAIL =====
+function showDayDetail(dateStr) {
+  const data = activityData[dateStr];
+  const detailBody = document.getElementById('detailBody');
+  const detailTitle = document.getElementById('detailTitle');
+  const detailDate = document.getElementById('detailDate');
+
+  detailTitle.textContent = dateStr;
+  detailDate.textContent = dateStr;
+
+  if (!data || data.tasks.length === 0) {
+    detailBody.innerHTML = '<div class="empty-state">当日无任务记录</div>';
+    return;
+  }
+
+  const byType = {};
+  data.tasks.forEach(t => {
+    if (!byType[t.type]) byType[t.type] = [];
+    byType[t.type].push(t);
+  });
+
+  let html = '';
+  Object.entries(byType).forEach(([type, tasks]) => {
+    html += `<div style="margin-bottom:12px">
+      <span class="task-badge badge-${type}" style="margin-bottom:6px;display:inline-block">${typeNames[type] || type}（${tasks.length}项）</span>`;
+    tasks.forEach(t => {
+      html += `<div class="detail-task-item" style="padding:6px 0 6px 12px;border:none">
+        <div class="detail-task-title">${t.title}</div>
+        <div class="detail-task-desc">${t.desc}</div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+
+  detailBody.innerHTML = html;
+
+  // Highlight selected day in calendar
+  document.querySelectorAll('.day-cell[data-date]').forEach(c => c.style.outline = '');
+  const target = document.querySelector(`.day-cell[data-date="${dateStr}"]`);
+  if (target) target.style.outline = '2px solid #a371f7';
+}
+
+// ===== AI INSIGHTS ACCORDION =====
+document.querySelectorAll('.insight-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const wasExpanded = card.classList.contains('expanded');
+    document.querySelectorAll('.insight-card').forEach(c => c.classList.remove('expanded'));
+    if (!wasExpanded) card.classList.add('expanded');
+  });
+});
+
+// ===== MODAL =====
+const modal = document.getElementById('modalOverlay');
+document.getElementById('addModuleBtn').addEventListener('click', () => {
+  modal.classList.add('open');
+});
+document.getElementById('modalClose').addEventListener('click', () => modal.classList.remove('open'));
+document.getElementById('modalCancel').addEventListener('click', () => modal.classList.remove('open'));
+modal.addEventListener('click', e => {
+  if (e.target === modal) modal.classList.remove('open');
+});
+document.getElementById('modalConfirm').addEventListener('click', () => {
+  const selected = [...document.querySelectorAll('.module-option input:checked')]
+    .map(el => el.id);
+  modal.classList.remove('open');
+
+  const container = document.querySelector('.container');
+  const insertPoint = document.querySelector('.calendar-section');
+
+  if (selected.includes('mod1')) {
+    // Already in header stats - no-op but show toast
+    showToast('「产出热力图」已默认集成在日历中');
+  }
+  if (selected.includes('mod2')) {
+    showToast('「技能使用统计」模块已在规划中');
+  }
+  if (selected.includes('mod3')) {
+    showToast('「时间分布图」模块已在规划中');
+  }
+  if (selected.includes('mod4')) {
+    showToast('「主题标签云」模块已在规划中');
+  }
+  if (selected.includes('mod5')) {
+    showToast('「连续工作 Streak」模块已在规划中');
+  }
+  if (selected.includes('mod6')) {
+    showToast('「周环比趋势」模块已在规划中');
+  }
+  if (selected.includes('mod7')) {
+    showToast('「文章复盘区」模块已在规划中');
+  }
+  if (selected.includes('mod8')) {
+    showToast('「选题 Pipeline」模块已在规划中');
+  }
+  if (selected.length === 0) {
+    showToast('请至少选择一个模块');
+  }
+});
+
+function showToast(msg) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = msg;
+  toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#238636;color:white;padding:10px 20px;border-radius:8px;font-size:13px;z-index:2000;animation:fadeIn 0.2s';
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.style.opacity='0'; toast.style.transition='opacity 0.3s'; setTimeout(()=>toast.remove(),300); }, 2500);
+}
+
+// ===== INIT =====
+renderCalendar();
+renderTasks('all');
+</script>
+</body>
+</html>
