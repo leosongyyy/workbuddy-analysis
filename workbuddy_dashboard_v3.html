@@ -234,6 +234,8 @@ header {
 .insight-card.expanded .insight-summary { display: none; }
 
 /* WECHAT ACCOUNT MODULE */
+#mod-wechat { grid-column: 1 / -1; }
+.wx-layout { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; align-items: start; }
 .wx-kpi-row { display: flex; gap: 16px; margin-bottom: 16px; }
 .wx-kpi { flex: 1; text-align: center; padding: 12px 8px; background: var(--card-hover); border-radius: 6px; }
 .wx-kpi .kpi-val { font-size: 22px; font-weight: 700; color: var(--blue); line-height: 1; }
@@ -260,6 +262,17 @@ header {
 .wx-art-meta { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
 .wx-art-meta span { margin-right: 8px; }
 .wx-art-reads { font-size: 12px; font-weight: 600; color: var(--green-4); min-width: 50px; text-align: right; }
+/* Channel bars */
+.wx-channel-wrap { }
+.wx-channel-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 11px; }
+.wx-channel-name { min-width: 72px; color: var(--text-muted); text-align: right; }
+.wx-channel-bar-wrap { flex: 1; height: 14px; background: var(--card-hover); border-radius: 3px; overflow: hidden; }
+.wx-channel-bar { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+.wx-channel-val { min-width: 50px; font-size: 11px; color: var(--text); font-weight: 500; }
+.wx-channel-pct { min-width: 38px; font-size: 10px; color: var(--text-muted); text-align: right; }
+/* SVG trend charts */
+.wx-svg-chart { width: 100%; display: block; }
+.wx-chart-wrap { flex: 1; min-width: 0; }
 
 /* ADD MODULE CARD */
 .add-module-card { background: var(--card); border: 1px dashed var(--border); border-radius: 8px; padding: 16px 20px; cursor: pointer; transition: all 0.15s; }
@@ -728,14 +741,15 @@ header {
       <div id="topicGraphContent" style="position:relative;"></div>
     </div>
 
-      <!-- MOD: 公众号数据 -->
-      <div class="module-section" id="mod-wechat">
-        <div class="module-header">
-          <div class="module-title">
-            <span class="module-icon">&#x1F4F1;</span>
-            <span>公众号数据</span>
+      <!-- MOD: 公众号数据 (full-width, in modules-area above) -->
+      <div class="module-section visible" id="mod-wechat">
+        <div class="module-section-header">
+          <div class="module-section-title">
+            <span class="icon">&#x1F4F1;</span>
+            公众号数据
+            <span class="count">2026.03.14–04.12</span>
           </div>
-          <span class="module-tag">2026.03.14–04.12</span>
+          <div style="font-size:11px;color:var(--text-muted);">30天完整数据</div>
         </div>
         <div id="wechatContent"></div>
       </div>
@@ -1214,6 +1228,17 @@ function renderWechat() {
   const totalFavs = Object.values(wxEngagement).reduce((a,b)=>a+b.favs,0);
   const totalArticles = Object.values(wxEngagement).reduce((a,b)=>a+b.articles,0);
 
+  // Channel reads data
+  const channelData = [
+    { name: '推荐', reads: 38468, color: '#388bfd' },
+    { name: '搜一搜', reads: 557, color: '#a371f7' },
+    { name: '朋友圈', reads: 547, color: '#3fb950' },
+    { name: '公众号主页', reads: 263, color: '#e3b341' },
+    { name: '其他', reads: 270, color: '#8b949e' },
+    { name: '聊天会话', reads: 198, color: '#f0883e' }
+  ];
+  const maxChannel = Math.max(...channelData.map(c => c.reads));
+
   // KPI row
   let html = '<div class="wx-kpi-row">';
   html += `<div class="wx-kpi"><div class="kpi-val">${(totalReads/10000).toFixed(1)}<span style="font-size:14px">万</span></div><div class="kpi-label">总阅读</div></div>`;
@@ -1222,14 +1247,17 @@ function renderWechat() {
   html += `<div class="wx-kpi"><div class="kpi-val">${totalArticles}</div><div class="kpi-label">发文章</div></div>`;
   html += '</div>';
 
-  // Peak dates
+  // Peak note
   const peakDate = Object.entries(wxReads).sort((a,b)=>b[1]-a[1])[0];
-  html += `<div style="font-size:10px;color:var(--text-muted);margin-bottom:12px;">峰值：${peakDate[0]} · 阅读${peakDate[1].toLocaleString()}（DeepSeek爆款日）</div>`;
+  html += `<div style="font-size:10px;color:var(--text-muted);margin-bottom:16px;">峰值：${peakDate[0]} · 阅读${peakDate[1].toLocaleString()}（DeepSeek爆款日）</div>`;
 
-  // Trend chart (30-day)
+  // Three-column grid: trend | channel | share/fav
+  html += '<div class="wx-layout">';
+
+  // === Col 1: 30-day reads trend ===
   const maxR = Math.max(...reads, 1);
   const labelIdx = [0, 7, 14, 21, 29];
-  html += '<div class="wx-trend-wrap">';
+  html += '<div class="wx-chart-wrap">';
   html += '<div class="wx-trend-label">30天阅读趋势</div>';
   html += '<div class="wx-chart">';
   dates.forEach((d,i) => {
@@ -1244,14 +1272,77 @@ function renderWechat() {
   });
   html += '</div></div>';
 
+  // === Col 2: Channel proportion ===
+  html += '<div class="wx-channel-wrap">';
+  html += '<div class="wx-trend-label">各渠道阅读占比</div>';
+  channelData.forEach(c => {
+    const pct = (c.reads / totalReads * 100).toFixed(1);
+    const w = Math.max(2, Math.round((c.reads / maxChannel) * 100));
+    html += `<div class="wx-channel-row">
+      <div class="wx-channel-name">${c.name}</div>
+      <div class="wx-channel-bar-wrap">
+        <div class="wx-channel-bar" style="width:${w}%;background:${c.color}" title="${c.reads}"></div>
+      </div>
+      <div class="wx-channel-val">${c.reads >= 1000 ? (c.reads/1000).toFixed(1)+'k' : c.reads}</div>
+      <div class="wx-channel-pct">${pct}%</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  // === Col 3: Share + Fav trend (stacked bars via SVG) ===
+  html += '<div class="wx-chart-wrap">';
+  html += '<div class="wx-trend-label">分享 &amp; 收藏趋势</div>';
+
+  // SVG dual-line trend
+  const engDates = Object.keys(wxEngagement);
+  const shareVals = engDates.map(d => wxEngagement[d].shares);
+  const favVals = engDates.map(d => wxEngagement[d].favs);
+  const maxEng = Math.max(...shareVals, ...favVals, 1);
+  const wW = 300, wH = 70;
+  const paddingX = 2, paddingY = 4;
+  const plotW = wW - paddingX * 2;
+  const plotH = wH - paddingY * 2;
+
+  let svgPathShares = '';
+  let svgPathFavs = '';
+  engDates.forEach((d, i) => {
+    const x = paddingX + (i / (engDates.length - 1)) * plotW;
+    const yShare = paddingY + plotH - (shareVals[i] / maxEng) * plotH;
+    const yFav = paddingY + plotH - (favVals[i] / maxEng) * plotH;
+    svgPathShares += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + yShare.toFixed(1);
+    svgPathFavs += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + yFav.toFixed(1);
+  });
+
+  html += `<svg class="wx-svg-chart" viewBox="0 0 ${wW} ${wH}" preserveAspectRatio="xMidYMid meet">`;
+  html += `<polyline points="${svgPathShares}" fill="none" stroke="#3fb950" stroke-width="1.5" opacity="0.9"/>`;
+  html += `<polyline points="${svgPathFavs}" fill="none" stroke="#e3b341" stroke-width="1.5" opacity="0.9"/>`;
+  // Peak dot for shares
+  const peakShareIdx = shareVals.indexOf(Math.max(...shareVals));
+  const px = paddingX + (peakShareIdx / (engDates.length - 1)) * plotW;
+  const py = paddingY + plotH - (shareVals[peakShareIdx] / maxEng) * plotH;
+  html += `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="2.5" fill="#3fb950"/>`;
+  // Peak dot for favs
+  const peakFavIdx = favVals.indexOf(Math.max(...favVals));
+  const fx = paddingX + (peakFavIdx / (engDates.length - 1)) * plotW;
+  const fy = paddingY + plotH - (favVals[peakFavIdx] / maxEng) * plotH;
+  html += `<circle cx="${fx.toFixed(1)}" cy="${fy.toFixed(1)}" r="2.5" fill="#e3b341"/>`;
+  html += '</svg>';
+
+  // Legend for share/fav
+  html += '<div style="display:flex;gap:12px;font-size:10px;margin-top:2px;">';
+  html += `<span style="display:flex;align-items:center;gap:4px;"><span style="width:16px;height:2px;background:#3fb950;display:inline-block;border-radius:1px"></span>分享（峰值${Math.max(...shareVals)}）</span>`;
+  html += `<span style="display:flex;align-items:center;gap:4px;"><span style="width:16px;height:2px;background:#e3b341;display:inline-block;border-radius:1px"></span>收藏（峰值${Math.max(...favVals)}）</span>`;
+  html += '</div></div>';
+
+  html += '</div>'; // end wx-layout
+
   // Top articles
-  html += '<div class="wx-articles">';
+  html += '<div class="wx-articles" style="margin-top:16px;">';
   html += '<div class="wx-articles-title">TOP 10 热门文章</div>';
   wxTopArticles.slice(0,8).forEach((a,i) => {
     const rankClass = i===0?'gold':i===1?'silver':i===2?'bronze':'';
-    const rank = ['1st','2nd','3rd'][i] || `#${i+1}`;
     const dateFmt = `${a.date.slice(0,4)}-${a.date.slice(4,6)}-${a.date.slice(6)}`;
-    const channelColor = {'推荐':'#58a6ff','朋友圈':'#3fb950','搜一搜':'#e3b341','全部':'#cdd9e5'}[a.channel]||'#cdd9e5';
+    const channelColor = {'推荐':'#388bfd','朋友圈':'#3fb950','搜一搜':'#a371f7','全部':'#cdd9e5'}[a.channel]||'#cdd9e5';
     html += `<div class="wx-article-item">
       <div class="wx-art-rank ${rankClass}">${i+1}</div>
       <div class="wx-art-body">
