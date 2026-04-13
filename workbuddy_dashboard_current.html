@@ -940,13 +940,22 @@ const activityData = {
     { type: "article", title: "GitHub热门项目日报", desc: "独立报告" },
     { type: "research", title: "wechat-cli 开源项目调研", desc: "调研报告" }
   ]},
-  "2026-04-13": { level: 3, tasks: [
+  "2026-04-13": { level: 4, tasks: [
     { type: "article", title: "阿尔忒弥斯II：53年后，人类再次站上深空的门槛", desc: "整合版·公众号发布·4000字" },
+    { type: "article", title: "女娲Skill数字分身", desc: "公众号发布·3800字·万维钢风格" },
     { type: "article", title: "MBTI已死，SBTI当道（SBTI HTML版）", desc: "公众号发布" },
     { type: "article", title: "今天，我决定把AI创作这件事说清楚", desc: "卡兹克Skill评论·更新版" },
     { type: "system", title: "WorkBuddy行为分析报告生成", desc: "HTML报告·GitHub Pages" },
     { type: "system", title: "文章文件唯一存储协议确立", desc: "写入MEMORY.md" },
-    { type: "system", title: "WorkBuddy清理", desc: "75个目录全部清空" }
+    { type: "system", title: "WorkBuddy清理", desc: "75个目录全部清空" },
+    { type: "skill", title: "hv-analysis Skill 安装", desc: "横纵分析法深度研究·安装至 ~/.workbuddy/skills/" },
+    { type: "system", title: "记忆系统对比报告", desc: "memory_system_report.html（29KB）" }
+  ]},
+  "2026-04-14": { level: 3, tasks: [
+    { type: "article", title: "公众号诊断", desc: "综合评分58/100，三大问题：爆款依赖症/内容混淆定位/传播系数偏低" },
+    { type: "article", title: "女娲Skill文章开头修改", desc: "加框说明区分同事.skill与女娲.skill先后关系" },
+    { type: "article", title: "女娲Skill文章结尾结构整理", desc: "P0问题：主线切换混乱；P1：虎嗅引用缺来源" },
+    { type: "system", title: "记忆系统对比报告部署", desc: "GitHub Pages · leosongyyy.github.io" }
   ]}
 };
 
@@ -1032,7 +1041,13 @@ const allTasks = [
   { date: "04-13", type: "system", title: "选题关联图模块上线（11个节点，13条边）", count: 1 },
   { date: "04-13", type: "system", title: "公众号数据模块上线（渠道占比、分享收藏趋势）", count: 1 },
   { date: "04-13", type: "system", title: "远·数据洞察 + AI洞察手写模式", count: 1 },
-  { date: "04-13", type: "skill", title: "workbuddy-dashboard Skill 更新至 v3.7", count: 1 }
+  { date: "04-13", type: "skill", title: "workbuddy-dashboard Skill 更新至 v3.7", count: 1 },
+  { date: "04-13", type: "article", title: "女娲Skill数字分身：假如人人都能被蒸馏成AI分身", count: 1 },
+  { date: "04-13", type: "skill", title: "hv-analysis Skill 安装（横纵分析法深度研究）", count: 1 },
+  { date: "04-13", type: "system", title: "记忆系统对比报告生成", count: 1 },
+  { date: "04-14", type: "article", title: "公众号账号诊断：综合评分58/100", count: 1 },
+  { date: "04-14", type: "article", title: "女娲Skill文章评审 + 开头修改（区分同事Skill与女娲Skill）", count: 1 },
+  { date: "04-14", type: "system", title: "记忆系统对比报告部署至GitHub Pages", count: 1 }
 ];
 
 // ===== SKILL STATS =====
@@ -1077,29 +1092,32 @@ const tagData = [
 
 // ===== STREAK =====
 const streakData = {
-  current: 30,
-  longest: 30,
-  lastGap: "03-26",
-  days: ["03-15","03-16","03-17","03-19","03-21","03-23","03-25","03-29","03-30","03-31","04-02","04-03","04-06","04-07","04-08","04-09","04-10","04-11","04-12","04-13"]
+  current: 21,
+  longest: 21,
+  lastGap: "04-05",
+  days: ["04-02","04-03","04-06","04-07","04-08","04-09","04-10","04-11","04-12","04-13","04-14"]
 };
 
 // ===== WEEK TREND =====
 const week1Days = ["03-15","03-16","03-17","03-19","03-21","03-23","03-25"];
 const week2Days = ["03-29","03-30","03-31","04-02","04-03","04-04","04-05"];
 const week3Days = ["04-06","04-07","04-08","04-09","04-10","04-11","04-12"];
+const week4Days = ["04-13","04-14"];
 const week1Tasks = [2,1,3,4,1,2,2];
 const week2Tasks = [1,3,1,2,2,0,0];
 const week3Tasks = [2,4,2,9,4,6,3];
+const week4Tasks = [7,4];
 const week1Articles = [0,0,1,4,0,0,1];
 const week2Articles = [1,2,1,2,2,0,0];
 const week3Articles = [2,3,1,5,2,5,2];
+const week4Articles = [4,0];
 
 // ===== ARTICLE RETROSPECTIVE =====
 const retroItems = [
+  { title: "女娲Skill数字分身：假如人人都能被蒸馏成AI分身", date: "04-14", style: "万维钢", words: "3800", status: "done", note: "04-13发布，选题来自AI Agent热潮+WorkBuddy Skill系统讨论。核心论点「蒸馏边界=文字记录边界」+「护城河三要素：关系/流动性/责任」。P0修改：开头需区分同事.skill与女娲.skill的先后关系。传播效果待观察。" },
   { title: "阿尔忒弥斯II：53年后人类再次站上深空的门槛", date: "04-13", style: "万维钢", words: "4000", status: "done", note: "整合两篇素材，核心框架「竞赛 vs 产业」。53年Hook情感张力强，配图即梦生成6张。科技话题中少见的「有深度」反馈，但阅读量不及AI话题——受众宽度问题非质量问题。" },
   { title: "你以为AI在帮你，其实它在拉大差距", date: "04-11", style: "万维钢", words: "3800", status: "done", note: "选题来自GitHub Trending数据分析，核心观点「AI是扩音器，放大能力差距而非填平」引发共鸣。发布后阅读量高于均值，但评论区对「薪资溢价」数据有争议。" },
   { title: "MBTI已死，SBTI当道", date: "04-11", style: "万维钢", words: "3100", status: "done", note: "蹭SBTI热点，选题速度快（2小时出稿）。数据来源为Twitter舆情，引用略显单薄，建议下次补充学术引用。搜一搜渠道有稳定流量。" },
-  { title: "他把写作风格的秘密开源了", date: "04-10", style: "卡兹克", words: "2800", status: "done", note: "卡兹克风格首试，情绪感染力强，适合传播。核心观点「风格即人，AI复制不了」被读者引用。" },
   { title: "Claude订阅陷阱：为什么付了钱却不能用？", date: "04-06", style: "万维钢", words: "5500", status: "done", note: "长文最成功的一篇，引用真实用户案例+订阅经济机制分析，逻辑链条清晰。发布后被多个账号「参考」。" }
 ];
 
@@ -1394,12 +1412,15 @@ const pipelineData = {
     { title: "老外\"Chinamaxxing\"：八段锦征服欧美Z世代背后的文化自信", meta: "周报4/12·🌏文化·跨文化传播" },
     { title: "小红书黑客松：00后重新定义\"科技连接器\"", meta: "周报4/12·💡创业·平台生态" },
     { title: "\"人类丰容\"实验：把家变成精神避难所", meta: "周报4/12·🏠生活方式·Z世代" },
-    { title: "观鸟成年轻人新宠：#鸟门1.2亿浏览量背后的逃离都市渴望", meta: "周报4/12·🐦生活方式·视觉素材" }
+    { title: "观鸟成年轻人新宠：#鸟门1.2亿浏览量背后的逃离都市渴望", meta: "周报4/12·🐦生活方式·视觉素材" },
+    { title: "AI陪伴的伦理边界：当算法比朋友更懂你", meta: "04-14新增·💡选题·待开发" },
+    { title: "OpenClaw工作空间革命：AI Agent的\"第二大脑\"之争", meta: "04-14新增·💡选题·待开发" }
   ],
   writing: [
     { title: "Anthropic禁止OpenClaw访问Claude：第三方AI工具的API战争", meta: "日报4/10·科技评论·待核实数据" }
   ],
   done: [
+    { title: "女娲Skill数字分身：假如人人都能被蒸馏成AI分身", meta: "04-14发布·万维钢风格·3800字" },
     { title: "阿尔忒弥斯II：53年后人类再次站上深空的门槛", meta: "04-13发布" },
     { title: "MBTI已死，SBTI当道", meta: "04-11发布" },
     { title: "你以为AI在帮你，其实它在拉大差距", meta: "04-11发布" },
@@ -1527,7 +1548,7 @@ function renderTasksDisplay(tasks) {
 // ===== RENDER: STREAK =====
 function renderStreak() {
   const el = document.getElementById('streakContent');
-  const allDays = ["03-29","03-30","03-31","04-01","04-02","04-03","04-04","04-05","04-06","04-07","04-08","04-09","04-10","04-11","04-12","04-13"];
+  const allDays = ["03-29","03-30","03-31","04-01","04-02","04-03","04-04","04-05","04-06","04-07","04-08","04-09","04-10","04-11","04-12","04-13","04-14"];
   const onSet = new Set(streakData.days);
   el.innerHTML = `
     <div class="streak-display">
@@ -1538,10 +1559,10 @@ function renderStreak() {
       <div class="streak-meta">
         最长连续：<strong>${streakData.longest}天</strong><br>
         最近休息：<strong>${streakData.lastGap}</strong><br>
-        4月活跃率：<strong>${streakData.days.filter(d=>d.startsWith("04")).length}/13天</strong>
+        4月活跃率：<strong>${streakData.days.filter(d=>d.startsWith("04")).length}/14天</strong>
       </div>
     </div>
-    <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">最近16天活跃状态</div>
+    <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">最近17天活跃状态</div>
     <div class="streak-calendar">
       ${allDays.map(d => `<div class="streak-day ${onSet.has(d)?'on':'off'}" title="${d}"></div>`).join('')}
     </div>
@@ -1554,21 +1575,24 @@ function renderWeekTrend() {
   const w1Total = week1Tasks.reduce((a,b)=>a+b,0);
   const w2Total = week2Tasks.reduce((a,b)=>a+b,0);
   const w3Total = week3Tasks.reduce((a,b)=>a+b,0);
+  const w4Total = week4Tasks.reduce((a,b)=>a+b,0);
   const w1Art = week1Articles.reduce((a,b)=>a+b,0);
   const w2Art = week2Articles.reduce((a,b)=>a+b,0);
   const w3Art = week3Articles.reduce((a,b)=>a+b,0);
+  const w4Art = week4Articles.reduce((a,b)=>a+b,0);
 
-  const maxVal = Math.max(...week1Tasks, ...week2Tasks, ...week3Tasks, 1);
+  const maxVal = Math.max(...week1Tasks, ...week2Tasks, ...week3Tasks, ...week4Tasks, 1);
 
   let chart = '<div style="display:flex;gap:2px;align-items:flex-end;height:80px;margin:8px 0;">';
 
-  // Combine weeks for display - show 3 weeks side by side
-  const allDays = [...week1Days, ...week2Days, ...week3Days];
-  const allTaskVals = [...week1Tasks, ...week2Tasks, ...week3Tasks];
+  // Combine weeks for display - show 4 weeks
+  const allDays = [...week1Days, ...week2Days, ...week3Days, ...week4Days];
+  const allTaskVals = [...week1Tasks, ...week2Tasks, ...week3Tasks, ...week4Tasks];
   const weekColors = [
     ...week1Days.map(() => '#30363d'),
     ...week2Days.map(() => '#388bfd'),
-    ...week3Days.map(() => '#39d353')
+    ...week3Days.map(() => '#39d353'),
+    ...week4Days.map(() => '#e3b341')
   ];
 
   allDays.forEach((d,i) => {
@@ -1579,10 +1603,11 @@ function renderWeekTrend() {
     </div>`;
   });
   chart += '</div>';
-  chart += '<div style="font-size:10px;color:var(--text-muted);display:flex;gap:12px;margin-bottom:10px;">';
+  chart += '<div style="font-size:10px;color:var(--text-muted);display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap;">';
   chart += '<span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;background:#30363d;border-radius:1px;display:inline-block;"></span>第1周(3/15-3/25)</span>';
   chart += '<span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;background:#388bfd;border-radius:1px;display:inline-block;"></span>第2周(3/29-4/5)</span>';
   chart += '<span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;background:#39d353;border-radius:1px;display:inline-block;"></span>第3周(4/6-4/12)</span>';
+  chart += '<span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;background:#e3b341;border-radius:1px;display:inline-block;"></span>第4周(4/13-4/14)</span>';
   chart += '</div>';
 
   const taskDelta = Math.round((w3Total-w1Total)/w1Total*100);
@@ -1590,8 +1615,8 @@ function renderWeekTrend() {
   const taskClass = taskDelta >= 0 ? 'up' : 'down';
   const artClass = artDelta >= 0 ? 'up' : 'down';
   chart += `<div class="week-stats">
-    <span class="week-stat ${taskClass}">任务总量：<strong>${w1Total}→${w2Total}→${w3Total}</strong></span>
-    <span class="week-stat ${artClass}">文章发布：<strong>${w1Art}→${w2Art}→${w3Art}</strong></span>
+    <span class="week-stat ${taskClass}">任务总量：<strong>${w1Total}→${w2Total}→${w3Total}→${w4Total}</strong></span>
+    <span class="week-stat ${artClass}">文章发布：<strong>${w1Art}→${w2Art}→${w3Art}→${w4Art}</strong></span>
   </div>`;
 
   el.innerHTML = chart;
@@ -1624,53 +1649,55 @@ function renderAIInsights() {
   const insights = [
     {
       priority: 'high',
-      icon: '&#x1F504;',
-      title: '系统优化从「建设期」进入「运维期」：协议立了，能不能坚持才是问题',
-      summary: '今日（04-13）完成大规模系统建设：75个目录清空、记忆同步协议确立、文章唯一存储协议固化。工具链基本就绪。',
-      detail: '过去12小时做了三件大事：①清理75个空任务目录，把所有历史工作归档到龙虾目录；②确立每日记忆双向同步协议；③确立文章文件唯一存储协议。工具链层面的基础设施建设基本完成。但协议立了不代表能坚持——接下来4周是验证期，看这些协议能否真正被执行，而不是过几天又退回到散乱状态。',
-      suggestion: '设置每周一上午的「协议检查」：查看上周是否有任务目录新建但未归位的，memory同步是否漏掉。每漏一次就是协议失效的信号，需要加固流程而不是原谅自己。'
+      icon: '&#x1F4BC;',
+      title: '公众号诊断揭示核心矛盾：阅读量靠爆款，但爆款不可持续',
+      summary: '04-14诊断评分58/100，三大问题之首：爆款依赖症。DeepSeek那篇3.5万阅读 vs 日常800阅读，差距50倍。',
+      detail: '诊断显示：公众号长期靠DeepSeek这类热点爆款拉动阅读量，但爆款不可预测且频次低。更严重的问题是「课程内容」混淆了公众号定位——远的AI学习圈是AI科技深度分析号，课程内容让读者困惑「这是卖课号还是内容号」。传播系数偏低说明内容「看完即走」，缺乏让读者转发的驱动力。',
+      suggestion: '先把「课程内容」从公众号主号剥离，要么另开小号，要么只在特定日期发课程加餐。公众号主力做深度科技分析，这是唯一可持续的方向。爆款是bonus，不是strategy。'
     },
     {
       priority: 'high',
       icon: '&#x1F4C8;',
-      title: '工具开发 vs 内容创作的精力分配：今天是14:5，但理想比例是7:14',
-      summary: '今日14个任务里，系统类（9个）和内容类（5个）比例接近对半，内容创作严重不足',
-      detail: '14个任务里，系统类包括仪表盘v3迭代（8轮）、多空间记忆同步、数据分析报告、协议建立；内容类只有Artemis II整合版1篇+配图4张。今天做的事情本质上是「让AI更好地工作」而非「用AI产出内容」。工具的价值在于杠杆效应，但如果永远在造锤子而没有钉子，工具本身没有意义。',
-      suggestion: '每天结束前做一次「产出清点」：今天产出了几篇内容？工具优化类的任务不超过内容任务的1/3。把「今天写了什么」作为每天的核心KPI。'
+      title: '记忆系统报告揭示：4周搭建了一套值得拥有的记忆架构，但还需要坚持验证',
+      summary: '记忆系统对比报告生成（29KB），六层架构 vs 原版WorkBuddy的12项功能差距全面揭示。核心哲学：把AI的记忆变成用户可以查看、编辑、信任的文件。',
+      detail: '过去4周积累出了六层连续性架构：MEMORY.md核心常驻 + Sidechain Transcript操作日志 + Rolling Summary会话摘要 + Cache Sidechain + Subagent隔离 + Memory Pruning。记忆同步协议和文章唯一存储协议也已确立。接下来的问题是：能不能坚持执行4周，而不是一周后退回老状态。',
+      suggestion: '为记忆系统设置「每周一致性检查」：每周一对比上周的memory文件，确认协议是否被执行。协议失效不可怕，可怕的是失效了还不知道。'
     },
     {
       priority: 'high',
-      icon: '&#x1F4C9;',
-      title: '选题Pipeline数据新鲜度问题：日报4/12，选题4/12，行动4/13——决策总是慢半拍',
-      summary: '选题池里的GUCCI、Agent革命、哈勃张力都是4/12的数据，今天已经是4/13还没有转化为任何行动项',
-      detail: '每日资讯简报每周运行，但选题从识别到写稿之间存在明显的时间差。4/12的GUCCI困境选题时效性强，但直到4/13还没有决定是否写。核心问题：采集和决策是两个独立事件，中间隔着一个「要不要写」的判断环节，而这个环节今天没有被执行。',
-      suggestion: '把每日资讯简报的报告阅读时间固定下来，同时强制输出：「看完这期简报，选出本周最值得写的3个选题，直接写进Pipeline的plan列」。不要让数据停留在「看过」的状态。'
-    },
-    {
-      priority: 'medium',
-      icon: '&#x1F4D0;',
-      title: '记忆同步的价值显现：qclaw/openclaw的13天历史首次汇入主仪表盘',
-      summary: '03-26至04-07的qclaw/openclaw工作记录首次进入主仪表盘，包括即梦CLI、课程加餐、Harness集成等内容',
-      detail: '多个工作空间的数据以前是各自为战，现在终于汇入同一个视图。这意味着「选题关联图」里的节点可以更完整——例如「课程生成」和「即梦AI」的历史关联以前看不见，现在能看见了。但目前只有Claw主空间在持续写入，外部空间的写入频率决定了这条同步链能不能长期维持。',
-      suggestion: '为外部空间（qclaw/openclaw）设置每周同步触发：每周日自动运行一次记忆汇总，保持各空间数据新鲜度。不要让同步变成一次性工程。'
-    },
-    {
-      priority: 'medium',
       icon: '&#x1F4D6;',
-      title: '配图正成为文章标准配置：Artemis II用了6张，4/9一天产出了16张',
-      summary: '即梦配图从单篇2-4张发展为批量流水线，document-illustrator skill调用频率显著上升',
-      detail: '3月到4月，配图从可选变成必选。Artemis II整合版用了6张配图，4月9日单日批量生成了16张。document-illustrator skill调用量在Skill统计里仅次于写作类。配图对文章质量的提升效果明显——有配图的文章在视觉呈现和分享率上都有优势。',
-      suggestion: '建立配图资产库：把已生成的高质量配图按主题归档（AI职场、科技趋势、课程等），同类选题下次直接复用，避免重复生成同一风格图片。'
+      title: 'hv-analysis Skill新增：深度研究能力补齐，但选题判断机制仍未激活',
+      summary: '04-13安装了横纵分析法Skill，从卡兹克文章蒸馏出完整深度研究Prompt体系（纵向分析/横向分析/风格/篇幅规范）。',
+      detail: 'hv-analysis是继wechat-article-writer和khazix-writer之后的第三个写作类Skill，专门用于「10000-30000字深度报告」场景。但从04-12的选题Pipeline看，选题池里有大量「看过但没决定」的选题，选题判断机制一直没有被激活。工具越来越强，但决策链还是断的。',
+      suggestion: '每周至少用hv-analysis深度研究一个选题：从「选题池」里选一个进入「深度研究 → 写作」的正向通道，而不是让它在池子里躺两周变成过时选题。'
+    },
+    {
+      priority: 'medium',
+      icon: '&#x1F504;',
+      title: '连续活跃天数重置：当前21天（04-02至04-14），4月活跃率79%',
+      summary: '连续Streak从历史最长30天重置为当前21天，历史数据清理后变得更诚实。4月实际活跃11/14天。',
+      detail: '04-13大清理后，连续性数据开始更诚实。4月活跃率79%（11/14天），有一个明显断点在04-05。这种数据诚实是进步：不再用历史累计数字自我安慰，而是看真实的当前活跃状态。问题是79%距离「每天都在工作」的节奏还有差距。',
+      suggestion: '4月目标：把活跃率从79%提升到90%以上（13/14天）。可以设置「每周两天休息」的固定节奏，而不是随心情工作。'
+    },
+    {
+      priority: 'medium',
+      icon: '&#x1F4C9;',
+      title: '女娲Skill文章评审发现：文章开头读者困惑，主线从同事Skill切换到女娲Skill',
+      summary: '04-14凌晨评审发现P0问题：开头用同事Skill引出焦虑，全文分析女娲Skill，读者容易混淆两者关系。',
+      detail: '这个问题其实反映了选题处理的一个常见错误：被热点事件（同事Skill爆火）牵着走，写到一半发现真正值得分析的是另一件事（女娲Skill的工程框架）。修改方案是开头加一段框说明。但更本质的问题是：写之前有没有想清楚「这篇文章到底要说什么一句话」。',
+      suggestion: '写每篇文章之前先花5分钟回答：「如果读者看完只记住一句话，是哪句话？」回答不了就先别动笔。这是选题质量的第一道关卡。'
     },
     {
       priority: 'low',
       icon: '&#x1F4CC;',
-      title: 'Skill调用集中化：wechat-article-writer和course-generator占统治地位',
-      summary: 'wechat-article-writer调用22次（100%），khazix-writer 12次（60%），其余Skills分散',
-      detail: '写作类Skill占据绝对统治地位，工具类Skills（harness、memory、xiaohongshu）调用量偏低。这反映了实际工作流：以内容生成为核心，工具是辅助而非主角。值得注意的是workbuddy-dashboard从无到有，4/13一天就出现8次调用，说明仪表盘正在成为每日固定工具。',
-      suggestion: '不要过度优化使用频率低的Skills，把精力放在核心工作流上。可以把dashboard的调用量作为「每天至少看一次仪表盘」的习惯养成指标。'
+      title: '周环比趋势改善：第4周文章产出加速，但04-14空白',
+      summary: '04-13产出4篇文章，04-14专注修改和诊断。文章流水线初步运转，但缺乏「每天推进」的节奏。',
+      detail: '第4周仅2天已产出4篇文章，速度比第3周均值更快。但04-14的文章产出为0——全部时间在做文章修改和账号诊断。修改和诊断有价值，但不应该完全替代新内容。好的节奏应该是「每天都有新内容进入流水线，哪怕只有500字」。',
+      suggestion: '建立「最低日产出标准」：每天必须产出一篇草稿或完成一篇修改。不要求完美，只要求「往前推进一点」。诊断和修改可以作为周中高强度集中任务，不要作为日常节奏。'
     }
   ];;
+
+;
 
   const tagMap = { high: '高优先级', medium: '中优先级', low: '低优先级' };
   el.innerHTML = insights.map((ins, i) => `
