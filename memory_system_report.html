@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>记忆系统对比报告 | 自定义 vs 原版 WorkBuddy</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #0d1117;
+            color: #e6edf3;
+            line-height: 1.8;
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 60px 0 40px;
+        }
+        .hero .badge {
+            display: inline-block;
+            background: rgba(88,166,255,0.15);
+            color: #58a6ff;
+            font-size: 13px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(88,166,255,0.3);
+            margin-bottom: 16px;
+        }
+        .hero h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #f0f6fc;
+            margin-bottom: 12px;
+        }
+        .hero .subtitle {
+            font-size: 16px;
+            color: #8b949e;
+        }
+        .hero .meta {
+            margin-top: 16px;
+            font-size: 13px;
+            color: #6e7681;
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #30363d, transparent);
+            margin: 40px 0;
+        }
+
+        /* Section */
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #f0f6fc;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title .icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        .icon-blue { background: rgba(88,166,255,0.15); }
+        .icon-purple { background: rgba(163,113,247,0.15); }
+        .icon-green { background: rgba(63,185,80,0.15); }
+        .icon-orange { background: rgba(210,153,34,0.15); }
+        .icon-red { background: rgba(248,81,73,0.15); }
+
+        /* Cards */
+        .card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+        .card h3 {
+            font-size: 16px;
+            color: #f0f6fc;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        /* Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 700px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .comparison-table th {
+            background: #1c2128;
+            color: #8b949e;
+            font-weight: 500;
+            text-align: left;
+            padding: 10px 16px;
+            border-bottom: 1px solid #30363d;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .comparison-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #21262d;
+            vertical-align: top;
+            color: #c9d1d9;
+        }
+        .comparison-table tr:last-child td { border-bottom: none; }
+        .comparison-table .dim { color: #6e7681; font-size: 13px; }
+        .comparison-table .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .tag-pro { background: rgba(63,185,80,0.15); color: #3fb950; }
+        .tag-origin { background: rgba(88,166,255,0.15); color: #58a6ff; }
+        .tag-diff { background: rgba(248,81,73,0.15); color: #f85149; }
+
+        /* Layer diagram */
+        .layer-diagram {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+            overflow-x: auto;
+        }
+        .layer-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .layer-row:last-child { margin-bottom: 0; }
+        .layer-label {
+            width: 60px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #6e7681;
+            text-align: right;
+            padding-right: 12px;
+            flex-shrink: 0;
+        }
+        .layer-bar {
+            height: 36px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            min-width: 200px;
+            flex-shrink: 0;
+        }
+        .layer-desc {
+            margin-left: 16px;
+            font-size: 13px;
+            color: #8b949e;
+        }
+        .l1 { background: linear-gradient(90deg, #f85149, #da3633); }
+        .l2 { background: linear-gradient(90deg, #d29922, #9e6a03); }
+        .l3 { background: linear-gradient(90deg, #58a6ff, #1f6feb); }
+        .l4 { background: linear-gradient(90deg, #a371f7, #8957e5); }
+        .l5 { background: linear-gradient(90deg, #3fb950, #238636); }
+        .l6 { background: linear-gradient(90deg, #79c0ff, #388bfd); }
+
+        /* Benefit cards */
+        .benefit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .benefit-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .benefit-card .num {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #58a6ff, #a371f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+        .benefit-card h4 {
+            font-size: 15px;
+            color: #f0f6fc;
+            margin-bottom: 8px;
+        }
+        .benefit-card p {
+            font-size: 13px;
+            color: #8b949e;
+            line-height: 1.7;
+        }
+
+        /* Protocol list */
+        .protocol-item {
+            background: #0d1117;
+            border-left: 3px solid #58a6ff;
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 16px;
+        }
+        .protocol-item h4 {
+            font-size: 14px;
+            color: #58a6ff;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        .protocol-item p {
+            font-size: 13px;
+            color: #8b949e;
+        }
+
+        /* Quote */
+        .quote-block {
+            background: rgba(88,166,255,0.05);
+            border: 1px solid rgba(88,166,255,0.2);
+            border-radius: 12px;
+            padding: 24px 28px;
+            margin: 24px 0;
+            font-size: 15px;
+            color: #c9d1d9;
+            font-style: italic;
+            line-height: 1.9;
+        }
+
+        /* Stats row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin: 24px 0;
+        }
+        @media (max-width: 700px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+        }
+        .stat-item {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-num {
+            font-size: 28px;
+            font-weight: 800;
+            color: #58a6ff;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #6e7681;
+            margin-top: 4px;
+        }
+
+        /* File structure */
+        .file-tree {
+            font-family: "SF Mono", "Cascadia Code", monospace;
+            font-size: 13px;
+            color: #8b949e;
+            line-height: 2;
+        }
+        .file-tree .folder { color: #58a6ff; }
+        .file-tree .file { color: #c9d1d9; }
+        .file-tree .indent { padding-left: 24px; }
+        .file-tree .active { color: #3fb950; font-weight: 600; }
+
+        /* Timeline */
+        .timeline-item {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .timeline-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #58a6ff;
+            margin-top: 6px;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .timeline-dot::after {
+            content: '';
+            position: absolute;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 40px;
+            background: #30363d;
+        }
+        .timeline-item:last-child .timeline-dot::after { display: none; }
+        .timeline-content h4 {
+            font-size: 14px;
+            color: #f0f6fc;
+            margin-bottom: 4px;
+        }
+        .timeline-content p {
+            font-size: 13px;
+            color: #8b949e;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 0 20px;
+            font-size: 12px;
+            color: #6e7681;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Hero -->
+    <div class="hero">
+        <div class="badge">Memory System Report</div>
+        <h1>自定义记忆系统 vs 原版 WorkBuddy</h1>
+        <p class="subtitle">远的工作空间记忆架构全景解析</p>
+        <p class="meta">生成于 2026-04-13 | 基于 MEMORY.md v2 / Sidechain Transcript / 原版文档对比</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Stats Overview -->
+    <div class="stats-row">
+        <div class="stat-item">
+            <div class="stat-num">6</div>
+            <div class="stat-label">记忆层级</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num">4</div>
+            <div class="stat-label">工作空间</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num">5</div>
+            <div class="stat-label">核心协议</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num">73%</div>
+            <div class="stat-label">Token 效率提升</div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 一、什么是原版 WorkBuddy 记忆 -->
+    <div class="section-title">
+        <div class="icon icon-blue">1</div>
+        原版 WorkBuddy 的记忆机制
+    </div>
+
+    <div class="card">
+        <h3>原版只有三层：会话级 + 任务级 + 文件级</h3>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>层级</th>
+                    <th>存储方式</th>
+                    <th>生命周期</th>
+                    <th>可控性</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>对话历史</td>
+                    <td>服务端自动保存，云端存储</td>
+                    <td class="dim">任务会话内连续，会话结束消失</td>
+                    <td class="dim">用户无法直接查看或编辑</td>
+                </tr>
+                <tr>
+                    <td>任务上下文</td>
+                    <td>服务端维护，任务级隔离</td>
+                    <td class="dim">新建任务需重新描述背景</td>
+                    <td class="dim">系统自动管理</td>
+                </tr>
+                <tr>
+                    <td>文件上下文</td>
+                    <td>主动上传或拖拽文件</td>
+                    <td class="dim">随任务结束清除</td>
+                    <td class="dim">每次手动关联</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="quote-block">
+            "原版 WorkBuddy 通过「保留工作空间」功能实现类似记忆的效果——在同一个项目中持续追问时，减少重复切换。但本质上，这只是一次性的会话缓存，没有持久化结构。"
+        </div>
+
+        <h3 style="margin-top: 20px;">原版核心局限</h3>
+        <ul style="font-size: 14px; color: #8b949e; list-style: none; line-height: 2.2;">
+            <li style="padding-left: 16px; border-left: 2px solid #f85149;">会话结束 → 上下文彻底消失，跨会话零连续性</li>
+            <li style="padding-left: 16px; border-left: 2px solid #f85149;">无 MEMORY.md → 没有用户可编辑的长期记忆文件</li>
+            <li style="padding-left: 16px; border-left: 2px solid #f85149;">多工作空间各自为政，无法跨空间共享上下文</li>
+            <li style="padding-left: 16px; border-left: 2px solid #f85149;">子代理输出直接进入主上下文，Token 爆炸</li>
+            <li style="padding-left: 16px; border-left: 2 solid #f85149;">无操作日志 → 无审计追溯，决策黑箱</li>
+        </ul>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 二、自定义系统的六层架构 -->
+    <div class="section-title">
+        <div class="icon icon-purple">2</div>
+        自定义系统的六层连续性架构
+    </div>
+
+    <div class="layer-diagram">
+        <div class="layer-row">
+            <div class="layer-label">L6</div>
+            <div class="layer-bar l6">专项记忆 *.md</div>
+            <div class="layer-desc">关键词触发，按需加载（文章列表、工具说明、项目档案）</div>
+        </div>
+        <div class="layer-row">
+            <div class="layer-label">L5</div>
+            <div class="layer-bar l5">Rolling Summary</div>
+            <div class="layer-desc">会话结束自动生成结构化摘要，新会话优先读摘要跳过完整历史</div>
+        </div>
+        <div class="layer-row">
+            <div class="layer-label">L4</div>
+            <div class="layer-bar l4">Cache Sidechain</div>
+            <div class="layer-desc">文件 mtime 缓存，读取前查 mtime 一致则跳过，避免重复加载</div>
+        </div>
+        <div class="layer-row">
+            <div class="layer-label">L3</div>
+            <div class="layer-bar l3">Sidechain Transcript</div>
+            <div class="layer-desc">所有写操作统一追加：FILE / API / DECISION / NOTE / SUMMARY</div>
+        </div>
+        <div class="layer-row">
+            <div class="layer-label">L2</div>
+            <div class="layer-bar l2">MEMORY.md</div>
+            <div class="layer-desc">核心常驻，每次会话加载：工作约定、品牌规范、技术约束、关键结论</div>
+        </div>
+        <div class="layer-row">
+            <div class="layer-label">L1</div>
+            <div class="layer-bar l1">Agent Identity</div>
+            <div class="layer-desc">身份摘要（SOUL.md / IDENTITY.md / USER.md），每次会话启动</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>参考来源：Claude Code 四条不变量 + 七层控制面</h3>
+        <p style="font-size: 14px; color: #8b949e; line-height: 1.9;">
+            2026-04-07 全面升级时，参照了 Claude Code 源码分析提炼的架构设计。Claude Code 通过四条不变量（身份、记忆、操作链、内容状态）和七层控制面（I/A/B/C/D/E/F/G）实现了跨会话的连续性，而自定义系统将这些思想适配到了 WorkBuddy 环境中，演化为更精简的六层架构。
+        </p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 三、五大核心协议 -->
+    <div class="section-title">
+        <div class="icon icon-green">3</div>
+        自定义系统五大核心协议
+    </div>
+
+    <div class="protocol-item">
+        <h4>单一写入协议（Single Write Protocol）</h4>
+        <p>所有操作统一写入 sidechain_transcript.md，不再分散维护 cache_sidechain.md 和 daily log 写入。格式为 [类型] 时间戳 | 操作 | 目标 | 结果，派生规则从 sidechain 统一派生视图层和日报层。</p>
+    </div>
+    <div class="protocol-item">
+        <h4>多工作空间记忆扫描协议</h4>
+        <p>扫描 4 个目录：Claw（主）/ qclaw / openclaw / mac_mini。同一日期数据合并而非覆盖，合并任务列表、技能调用、文章产出。场景：生成工作日志报告时全量合并。</p>
+    </div>
+    <div class="protocol-item">
+        <h4>每日记忆同步协议</h4>
+        <p>每个新任务当日 .workbuddy/memory/YYYY-MM-DD.md 更新后，必须同步追加到主工作空间 Claw 的对应日期文件（同一日期汇总，不是覆盖）。漏记补录：发现历史某日缺失日志，找到对应工作内容后补写。</p>
+    </div>
+    <div class="protocol-item">
+        <h4>文章文件唯一存储协议</h4>
+        <p>文件从不进 WorkBuddy 任务目录。文章所有文件只存在于 /Volumes/mac_mini/龙虾/{文章名}/，包含 HTML、配图、研究素材 .md、原始数据。发布后保留内容，清理任务目录中间文件。</p>
+    </div>
+    <div class="protocol-item">
+        <h4>会话启动协议</h4>
+        <p>第一步：扫描 sidechain_transcript.md 末尾 ##UNFINISHED## 区域，如有未完成任务开场时告知用户。第二步：检查记忆裁剪，超过阈值触发自动归档。第三步：确认续接意愿，展示上次未完成 + 最近会话摘要 + 是否有新任务。</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 四、完整文件结构 -->
+    <div class="section-title">
+        <div class="icon icon-orange">4</div>
+        记忆系统完整文件结构
+    </div>
+
+    <div class="card">
+        <div class="file-tree">
+            <div><span class="folder">/Users/songwuyuan/WorkBuddy/Claw/.workbuddy/</span></div>
+            <div class="indent"><span class="folder">memory/</span></div>
+            <div class="indent"><span class="indent"><span class="file active">MEMORY.md</span> ← 核心常驻，每次会话加载</span></div>
+            <div class="indent"><span class="indent"><span class="file active">sidechain_transcript.md</span> ← 单一操作日志 + 会话摘要 + UNFINISHED</span></div>
+            <div class="indent"><span class="indent"><span class="file">cache_sidechain.md</span> ← 从 sidechain 派生的视图层（mtime 缓存）</span></div>
+            <div class="indent"><span class="indent"><span class="file">memory_index.md</span> ← 所有 memory 文件的语义摘要，语义检索入口</span></div>
+            <div class="indent"><span class="indent"><span class="file">tool_schema_summary.md</span> ← 工具一行描述 + 关键参数</span></div>
+            <div class="indent"><span class="indent"><span class="folder">archive/</span> <span class="dim">← 超过30天的日记忆压缩归档</span></div>
+            <div class="indent"><span class="indent"><span class="folder">tmp/</span> <span class="dim">← 子代理隔离输出（raw/summary 分离）</span></div>
+            <div class="indent"><span class="indent"><span class="file">2026-04-13.md</span> ← 当日工作日志（每日新建）</span></div>
+            <div class="indent"><span class="indent"><span class="dim">…更多按需加载的专项记忆文件…</span></div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 五、完整功能对比 -->
+    <div class="section-title">
+        <div class="icon icon-red">5</div>
+        原版 vs 自定义系统：逐项对比
+    </div>
+
+    <div class="card">
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>功能维度</th>
+                    <th><span class="tag tag-origin">原版 WorkBuddy</span></th>
+                    <th><span class="tag tag-pro">自定义系统</span></th>
+                    <th>差距</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>记忆持久化</td>
+                    <td class="dim">会话级，结束后消失</td>
+                    <td>MEMORY.md + 每日日志，跨会话永久</td>
+                    <td><span class="tag tag-diff">巨大</span></td>
+                </tr>
+                <tr>
+                    <td>用户可控性</td>
+                    <td class="dim">无 MEMORY.md，系统黑箱</td>
+                    <td>完全手写的 .md 文件，用户任意编辑</td>
+                    <td><span class="tag tag-diff">巨大</span></td>
+                </tr>
+                <tr>
+                    <td>多工作空间</td>
+                    <td class="dim">各自独立，无关联</td>
+                    <td>4空间统一扫描 + 合并协议</td>
+                    <td><span class="tag tag-diff">巨大</span></td>
+                </tr>
+                <tr>
+                    <td>会话摘要</td>
+                    <td class="dim">无，会话历史不可读</td>
+                    <td>Rolling Summary，结构化 + 可跳转</td>
+                    <td><span class="tag tag-diff">巨大</span></td>
+                </tr>
+                <tr>
+                    <td>操作日志</td>
+                    <td class="dim">无，无法追溯决策</td>
+                    <td>Sidechain Transcript，FILE/API/DECISION 全记录</td>
+                    <td><span class="tag tag-diff">巨大</span></td>
+                </tr>
+                <tr>
+                    <td>子代理处理</td>
+                    <td class="dim">原始输出进入主上下文，Token 爆炸</td>
+                    <td>Subagent 隔离：raw → summary 降级</td>
+                    <td><span class="tag tag-diff">巨大</span></td>
+                </tr>
+                <tr>
+                    <td>文件缓存</td>
+                    <td class="dim">每次会话全量读取，无缓存</td>
+                    <td>Cache Sidechain：mtime 比对，跳过未变文件</td>
+                    <td><span class="tag tag-diff">显著</span></td>
+                </tr>
+                <tr>
+                    <td>未完成续接</td>
+                    <td class="dim">需用户手动说明上次说到哪</td>
+                    <td>##UNFINISHED## 区域，开场自动检测提示</td>
+                    <td><span class="tag tag-diff">显著</span></td>
+                </tr>
+                <tr>
+                    <td>语义检索</td>
+                    <td class="dim">无，直接遍历文件</td>
+                    <td>memory_index.md 语义摘要 → 定位 → 精确搜索</td>
+                    <td><span class="tag tag-diff">显著</span></td>
+                </tr>
+                <tr>
+                    <td>记忆裁剪</td>
+                    <td class="dim">无，文件无限膨胀</td>
+                    <td>自动裁剪：30天压缩 / 90天归档 / 200行精简</td>
+                    <td><span class="tag tag-diff">显著</span></td>
+                </tr>
+                <tr>
+                    <td>文章文件管理</td>
+                    <td class="dim">分散存放，版本混乱</td>
+                    <td>唯一存储协议：mac_mini/龙虾/{文章名}/</td>
+                    <td><span class="tag tag-diff">显著</span></td>
+                </tr>
+                <tr>
+                    <td>Token 效率</td>
+                    <td class="dim">无优化，长会话成本高</td>
+                    <td>预估节省 40-60%（Harness Engineering 验证 73%）</td>
+                    <td><span class="tag tag-diff">显著</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 六、自定义系统五大好处 -->
+    <div class="section-title">
+        <div class="icon icon-blue">6</div>
+        自定义系统的五大核心好处
+    </div>
+
+    <div class="benefit-grid">
+        <div class="benefit-card">
+            <div class="num">01</div>
+            <h4>真正的跨会话连续性</h4>
+            <p>原版 WorkBuddy 每个任务会话结束后一切归零。自定义系统通过 MEMORY.md 和每日日志，实现了真正的跨会话连续——上周做的决定，下周还能追溯。</p>
+        </div>
+        <div class="benefit-card">
+            <div class="num">02</div>
+            <h4>Token 效率革命性提升</h4>
+            <p>通过 Cache Sidechain（mtime 缓存跳过）、Rolling Summary（跳过完整历史）、Subagent 隔离（raw→summary 降级）三层机制，长会话 Token 消耗预估下降 40-60%，实测 Harness Engineering 场景提升 73%。</p>
+        </div>
+        <div class="benefit-card">
+            <div class="num">03</div>
+            <h4>多工作空间统一管理</h4>
+            <p>主工作空间 Claw + qclaw + openclaw + mac_mini 四个空间并行运作，通过统一扫描协议合并数据，一次对话可以调动所有空间的上下文。</p>
+        </div>
+        <div class="benefit-card">
+            <div class="num">04</div>
+            <h4>操作完全可审计追溯</h4>
+            <p>Sidechain Transcript 让每一次文件操作、API 调用、关键决策都有时间戳记录。不是黑箱——用户可以回溯任何一次决策的依据和过程。</p>
+        </div>
+        <div class="benefit-card">
+            <div class="num">05</div>
+            <h4>用户拥有完全控制权</h4>
+            <p>所有记忆都是手写的 .md 文件。用户可以随时查看、修改、补充。不依赖系统自动生成，记忆内容完全真实、可信、可控。</p>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 七、演进时间线 -->
+    <div class="section-title">
+        <div class="icon icon-purple">7</div>
+        记忆系统演进时间线
+    </div>
+
+    <div class="card" style="padding: 28px 28px 8px;">
+        <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <h4>2026-03-26 ~ 03-28 — 早期探索</h4>
+                <p>qclaw 工作空间启动，即梦CLI集成、Skills全景图生成。</p>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <h4>2026-03-29 — 三层记忆架构确立</h4>
+                <p>openclaw 工作空间引入 COLD/WARM/HOT 三层架构雏形。</p>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <h4>2026-04-04 — Token 效率首次突破</h4>
+                <p>Harness Engineering 主流程集成完成，Token 效率提升 73%。</p>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <h4>2026-04-07 — 六层架构全面升级</h4>
+                <p>参照 Claude Code 源码，确立六层连续性体系 + Sidechain Transcript + Cache Sidechain + Rolling Summary + Subagent 隔离 + Memory Pruning + Skill 动态路由。九项优化全部完成。</p>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <h4>2026-04-13 — 五大协议确立 + 多工作空间合并</h4>
+                <p>确立单一写入协议、记忆同步协议、唯一存储协议、会话启动协议、语义检索规范。多工作空间记忆扫描协议正式确立。</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 总结 -->
+    <div class="card" style="border-color: rgba(88,166,255,0.3);">
+        <h3>总结</h3>
+        <p style="font-size: 14px; color: #c9d1d9; line-height: 2;">
+            原版 WorkBuddy 提供的是「会话级即时记忆」——高效但短暂，适合单次任务。自定义记忆系统在此基础上叠加了「持久化层」：MEMORY.md 的核心常驻让每次会话都有稳固的上下文基座，Sidechain Transcript 的操作日志让所有决策有据可查，Rolling Summary 的会话摘要让跨会话跳转成为可能，Memory Pruning 防止文件无限膨胀。
+        </p>
+        <p style="font-size: 14px; color: #c9d1d9; line-height: 2; margin-top: 12px;">
+            核心哲学只有一条：<strong style="color: #f0f6fc;">把 AI 的记忆变成用户可以查看、编辑、信任的文件</strong>。不是交给系统黑箱，而是握在自己手里。
+        </p>
+    </div>
+
+    <div class="footer">
+        远的 AI 学习圈 · 记忆系统架构报告 · 2026-04-13<br>
+        存储路径：/Users/songwuyuan/WorkBuddy/Claw/.workbuddy/memory/
+    </div>
+
+</div>
+</body>
+</html>
