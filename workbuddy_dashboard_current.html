@@ -502,7 +502,7 @@ header {
       <div class="module-section-title">
         <span class="icon">&#x1F4F1;</span>
         公众号数据
-        <span class="count">2026.03.14–04.13</span>
+        <span class="count">2026.03.15–04.15</span>
       </div>
       <div style="font-size:11px;color:var(--text-muted);">30天完整数据</div>
     </div>
@@ -1160,7 +1160,7 @@ const wxReads = {
   "2026-03-29":252,"2026-03-30":1115,"2026-03-31":4942,"2026-04-01":7989,
   "2026-04-02":6518,"2026-04-03":6364,"2026-04-04":5000,"2026-04-05":2977,
   "2026-04-06":2104,"2026-04-07":806,"2026-04-08":181,"2026-04-09":294,
-  "2026-04-10":309,"2026-04-11":192,"2026-04-12":398,"2026-04-13":974
+  "2026-04-10":309,"2026-04-11":192,"2026-04-12":398,"2026-04-13":974,"2026-04-14":2055,"2026-04-15":916
 };
 const wxEngagement = {
   "2026-03-14":{"shares":0,"jumps":0,"favs":0,"articles":0},
@@ -1193,21 +1193,23 @@ const wxEngagement = {
   "2026-04-10":{"shares":12,"jumps":0,"favs":3,"articles":3},
   "2026-04-11":{"shares":16,"jumps":0,"favs":10,"articles":2},
   "2026-04-12":{"shares":59,"jumps":0,"favs":30,"articles":3},
-  "2026-04-13":{"shares":45,"jumps":0,"favs":18,"articles":2}
+  "2026-04-13":{"shares":149,"jumps":0,"favs":50,"articles":3},
+  "2026-04-14":{"shares":263,"jumps":0,"favs":117,"articles":1},
+  "2026-04-15":{"shares":137,"jumps":0,"favs":55,"articles":2}
 };
 const wxTopArticles = [
-  {title:"DeepSeek还没凉，豆包已经3亿了",date:"20260330",reads:34697,channel:"全部"},
-  {title:"小红书最新规定：这样用AI，账号直接没了",date:"20260331",reads:2362,channel:"全部"},
-  {title:"七天真能重塑大脑？神经科学家说：能，而且比你想象的快",date:"20260408",reads:1123,channel:"全部"},
-  {title:"你以为很丑，实际是中了基因彩票",date:"20260329",reads:597,channel:"全部"},
-  {title:"AI能帮你写，但那个凌晨两点半的顿悟，它给不了",date:"20260411",reads:56,channel:"全部"},
+  {title:"DeepSeek还没凉，豆包已经3亿了",date:"20260330",reads:34704,channel:"全部"},
+  {title:"七天真能重塑大脑？神经科学家说：能，而且比你想象的快",date:"20260408",reads:3829,channel:"全部"},
+  {title:"小红书最新规定：这样用AI，账号直接没了",date:"20260331",reads:2370,channel:"全部"},
+  {title:"你以为很丑，实际是中了基因彩票",date:"20260329",reads:626,channel:"全部"},
+  {title:"AI能帮你写，但那个凌晨两点半的顿悟，它给不了",date:"20260411",reads:73,channel:"全部"},
   {title:"养一只龙虾——关于 OpenClaw，你需要知道的一切",date:"20260315",reads:49,channel:"全部"},
-  {title:"被忽视的追赶者：千问552%增长背后的AI格局洗牌",date:"20260405",reads:37,channel:"搜一搜"},
-  {title:"Claude订阅陷阱：为什么付了钱却不能用？",date:"20260407",reads:34,channel:"搜一搜"},
-  {title:"纽约客万字长文：Sam Altman的谎言与野心",date:"20260407",reads:33,channel:"朋友圈"},
+  {title:"被忽视的追赶者：千问552%增长背后的AI格局洗牌",date:"20260405",reads:40,channel:"搜一搜"},
+  {title:"纽约客万字长文：Sam Altman的谎言与野心",date:"20260407",reads:38,channel:"朋友圈"},
+  {title:"Claude订阅陷阱：为什么付了钱却不能用？",date:"20260407",reads:36,channel:"搜一搜"},
+  {title:"MBTI已死，SBTI当道：一场关于\"发疯\"的集体狂欢",date:"20260412",reads:30,channel:"搜一搜"},
   {title:"你对AI工具的焦虑，是理性的",date:"20260316",reads:25,channel:"朋友圈"},
-  {title:"Happy Horse 1.0登顶AI视频榜：开源视频模型为何让巨头紧张？",date:"20260409",reads:24,channel:"搜一搜"},
-  {title:"MBTI已死，SBTI当道：一场关于\"发疯\"的集体狂欢",date:"20260412",reads:23,channel:"搜一搜"}
+  {title:"Happy Horse 1.0登顶AI视频榜：开源视频模型为何让巨头紧张？",date:"20260409",reads:24,channel:"搜一搜"}
 ];
 
 function renderWechat() {
@@ -1221,12 +1223,12 @@ function renderWechat() {
 
   // Channel reads data
   const channelData = [
-    { name: '推荐', reads: 39307, color: '#388bfd' },
-    { name: '搜一搜', reads: 628, color: '#a371f7' },
-    { name: '朋友圈', reads: 567, color: '#3fb950' },
-    { name: '公众号主页', reads: 277, color: '#e3b341' },
-    { name: '其他', reads: 286, color: '#8b949e' },
-    { name: '聊天会话', reads: 225, color: '#f0883e' }
+    { name: '推荐', reads: 41997, color: '#388bfd' },
+    { name: '搜一搜', reads: 708, color: '#a371f7' },
+    { name: '朋友圈', reads: 607, color: '#3fb950' },
+    { name: '聊天会话', reads: 337, color: '#f0883e' },
+    { name: '其他', reads: 336, color: '#8b949e' },
+    { name: '公众号主页', reads: 312, color: '#e3b341' }
   ];
   const maxChannel = Math.max(...channelData.map(c => c.reads));
 
